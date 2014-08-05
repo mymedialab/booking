@@ -1,0 +1,14 @@
+{
+    "name": "mml/booking",
+    "version": "0.0.1",
+    "autoload": {
+        "psr-4": {"MML\\Booking\\": "src/"}
+    },
+    "require" : {
+        "doctrine/orm": "~2.3"
+    },
+    "require-dev" : {
+        "phpunit/phpunit": "~4.1",
+        "squizlabs/php_codesniffer": "1.*"
+    }
+}
