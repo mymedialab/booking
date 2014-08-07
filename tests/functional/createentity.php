@@ -7,6 +7,9 @@ try {
 } catch (MML\Booking\Exceptions\Booking $e) {
     echo $e->getMessage() . "\n\n";
     exit(1);
+} catch (Doctrine\DBAL\DBALException $e) {
+    echo $e->getMessage() . "\n\n";
+    exit(1);
 }
 
 echo "\n";

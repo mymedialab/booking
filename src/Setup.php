@@ -23,7 +23,7 @@ class Setup
     {
         $Mapper = $this->Factory->getDataMapper();
         $Entity = $Mapper->getEmpty('Entity');
-        $Entity->name = $name;
+        $Entity->setName($name);
         $Mapper->persist($Entity);
 
         return $Entity;

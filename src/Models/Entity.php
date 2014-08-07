@@ -6,15 +6,22 @@ use MML\Booking\Interfaces;
 
 class Entity implements Interfaces\Mappable
 {
-    protected $Data;
+    protected $BackingData;
 
     public function __construct(Data\Entity $BackingData)
     {
-        $this->Data = $BackingData;
+        $this->BackingData = $BackingData;
     }
     public function exposeData()
     {
-        return $this->Data;
+        return $this->BackingData;
+    }
+    public function __call($fn, $args)
+    {
+        // allow this data-entities methods to be accessed through us
+        if (is_callable(array($this->BackingData, $fn))) {
+            return call_user_func_array(array($this->BackingData, $fn), $args);
+        }
     }
 
     public function isAvailable(\DateTime $Start, Interfaces\Period $Period)

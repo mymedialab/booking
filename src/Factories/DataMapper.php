@@ -52,9 +52,11 @@ class DataMapper
         return $this->Factory->makeModel($modelName, $Entity);
     }
 
-    public function getEmpty($entityName)
+    public function getEmpty($entityIdentifier)
     {
-        $entityName = $this->lookupDoctrineEntity($entityName);
+        $entityName = $this->lookupDoctrineEntity($entityIdentifier);
+        $modelName  = $this->lookupDomainModel($entityIdentifier);
+
         return $this->Factory->makeModel($modelName, new $entityName);
     }
 
@@ -82,7 +84,7 @@ class DataMapper
 
     public function persist(Interfaces\Mappable $Model)
     {
-        $Entity = $Model->exposeEntity();
+        $Entity = $Model->exposeData();
 
         $this->Doctrine->persist($Entity);
         $this->Doctrine->flush();
