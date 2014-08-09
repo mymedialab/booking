@@ -10,12 +10,18 @@ class Period
     public function get($periodName, array $options)
     {
         // @todo
-        return new Periods\Weekly;
+        return new Periods\Generic;
     }
 
-    public function getFor(Models\Entity $Entity, $name)
+    public function getFor(Models\Resource $Resource, $name)
     {
         // @todo
-        return new Periods\Weekly;
+        return new Periods\Generic;
+    }
+
+    public function getAllFor(Models\Resource $Resource)
+    {
+        // @todo
+        return array(new Periods\Generic, new Periods\Weekly);
     }
 }

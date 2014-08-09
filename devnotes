@@ -1,0 +1,6 @@
+IDEA: Could we make this TWO apis? A calendar driver that handles the dates /
+times / periods and a booking api that handles the reservations? Then we could
+reuse the calendar for other purposes such as budget-planning, event management
+etc.
+
+Try and keep the calendar seamed away from reservations!

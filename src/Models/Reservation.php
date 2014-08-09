@@ -1,5 +1,5 @@
 <?php
-namespace MML\Booking\Data;
+namespace MML\Booking\Models;
 
 /**
  * Holds data for an existing reservation
@@ -8,7 +8,7 @@ namespace MML\Booking\Data;
  *
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="reservations")
+ * @Table(name="booking_reservations")
  */
 class Reservation
 {
@@ -25,8 +25,8 @@ class Reservation
     private $created;
     /** @Column(type="datetime") */
     private $modified;
-    /** @ManyToOne(targetEntity="MML\Booking\Data\Entity") */
-    private $entity;
+    /** @ManyToOne(targetEntity="MML\Booking\Models\Resource") */
+    private $Resource;
 
     public function getId()
     {
@@ -48,9 +48,9 @@ class Reservation
     {
         return $this->modified;
     }
-    public function getEntity()
+    public function getResource()
     {
-        return $this->entity;
+        return $this->Resource;
     }
 
 

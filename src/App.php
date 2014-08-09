@@ -19,29 +19,40 @@ class App
         $this->Factory = is_null($Factory) ? new Factories\General() : $Factory;
     }
 
-    public function getEntity($name)
+    public function getResource($name)
     {
-        $Mapper = $this->Factory->getDataMapper();
-        return $Mapper->getOne('Entity', $name, 'name');
+        $Doctrine = $this->Factory->getDoctrine();
+        return $Doctrine->getRepository('MML\\Booking\\Models\\Resource')->findOneBy(array('name' => $name));
     }
 
-    public function getPeriodFor(Models\Entity $Entity, $Periodname)
+    public function getPeriodFor(Models\Resource $Resource, $Periodname)
     {
         $Locator = $this->Factory->getPeriodFactory();
-        return $Locator->getFor($Entity, $Periodname);
+        return $Locator->getFor($Resource, $Periodname);
     }
 
-    public function createReservation(Models\Entity $Entity, \DateTime $Start, Interfaces\Period $Period)
+    public function createReservation(Models\Resource $Resource, \DateTime $Start, Interfaces\Period $Period)
     {
-        if (!$Entity->isAvailable($Start, $Period)) {
-            throw new Exceptions\Unavailable("{$Entity->name} is not available for the selected period");
+        if (!$Resource->isAvailable($Start, $Period)) {
+            throw new Exceptions\Unavailable("{$Resource->name} is not available for the selected period");
         }
 
         // @todo
     }
 
-    public function getReservations(Models\Entity $Entity, \DateTime $Start, \DateTime $End)
+    public function createBlockReservation(Models\Resource $Resource, \DateTime $Start, Interfaces\Period $Period, Interfaces\Interval $Interval)
     {
         // @todo
+    }
+
+    public function getReservations(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
+    {
+        // @todo
+    }
+
+    public function getInterval($identifier)
+    {
+        $Provider = $this->Factory->getIntervalFactory();
+        return $Provider->get($identifier);
     }
 }

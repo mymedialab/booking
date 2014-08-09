@@ -1,7 +1,8 @@
 <?php
-namespace MML\Booking\Data;
+namespace MML\Booking\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use MML\Booking\Interfaces;
 
 /**
  *
@@ -9,9 +10,9 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @Entity
  * @HasLifecycleCallbacks
- * @Table(name="entities")
+ * @Table(name="booking_resources")
  */
-class Entity
+class Resource
 {
     /**
      * @id @Column(type="integer")
@@ -24,8 +25,10 @@ class Entity
     private $created;
     /** @Column(type="datetime") */
     private $modified;
+    /** @Column(type="integer") */
+    private $quantity = 1;
     /**
-     * @OneToMany(targetEntity="MML\Booking\Data\Reservation", mappedBy="Reservation")
+     * @OneToMany(targetEntity="MML\Booking\Models\Reservation", mappedBy="Reservation")
      * @OrderBy({"start" = "DESC"})
     */
     private $reservations;
@@ -35,6 +38,26 @@ class Entity
         $this->reservations = new ArrayCollection();
     }
 
+
+    public function isAvailable(\DateTime $Start, Interfaces\Period $Period)
+    {
+        //@todo
+        return true;
+    }
+
+    /**
+     * Returns the availability of the resource at the time specified
+     *
+     * @param  DateTime $Time The time of checking. This may be subject to period smoothing
+     * @return integer  number of items available at the given time
+     */
+    public function getAvailability(\DateTime $Time)
+    {
+        //@todo is an integer going to work? How long is it available for? Is this an exercise for the user?
+        return 1;
+    }
+
+
     public function getId()
     {
         return $this->id;
@@ -42,6 +65,10 @@ class Entity
     public function getName()
     {
         return $this->name;
+    }
+    public function getQuantity()
+    {
+        return $this->quantity;
     }
     public function getCreated()
     {
@@ -60,6 +87,10 @@ class Entity
     public function setName($newName)
     {
         $this->name = $newName;
+    }
+    public function setQuantity($newQuantity)
+    {
+        $this->quantity = $newQuantity;
     }
 
     /**

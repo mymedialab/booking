@@ -2,6 +2,7 @@
 namespace MML\Booking\Factories;
 
 use MML\Booking;
+use MML\Booking\Models;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
@@ -9,6 +10,14 @@ class General
 {
     protected $cache = array();
 
+    /**
+     * @todo might this be better as a caching factory? Could use a decorator and __call around a
+     * real factory. Pros: cleaner. Cons: no granularity? (could do a lookup?)
+     *
+     * @param  [type] $fn         [description]
+     * @param  [type] $identifier [description]
+     * @return [type]             [description]
+     */
     protected function cache($fn, $identifier)
     {
         if (!isset($this->cache[$identifier])) {
@@ -21,13 +30,8 @@ class General
     public function getConfig()
     {
         return $this->cache(function () {
-            return new \MML\Booking\Config();
+            return new Booking\Config();
         }, 'config');
-    }
-
-    public function makeModel($modelName, $BackingData)
-    {
-        return new $modelName($BackingData);
     }
 
     public function getDoctrine()
@@ -59,14 +63,22 @@ class General
     public function getPeriodFactory()
     {
         return $this->cache(function () {
-            return new \MML\Booking\Factories\Period();
-        }, 'PeriodMapper');
+            return new Period();
+        }, 'PeriodFactory');
     }
-
-    public function getDataMapper()
+    public function getIntervalFactory()
     {
         return $this->cache(function () {
-            return new \MML\Booking\Factories\DataMapper($this);
-        }, 'DataMapper');
+            return new Interval();
+        }, 'IntervalFactory');
+    }
+
+    public function getEmptyResource()
+    {
+        return new Models\Resource;
+    }
+    public function getEmptyReservation()
+    {
+        return new Models\Reservation;
     }
 }

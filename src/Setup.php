@@ -19,13 +19,16 @@ class Setup
         $this->Factory = is_null($Factory) ? new Factories\General() : $Factory;
     }
 
-    public function createEntity($name)
+    public function createResource($name, $quantityAvailable = 1)
     {
-        $Mapper = $this->Factory->getDataMapper();
-        $Entity = $Mapper->getEmpty('Entity');
-        $Entity->setName($name);
-        $Mapper->persist($Entity);
+        $Doctrine = $this->Factory->getDoctrine();
+        $Resource = $this->Factory->getEmptyResource('Resource');
 
-        return $Entity;
+        $Resource->setName($name);
+        $Resource->setQuantity($quantityAvailable);
+        $Doctrine->persist($Resource);
+        $Doctrine->flush();
+
+        return $Resource;
     }
 }
