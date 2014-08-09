@@ -2,7 +2,11 @@
 namespace MML\Booking;
 
 /**
- * This is the front-controller for the bookings plugin. Most major functionality can be accessed through here for ease of use.
+ * This is the front-controller for the bookings plugin. Most major functionality can be accessed through here for
+ * ease of use.
+ *
+ * @todo  Could I make this nicer? This will become a God object in very short order! Maybe force devs to use the
+ * factory themselves? Or implement a __call to the factory?
  */
 class App
 {
