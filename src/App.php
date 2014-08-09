@@ -37,8 +37,10 @@ class App
 
     public function createReservation(Models\Resource $Resource, Interfaces\Period $Period)
     {
-        if (!$Resource->isAvailable($Period)) {
-            throw new Exceptions\Unavailable("{$Resource->name} is not available for the selected period");
+        $Availability = $this->Factory->getReservationAvailability();
+
+        if (!$Availability->check($Resource, $Period)) {
+            throw new Exceptions\Unavailable("{$Resource->getName()} is not available for the selected period");
         }
 
         // @todo

@@ -17,4 +17,8 @@ class Weekly implements Interfaces\Period
     {
 
     }
+    public function forcePerSecond()
+    {
+        return false;
+    }
 }

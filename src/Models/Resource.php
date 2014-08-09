@@ -38,12 +38,6 @@ class Resource
         $this->reservations = new ArrayCollection();
     }
 
-
-    public function isAvailable(Interfaces\Period $Period)
-    {
-        return true;
-    }
-
     /**
      * Returns the availability of the resource at the time specified
      *

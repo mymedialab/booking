@@ -3,6 +3,7 @@ namespace MML\Booking\Factories;
 
 use MML\Booking;
 use MML\Booking\Models;
+use MML\Booking\Reservations;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
@@ -71,6 +72,13 @@ class General
         return $this->cache(function () {
             return new Interval();
         }, 'IntervalFactory');
+    }
+
+    public function getReservationAvailability()
+    {
+        return $this->cache(function () {
+            return new Reservations\Availability($this);
+        }, 'ReservationsAvailability');
     }
 
     public function getEmptyResource()
