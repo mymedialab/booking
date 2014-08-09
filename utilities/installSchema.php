@@ -10,8 +10,9 @@ $Doctrine = $Factory->getDoctrine();
 $Tool = new \Doctrine\ORM\Tools\SchemaTool($Doctrine);
 
 $classes = array(
+  $Doctrine->getClassMetadata('MML\\Booking\\Models\\BlockReservation'),
   $Doctrine->getClassMetadata('MML\\Booking\\Models\\Resource'),
-  $Doctrine->getClassMetadata('MML\\Booking\\Models\\Reservation')
+  $Doctrine->getClassMetadata('MML\\Booking\\Models\\Reservation'),
 );
 
 $Tool->updateSchema($classes);

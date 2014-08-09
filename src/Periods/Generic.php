@@ -26,11 +26,19 @@ class Generic implements Interfaces\Period
     public function getStart()
     {
         // @todo
+        return new \DateTime();
     }
 
     public function getEnd()
     {
         // @todo
+        return new \DateTime();
+    }
+
+    public function isPopulated()
+    {
+        // @todo
+        return true;
     }
 
     public function forcePerSecond()

@@ -1,6 +1,7 @@
 <?php
 namespace MML\Booking\Reservations;
 
+use MML\Booking\Exceptions;
 use MML\Booking\Factories;
 use MML\Booking\Interfaces;
 use MML\Booking\Models;
@@ -16,6 +17,18 @@ class Availability
 
     public function check(Models\Resource $Resource, Interfaces\Period $Period)
     {
+        if (!$Period->isPopulated()) {
+            throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
+        }
+        $count = $this->singleReservation($Resource, $Period);
+        $count += $this->blockBooking($Resource, $Period);
+
+        // If we've got more rooms than bookings, we have availability!
+        return ($Resource->getQuantity() > $count);
+    }
+
+    protected function singleReservation(Models\Resource $Resource, Interfaces\Period $Period)
+    {
         $Doctrine = $this->Factory->getDoctrine();
 
         if ($Period->forcePerSecond()) {
@@ -27,9 +40,19 @@ class Availability
         $Query->setParameter('start', $Period->getStart());
         $Query->setParameter('end', $Period->getEnd());
 
-        $count = $Query->getSingleScalarResult();
+        return intval($Query->getSingleScalarResult());
+    }
 
-        // @todo Block bookings. EEK!
-        return (intval($count) === 0);
+    protected function blockBooking(Models\Resource $Resource, Interfaces\Period $Period)
+    {
+        $count = 0;
+
+        foreach ($Resource->getBlockReservationsAfter($Period->getStart()) as $Block) {
+            if ($Block->overlaps($Period)) {
+                ++$count;
+            }
+        }
+
+        return $count;
     }
 }

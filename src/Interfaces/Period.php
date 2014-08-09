@@ -40,6 +40,14 @@ interface Period
     public function getEnd();
 
     /**
+     * Used to check if this period has been configured enough to be read reliably. For example, default
+     * periods will return false if neither begins nor ends have been called.
+     *
+     * @return boolean true if ready-to-read
+     */
+    public function isPopulated();
+
+    /**
      * In the instance where per-second is important, having this function return true will inform the availability
      * checker to use a lookup which doesn't allow start/end overlaps. Which are usually permitted. For example:
      *

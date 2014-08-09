@@ -19,12 +19,13 @@ class Setup
         $this->Factory = is_null($Factory) ? new Factories\General() : $Factory;
     }
 
-    public function createResource($name, $quantityAvailable = 1)
+    public function createResource($name, $friendlyName, $quantityAvailable = 1)
     {
         $Doctrine = $this->Factory->getDoctrine();
         $Resource = $this->Factory->getEmptyResource('Resource');
 
         $Resource->setName($name);
+        $Resource->setFriendlyName($friendlyName);
         $Resource->setQuantity($quantityAvailable);
         $Doctrine->persist($Resource);
         $Doctrine->flush();

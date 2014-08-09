@@ -1,6 +1,6 @@
 <?php
-set_error_handler(function($code, $message){
-    throw new \ErrorException($message, $code);
+set_error_handler(function($code, $message, $file, $line){
+    throw new \ErrorException($message, 0, $code, $file, $line);
 });
 
 require __DIR__ . "/../../vendor/autoload.php";
@@ -43,6 +43,12 @@ foreach ($tests as $filepath) {
         $failures .= $e->getMessage() . "\n\n";
         echo 'F';
         $status = 1;
+    } catch (\ErrorException $e) {
+        echo "ERROR WHEN RUNNING: $filepath\n\n";
+        echo "Error was {$e->getMessage()} in file {$e->getFile()} on line {$e->getLine()}\nCall Stack:\n";
+        echo $e->getTraceAsString();
+        echo "\n\n";
+        exit(1);
     }
 }
 

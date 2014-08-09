@@ -29,6 +29,12 @@ class App
         return $Doctrine->getRepository('MML\\Booking\\Models\\Resource')->findOneBy(array('name' => $name));
     }
 
+    public function checkAvailability(Models\Resource $Resource, Interfaces\Period $Period)
+    {
+        $Availability = $this->Factory->getReservationAvailability();
+        return $Availability->check($Resource, $Period);
+    }
+
     public function getPeriodFor(Models\Resource $Resource, $Periodname)
     {
         $Locator = $this->Factory->getPeriodFactory();
@@ -40,7 +46,7 @@ class App
         $Availability = $this->Factory->getReservationAvailability();
 
         if (!$Availability->check($Resource, $Period)) {
-            throw new Exceptions\Unavailable("{$Resource->getName()} is not available for the selected period");
+            throw new Exceptions\Unavailable("{$Resource->getFriendlyName()} is not available for the selected period");
         }
 
         // @todo

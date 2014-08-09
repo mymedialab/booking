@@ -2,6 +2,7 @@
 namespace MML\Booking\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Criteria;
 use MML\Booking\Interfaces;
 
 /**
@@ -21,35 +22,30 @@ class Resource
     private $id;
     /** @Column(unique=true) */
     private $name;
+    /** @Column(name="friendly_name") */
+    private $friendlyName;
     /** @Column(type="datetime") */
     private $created;
     /** @Column(type="datetime") */
     private $modified;
     /** @Column(type="integer") */
-    private $quantity = 1;
+    private $quantity;
     /**
-     * @OneToMany(targetEntity="MML\Booking\Models\Reservation", mappedBy="Reservation")
+     * @OneToMany(targetEntity="MML\Booking\Models\Reservation", mappedBy="Resource")
      * @OrderBy({"start" = "DESC"})
     */
-    private $reservations;
+    private $Reservations;
+    /**
+     * @OneToMany(targetEntity="MML\Booking\Models\BlockReservation", mappedBy="Resource")
+     * @OrderBy({"start" = "DESC"})
+    */
+    private $BlockReservations;
 
     public function __construct()
     {
-        $this->reservations = new ArrayCollection();
+        $this->Reservations = new ArrayCollection();
+        $this->BlockReservations = new ArrayCollection();
     }
-
-    /**
-     * Returns the availability of the resource at the time specified
-     *
-     * @param  DateTime $Time The time of checking. This may be subject to period smoothing
-     * @return integer  number of items available at the given time
-     */
-    public function getAvailability(\DateTime $Time)
-    {
-        //@todo is an integer going to work? How long is it available for? Is this an exercise for the user?
-        return 1;
-    }
-
 
     public function getId()
     {
@@ -63,6 +59,10 @@ class Resource
     {
         return $this->quantity;
     }
+    public function getFriendlyName()
+    {
+        return $this->friendlyName;
+    }
     public function getCreated()
     {
         return $this->created;
@@ -73,7 +73,18 @@ class Resource
     }
     public function getReservations()
     {
-        return $this->reservations;
+        return $this->Reservations;
+    }
+    public function getBlockReservations()
+    {
+        return $this->BlockReservations;
+    }
+    public function getBlockReservationsAfter(\DateTime $DateTime)
+    {
+        $Criteria = Criteria::create();
+        $Criteria->where(Criteria::expr()->gt('start', $DateTime));
+
+        return $this->BlockReservations->matching($Criteria);
     }
 
 
@@ -84,6 +95,10 @@ class Resource
     public function setQuantity($newQuantity)
     {
         $this->quantity = $newQuantity;
+    }
+    public function setFriendlyName($newName)
+    {
+        $this->friendlyName = $newName;
     }
 
     /**
