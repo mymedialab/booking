@@ -35,16 +35,16 @@ class App
         return $Locator->getFor($Resource, $Periodname);
     }
 
-    public function createReservation(Models\Resource $Resource, \DateTime $Start, Interfaces\Period $Period)
+    public function createReservation(Models\Resource $Resource, Interfaces\Period $Period)
     {
-        if (!$Resource->isAvailable($Start, $Period)) {
+        if (!$Resource->isAvailable($Period)) {
             throw new Exceptions\Unavailable("{$Resource->name} is not available for the selected period");
         }
 
         // @todo
     }
 
-    public function createBlockReservation(Models\Resource $Resource, \DateTime $Start, Interfaces\Period $Period, Interfaces\Interval $Interval)
+    public function createBlockReservation(Models\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
     {
         // @todo
     }

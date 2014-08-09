@@ -15,10 +15,11 @@ if (!$Resource) {
 // start with setting up the first two hour booking
 $FirstStart = new \DateTime('2018-06-24 10:00:00');
 $Period     = $Booking->getPeriodFor($Resource, 'hourly');
+$Period->begins($FirstStart);
 $Period->repeat(2);
 
 // Repeat every other week ad infinitum
 $Interval = $Booking->getInterval('weekly');
 $Interval->stagger(2);
 
-$Reservation = $Booking->createBlockReservation($Resource, $FirstStart, $Period, $Interval);
+$Reservation = $Booking->createBlockReservation($Resource, $Period, $Interval);

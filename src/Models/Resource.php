@@ -39,9 +39,8 @@ class Resource
     }
 
 
-    public function isAvailable(\DateTime $Start, Interfaces\Period $Period)
+    public function isAvailable(Interfaces\Period $Period)
     {
-        //@todo
         return true;
     }
 
