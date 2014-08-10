@@ -9,7 +9,15 @@ use Doctrine\ORM\EntityManager;
 
 class General
 {
+    protected $configOverrides;
     protected $cache = array();
+
+    public function __construct(array $configOverrides = null)
+    {
+        if (!is_null($configOverrides)) {
+            $this->configOverrides = $configOverrides;
+        }
+    }
 
     /**
      * @todo might this be better as a caching factory? Could use a decorator and __call around a
@@ -31,7 +39,12 @@ class General
     public function getConfig()
     {
         return $this->cache(function () {
-            return new Booking\Config();
+            $Config = new Booking\Config();
+            if (!is_null($this->configOverrides)) {
+                $Config->setup($this->configOverrides);
+            }
+
+            return $Config;
         }, 'config');
     }
 

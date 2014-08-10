@@ -10,13 +10,16 @@ class Setup
 
     /**
      * Messy paradigm. Uses DI to get hold of a factory for ease of testing, but makes it optional so consuming
-     * applications needn't worry.
+     * applications needn't worry. If you want to over-ride our config settings, pass in your key-value pairs in  the
+     * settings array. If you need super-fine-grained control, pass in a factory.
+     *
+     * @param array   $settings
      *
      * @param Factory $Factory
      */
-    public function __construct(Factories\General $Factory = null)
+    public function __construct(array $settings = null, Factories\General $Factory = null)
     {
-        $this->Factory = is_null($Factory) ? new Factories\General() : $Factory;
+        $this->Factory = is_null($Factory) ? new Factories\General($settings) : $Factory;
     }
 
     public function createResource($name, $friendlyName, $quantityAvailable = 1)
