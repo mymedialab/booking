@@ -8,6 +8,11 @@ class Generic implements Interfaces\Interval
 {
     public function stagger($interval)
     {
+        // @todo missing function
+    }
 
+    public function configure()
+    {
+        // @todo missing function
     }
 }

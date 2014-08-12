@@ -35,4 +35,22 @@ class Setup
 
         return $Resource;
     }
+
+    public function addBookingIntervals(Models\Resource $Resource, array $bookingIntervals)
+    {
+        // @todo missing function
+    }
+
+    public function addAvailabilityWindow(
+        Models\Resource $Resource,
+        Interfaces\Interval $AvailablilityWindow,
+        array $bookingIntervals
+    ) {
+        // @todo missing function
+    }
+
+    public function markUnavailable(Models\Resource $Resource, Interfaces\Period $Period, $qty = null)
+    {
+        // @todo missing function
+    }
 }

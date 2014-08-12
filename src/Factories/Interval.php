@@ -9,13 +9,13 @@ class Interval
 {
     public function get($IntervalName)
     {
-        // @todo
+        // @todo missing function
         return new Intervals\Generic;
     }
 
     public function getAllFor(Models\Resource $Resource)
     {
-        // @todo
+        // @todo missing function
         return array(new Intervals\Generic, new Intervals\Weekly);
     }
 }

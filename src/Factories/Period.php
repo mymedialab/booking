@@ -7,21 +7,21 @@ use MML\Booking\Periods;
 
 class Period
 {
-    public function get($periodName, array $options)
+    public function get($periodName, array $options = null)
     {
-        // @todo
+        // @todo missing function
         return new Periods\Generic;
     }
 
     public function getFor(Models\Resource $Resource, $name)
     {
-        // @todo
+        // @todo missing function
         return new Periods\Generic;
     }
 
     public function getAllFor(Models\Resource $Resource)
     {
-        // @todo
+        // @todo missing function
         return array(new Periods\Generic, new Periods\Weekly);
     }
 }
