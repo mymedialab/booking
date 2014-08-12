@@ -1,6 +1,8 @@
 <?php
 namespace MML\Booking\Interfaces;
 
+use MML\Booking\Models;
+
 interface Interval
 {
     /**
@@ -10,4 +12,11 @@ interface Interval
      * @return null
      */
     public function stagger($interval);
+    public function setName($name);
+    public function getName($name);
+    public function setPlural($name);
+    public function getPlural($name);
+    public function setSingular($name);
+    public function getSingular($name);
+    public function addMeta(Models\IntervalMeta $Meta);
 }

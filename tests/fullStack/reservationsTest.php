@@ -29,13 +29,11 @@ class reservationsTest extends \Codeception\TestCase\Test
             if (!$Resource) {
                 // you wouldn't usually do this inline! This would be a pre-release step. Probably.
                 $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
+                $Nightly  = $this->Factory->getIntervalFactory()->get('daily');
+                $Nightly->configure("13:00", "09:00");
+                $this->Setup->addBookingIntervals('night', $Resource, array($Nightly));
             }
         }
-    }
-
-    protected function _after()
-    {
-
     }
 
     public function testAddBooking()
@@ -48,7 +46,7 @@ class reservationsTest extends \Codeception\TestCase\Test
          */
         $Start = new \DateTime('24-06-2018');
         $Resource = $this->Booking->getResource('double_room');
-        $Period = $this->Booking->getPeriodFor($Resource, 'night');
+        $Period   = $this->Booking->getPeriodFor($Resource, 'night');
 
         // reserve for three nights
         $Period->begins($Start);

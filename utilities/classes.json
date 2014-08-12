@@ -1,5 +1,10 @@
 [
+  "MML\\Booking\\Intervals\\Base",
+  "MML\\Booking\\Intervals\\Daily",
+  "MML\\Booking\\Intervals\\Generic",
+  "MML\\Booking\\Intervals\\Weekly",
   "MML\\Booking\\Models\\BlockReservation",
+  "MML\\Booking\\Models\\IntervalMeta",
   "MML\\Booking\\Models\\Resource",
   "MML\\Booking\\Models\\Reservation"
 ]

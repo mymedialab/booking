@@ -64,7 +64,7 @@ class Reservation
         $this->end = $Date;
     }
 
-    public function setResource(Reswource $Resource)
+    public function setResource(Resource $Resource)
     {
         $this->Resource = $Resource;
     }

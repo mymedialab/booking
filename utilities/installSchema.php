@@ -17,7 +17,7 @@ $Tool = new \Doctrine\ORM\Tools\SchemaTool($Doctrine);
 
 $classes = array();
 foreach ($classesToParse as $className) {
-  $classes[] = $Doctrine->getClassMetadata('MML\\Booking\\Models\\BlockReservation');
+  $classes[] = $Doctrine->getClassMetadata($className);
 }
 
 $Tool->updateSchema($classes);

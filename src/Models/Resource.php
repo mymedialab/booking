@@ -40,11 +40,20 @@ class Resource
      * @OrderBy({"start" = "DESC"})
     */
     private $BlockReservations;
+    /**
+     * @ManyToMany(targetEntity="MML\Booking\Intervals\Base", inversedBy="Resources")
+     * @JoinTable(name="booking_resource_intervals",
+     *      joinColumns={@JoinColumn(name="resource_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@JoinColumn(name="interval_id", referencedColumnName="id")}
+     *      )
+    */
+    private $Intervals;
 
     public function __construct()
     {
         $this->Reservations = new ArrayCollection();
         $this->BlockReservations = new ArrayCollection();
+        $this->Intervals = new ArrayCollection();
     }
 
     public function getId()
@@ -86,7 +95,11 @@ class Resource
 
         return $this->BlockReservations->matching($Criteria);
     }
-
+    public function addInterval(Interfaces\Interval $Interval)
+    {
+        $Interval->addResource($this); // synchronously updating inverse side
+        $this->Intervals[] = $Interval;
+    }
 
     public function setName($newName)
     {
