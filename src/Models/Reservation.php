@@ -1,6 +1,8 @@
 <?php
 namespace MML\Booking\Models;
 
+use MML\Booking\Interfaces;
+
 /**
  * Holds data for an existing reservation
  *
@@ -53,7 +55,6 @@ class Reservation
         return $this->Resource;
     }
 
-
     public function setStart(\DateTime $Date)
     {
         $this->start = $Date;
@@ -63,6 +64,11 @@ class Reservation
         $this->end = $Date;
     }
 
+    public function setResource(Reswource $Resource)
+    {
+        $this->Resource = $Resource;
+    }
+
     /**
      *  @PrePersist
      */
@@ -70,5 +76,25 @@ class Reservation
     {
         $this->created = $this->created ? $this->created : new \DateTime();
         $this->modified = new \DateTime();
+    }
+
+    /**
+     * Shorthand method to avoid having to hydrate all properties yo'sel
+     *
+     * @param  Resource         $Resource The Resource to reserve
+     * @param  InterfacesPeriod $Period   The period to reseerve for
+     * @return $this
+     */
+    public function hydrateFrom(Resource $Resource, Interfaces\Period $Period)
+    {
+        if ($this->start || $this->end) {
+            throw new Exceptions\Booking("Cannot create new reservation on top of non-empty model");
+        }
+
+        $this->start = $Period->getStart();
+        $this->end = $Period->getEnd();
+        $this->Resource = $Resource;
+
+        return $this;
     }
 }

@@ -32,11 +32,12 @@ class Availability
         $Doctrine = $this->Factory->getDoctrine();
 
         if ($Period->forcePerSecond()) {
-            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r WHERE r.start > :end OR r.end < :start');
+            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE r.start > :end OR r.end < :start');
         } else {
-            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r WHERE r.start >= :end OR r.end <= :start');
+            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE r.start >= :end OR r.end <= :start');
         }
 
+        $Query->setParameter('resource_id', $Resource->getId());
         $Query->setParameter('start', $Period->getStart());
         $Query->setParameter('end', $Period->getEnd());
 

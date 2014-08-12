@@ -5,6 +5,7 @@
     "gulp": "~3.8.7",
     "gulp-phpunit": "~0.5.3",
     "phplint": "~0.1.1",
-    "gulp-phpcs": "~0.1.0"
+    "gulp-phpcs": "~0.1.0",
+    "gulp-codeception": "~0.4.3"
   }
 }

@@ -1,4 +1,5 @@
 <?php
+// @todo use codeception databae I guess?
 global $fullStackTestConfig;
 $fullStackTestConfig = array(
     'isDevMode' => true,

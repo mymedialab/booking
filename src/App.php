@@ -51,7 +51,11 @@ class App
             throw new Exceptions\Unavailable("{$Resource->getFriendlyName()} is not available for the selected period");
         }
 
-        // @todo
+        $Doctrine    = $this->Factory->getDoctrine();
+        $Reservation = $this->Factory->getEmptyReservation();
+        $Reservation->hydrateFrom($Resource, $Period);
+        $Doctrine->persist($Reservation);
+        $Doctrine->flush();
     }
 
     public function createBlockReservation(Models\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
