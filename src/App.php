@@ -43,18 +43,22 @@ class App
         return $Locator->getFor($Resource, $Periodname);
     }
 
-    public function createReservation(Models\Resource $Resource, Interfaces\Period $Period)
+    public function createReservation(Models\Resource $Resource, Interfaces\Period $Period, $qty = 1)
     {
         $Availability = $this->Factory->getReservationAvailability();
 
-        if (!$Availability->check($Resource, $Period)) {
-            throw new Exceptions\Unavailable("{$Resource->getFriendlyName()} is not available for the selected period");
+        if (!$Availability->check($Resource, $Period, $qty)) {
+            throw new Exceptions\Unavailable("{$Resource->getFriendlyName()} does not have enough availability for the selected period");
         }
 
-        $Doctrine    = $this->Factory->getDoctrine();
-        $Reservation = $this->Factory->getEmptyReservation();
-        $Reservation->hydrateFrom($Resource, $Period);
-        $Doctrine->persist($Reservation);
+        $Doctrine = $this->Factory->getDoctrine();
+
+        for ($i=0; $i < $qty; $i++) {
+            $Reservation = $this->Factory->getEmptyReservation();
+            $Reservation->hydrateFrom($Resource, $Period);
+            $Doctrine->persist($Reservation);
+        }
+
         $Doctrine->flush();
     }
 

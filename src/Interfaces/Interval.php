@@ -12,11 +12,19 @@ interface Interval
      * @return null
      */
     public function stagger($interval);
+
     public function setName($name);
-    public function getName($name);
     public function setPlural($name);
-    public function getPlural($name);
     public function setSingular($name);
-    public function getSingular($name);
+
+    public function getName();
+    public function getPlural();
+    public function getSingular();
+
     public function addMeta(Models\IntervalMeta $Meta);
+
+    public function getNearestStart(\DateTime $RoughStart);
+    public function getNearestEnd(\DateTime $RoughEnd);
+    public function calculateEnd(\DateTime $Start, $qty = 1);
+    public function calculateStart(\DateTime $End, $qty = 1);
 }

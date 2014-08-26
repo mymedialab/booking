@@ -3,6 +3,7 @@ namespace MML\Booking\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Criteria;
+use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 
 /**
@@ -100,6 +101,16 @@ class Resource
         $Interval->addResource($this); // synchronously updating inverse side
         $this->Intervals[] = $Interval;
     }
+    public function getInterval($name)
+    {
+        foreach ($this->Intervals as $Interval) {
+            if (strtolower($Interval->getName()) === strtolower($name)) {
+                return $Interval;
+            }
+        }
+
+        throw new Exceptions\Booking("Resource::getInterval Unknown Interval $name");
+    }
 
     public function setName($newName)
     {
@@ -113,6 +124,16 @@ class Resource
     {
         $this->friendlyName = $newName;
     }
+    public function hasInterval(Interfaces\Interval $Interval)
+    {
+        foreach ($this->Intervals as $MyInterval) {
+            if ($MyInterval->getId() === $Interval->getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      *  @PrePersist

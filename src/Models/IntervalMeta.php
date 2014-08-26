@@ -6,7 +6,6 @@ namespace MML\Booking\Models;
  * DOCTRINE CONFIG
  *
  * @Entity
- * @HasLifecycleCallbacks
  * @Table(name="booking_interval_meta")
  */
 class IntervalMeta

@@ -5,6 +5,13 @@ use MML\Booking\Interfaces;
 
 class Weekly implements Interfaces\Period
 {
+    protected $Interval;
+
+    public function __construct(Interfaces\Interval $Interval)
+    {
+        $this->Interval = $Interval;
+    }
+
     public function begins(\DateTime $DateTime)
     {
 

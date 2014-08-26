@@ -28,16 +28,16 @@ class hotelTest extends \Codeception\TestCase\Test
 
     public function testSetup()
     {
-        $Nightly   = $this->Factory->getIntervalFactory()->get('daily');
-        $Nightly->configure("13:00", "09:00");
         $Day       = $this->Factory->getIntervalFactory()->get('daily');
         $Day->configure("09:00", "17:00");
+        $Nightly   = $this->Factory->getIntervalFactory()->get('daily');
+        $Nightly->configure("13:00", "09:00", 'nightly', 'nights', 'night');
         $Morning   = $this->Factory->getIntervalFactory()->get('daily');
-        $Morning->configure("09:00", "13:00");
+        $Morning->configure("09:00", "13:00", 'morning', 'mornings', 'morning');
         $Afternoon = $this->Factory->getIntervalFactory()->get('daily');
-        $Afternoon->configure("13:00", "17:00");
+        $Afternoon->configure("13:00", "17:00", 'afternoon', 'afternoons', 'afternoon');
         $Evening   = $this->Factory->getIntervalFactory()->get('daily');
-        $Evening->configure("16:00", "00:00"); // Note you now can't book an afternoon AND evening.
+        $Evening->configure("16:00", "00:00", 'evening', 'evenings', 'evening'); // Note you now can't book an afternoon AND evening.
 
         $MaintainenceOne = $this->Factory->getPeriodFactory()->get('generic');
         $MaintainenceOne->begins(new \DateTime('2014-10-20'));

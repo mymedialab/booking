@@ -15,16 +15,20 @@ class Availability
         $this->Factory = $Factory;
     }
 
-    public function check(Models\Resource $Resource, Interfaces\Period $Period)
+    public function check(Models\Resource $Resource, Interfaces\Period $Period, $qty = 1)
     {
+        if (intval($qty) <= 0) {
+            throw new Exceptions\Booking("Availability::check requires a positive integer quantity");
+        }
         if (!$Period->isPopulated()) {
             throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
         }
-        $count = $this->singleReservation($Resource, $Period);
-        $count += $this->blockBooking($Resource, $Period);
 
-        // If we've got more rooms than bookings, we have availability!
-        return ($Resource->getQuantity() > $count);
+        $taken = $this->singleReservation($Resource, $Period);
+        $taken += $this->blockBooking($Resource, $Period);
+
+        // If we've got enough rooms not taken, we have availability!
+        return (($Resource->getQuantity() - $taken) >= $qty);
     }
 
     protected function singleReservation(Models\Resource $Resource, Interfaces\Period $Period)
@@ -32,9 +36,9 @@ class Availability
         $Doctrine = $this->Factory->getDoctrine();
 
         if ($Period->forcePerSecond()) {
-            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE r.start > :end OR r.end < :start');
+            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start > :start AND r.start < :end) OR (r.end > :start AND r.end < :end))');
         } else {
-            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE r.start >= :end OR r.end <= :start');
+            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start >= :start AND r.start <= :end) OR (r.end >= :start AND r.end <= :end))');
         }
 
         $Query->setParameter('resource_id', $Resource->getId());

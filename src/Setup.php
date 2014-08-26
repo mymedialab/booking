@@ -38,7 +38,14 @@ class Setup
 
     public function addBookingIntervals(Models\Resource $Resource, array $bookingIntervals)
     {
-        // @todo missing function
+        $Doctrine = $this->Factory->getDoctrine();
+        foreach ($bookingIntervals as $Interval) {
+            $Doctrine->persist($Interval);
+            if ($Resource->hasInterval($Interval)) {
+                continue;
+            }
+            $Resource->addInterval($Interval);
+        }
     }
 
     public function addAvailabilityWindow(

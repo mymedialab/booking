@@ -29,9 +29,9 @@ class reservationsTest extends \Codeception\TestCase\Test
             if (!$Resource) {
                 // you wouldn't usually do this inline! This would be a pre-release step. Probably.
                 $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-                $Nightly  = $this->Factory->getIntervalFactory()->get('daily');
-                $Nightly->configure("13:00", "09:00");
-                $this->Setup->addBookingIntervals('night', $Resource, array($Nightly));
+                $Nightly  = $Factory->getIntervalFactory()->get('daily');
+                $Nightly->configure("13:00", "09:00", "nightly", "nights", "night");
+                $Setup->addBookingIntervals($Resource, array($Nightly));
             }
         }
     }
