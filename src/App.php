@@ -37,10 +37,10 @@ class App
         return $Availability->check($Resource, $Period);
     }
 
-    public function getPeriodFor(Models\Resource $Resource, $Periodname)
+    public function getPeriodFor(Models\Resource $Resource, $periodName)
     {
         $Locator = $this->Factory->getPeriodFactory();
-        return $Locator->getFor($Resource, $Periodname);
+        return $Locator->getFor($Resource, $periodName);
     }
 
     public function createReservation(Models\Resource $Resource, Interfaces\Period $Period, $qty = 1)

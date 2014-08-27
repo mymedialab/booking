@@ -7,7 +7,7 @@ use MML\Booking\Interfaces;
 /**
  *
  */
-class Generic implements Interfaces\Period
+class Standalone implements Interfaces\Period
 {
     protected $forcePerSecond = false;
     protected $repeats = 1;

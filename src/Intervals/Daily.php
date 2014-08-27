@@ -5,12 +5,14 @@ use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 
 /**
- * Requires an entity to be injected to be used. If you don't want to persist, inject a mock to handle the metadata
+ * This interval can be used for anything which happens once a day. For example daily bookings of offices, nightly
+ * bookings of hotel rooms, a morning or afternoon session for a speaker etc.
+ *
+ * Requires an entity to be injected to be used. If you don't want to persist, inject a suitable mock to handle the
+ * metadata and naming
  */
-class Daily implements Interfaces\Interval
+class Daily extends Base implements Interfaces\Interval
 {
-    protected $Entity;
-
     // defaults only; over-ridable by the methods in the injected entity.
     protected $defaults = array(
         'stagger'  => 0,
@@ -26,37 +28,6 @@ class Daily implements Interfaces\Interval
 
     // generated from open / close. If true, the closing time is on the next day. (eg, 10am to 10am etc)
     protected $straddles = false;
-
-
-    /**
-     * Sets the persistance layer required by the model.
-     *
-     * @param Interfaces\IntervalPersistence $Entity
-     * @todo  create interface.
-     */
-    public function __construct(Interfaces\IntervalPersistence $Entity)
-    {
-        $this->Entity = $Entity;
-        $this->setupOpenAndClose();
-    }
-
-
-    /**
-     * Passes through to functions available on the entity. Apologies to people on IDE's who now can't code-complete. I
-     * hate the awful conceptual overheads of having these pass throughs in the file.
-     *
-     * @todo  allow code completion with a trait and remove the magic method?
-     */
-    public function __call($fn, $args)
-    {
-        $maskedFunctions = array('getName', 'setName', 'getPlural', 'setPlural', 'getSingular', 'setSingular');
-
-        if (in_array($fn, $maskedFunctions)) {
-            return call_user_func_array(array($this->Entity, $fn), $args);
-        }
-
-        throw new Exceptions\Booking("Intervals\\Daily Method not found: $fn.");
-    }
 
     /**
      * Rounds RoughStart to an actual start time. eg. 24/06/15 may be rounded to 24/06/15 01:00:00.
@@ -158,33 +129,6 @@ class Daily implements Interfaces\Interval
     }
 
     /**
-     * Used for block reservations. You can have a reservation repeat on a staggered pattern (eg every other day, every 7 days)
-     *
-     * @param  integer $interval Set to 0 or below to remove a staggered interval.
-     * @return null
-     */
-    public function setStagger($interval)
-    {
-        $interval = intval($interval);
-
-        if ($interval > 0) {
-            $this->Entity->setMeta('stagger', $interval);
-        } else {
-            $this->Entity->removeMeta($Meta);
-        }
-    }
-
-    /**
-     * Getter for stagger. Used for block reservations.
-     *
-     * @return int
-     */
-    public function getStagger()
-    {
-        return $this->Entity->getMeta('stagger', 0);
-    }
-
-    /**
      * Sneaky shortcut method to avoid having to call lots and lots of other functions.
      *
      * @param  string $startTime In the format hh:mm The time the period should start from. eg 09:00
@@ -204,7 +148,7 @@ class Daily implements Interfaces\Interval
         $this->Entity->setMeta('opening', $startTime);
         $this->Entity->setMeta('closing', $endTime);
 
-        $this->setupOpenAndClose();
+        $this->setup();
 
         $name     = is_null($name)     ? $this->defaults['name']     : $name;
         $plural   = is_null($plural)   ? $this->defaults['plural']   : $plural;
@@ -215,27 +159,12 @@ class Daily implements Interfaces\Interval
         $this->Entity->setSingular($singular);
     }
 
-
-    /**
-     * ===== BORING PERSISTENCE METHODS. =====
-     */
-
-    /**
-     * Required to use Doctrine Entity manager. Must expose the entity.
-     *
-     * @return Interfaces\IntervalPersistence
-     */
-    public function getEntity()
-    {
-        return $this->Entity;
-    }
-
     /**
      * Called if opening / closing are changed via configure and on initial model setup
      *
      * @return null
      */
-    protected function setupOpenAndClose()
+    protected function setup()
     {
         $opening = $this->Entity->getMeta('opening', $this->defaults['opening']);
         $closing = $this->Entity->getMeta('closing', $this->defaults['closing']);

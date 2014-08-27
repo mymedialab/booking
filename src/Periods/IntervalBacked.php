@@ -5,10 +5,9 @@ use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 
 /**
- * @todo  Do we need custom Periods? Could a generic period handle itself using custom intervals?
  *
  */
-class Daily implements Interfaces\Period
+class IntervalBacked implements Interfaces\Period
 {
     protected $Interval;
     protected $repeats = 1;
@@ -41,7 +40,7 @@ class Daily implements Interfaces\Period
     {
         $qty = intval($qty);
         if ($qty <= 0) {
-            throw new Exceptions\Booking("Periods\Daily::Repeats expects a qty greater than zero");
+            throw new Exceptions\Booking("Periods\IntervalBacked::Repeats expects a qty greater than zero");
         }
 
         $this->repeats = $qty;
