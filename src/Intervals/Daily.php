@@ -16,9 +16,9 @@ class Daily implements Interfaces\Interval
         'stagger'  => 0,
         'opening'  => '01:00',
         'closing'  => '23:00',
-        'name' => 'Daily',
+        'name'     => 'Daily',
         'singular' => 'Day',
-        'plural' => 'Days',
+        'plural'   => 'Days',
     );
 
     protected $Opens;
@@ -59,36 +59,38 @@ class Daily implements Interfaces\Interval
     }
 
     /**
-     * Rounds RoughStart to an actual start time. eg. 24/06/15 may be rounded to 24/06/15 01:00:00
+     * Rounds RoughStart to an actual start time. eg. 24/06/15 may be rounded to 24/06/15 01:00:00.
+     *
+     * This instance takes the obvious route instead of the smart route. Only the *date* in is considered, time is
+     * ignored. So the start is not always nearest, just set to be the opening time for that date.
      *
      * @param  DateTime $RoughStart
      * @return DateTime $ExactStart
      */
     public function getNearestStart(\DateTime $RoughStart)
     {
-        // @todo this is not right. Write some tests covering what if time is 23:59 and start is midnight? (etc)
         $Start = clone $RoughStart;
         $Start->setTime($this->Opens->format('H'), $this->Opens->format('i'));
 
         return $Start;
     }
 
-
     /**
      * Rounds Roughend to an actual end time. eg. 04/09/1982 may be rounded to 04/09/1982 23:00:00
+     *
+     * This instance takes the obvious route instead of the smart route. Only the *date* in is considered, time is
+     * ignored. So the end is not always nearest, just set to be the closing time for that date
      *
      * @param  DateTime $RoughEnd
      * @return DateTime $ExactEnd
      */
     public function getNearestEnd(\DateTime $RoughEnd)
     {
-        // @todo this is not right. Write some tests covering what if time is 00:01 and end is midnight? (etc)
         $End = clone $RoughEnd;
         $End->setTime($this->Closes->format('H'), $this->Closes->format('i'));
 
         return $End;
     }
-
 
     /**
      * Given a $Start datetime, this will find the $End datetime. The $qty parameter modifies behaviour to account for
@@ -105,14 +107,13 @@ class Daily implements Interfaces\Interval
      */
     public function calculateEnd(\DateTime $Start, $qty = 1)
     {
-        // @todo unit test this shiz for riz.
         $qty = intval($qty);
         if ($qty <= 0) {
             throw new Exceptions\Booking("Intervals\\Daily::calculateStart requires qty to be greater than zero");
         }
 
         $End = clone $Start;
-        $End->setTime($this->Closes->format('H'), $this->Closes->format('i'));
+        $End->setTime($this->Closes->format('H'), $this->Closes->format('i'), 0);
 
         if ($this->straddles) {
             $qty++;
@@ -136,14 +137,13 @@ class Daily implements Interfaces\Interval
      */
     public function calculateStart(\DateTime $End, $qty = 1)
     {
-        // @todo unit test this shiz for riz.
         $qty = intval($qty);
         if ($qty <= 0) {
             throw new Exceptions\Booking("Intervals\\Daily::calculateStart requires qty to be greater than zero");
         }
 
         $Start = clone $End;
-        $Start->setTime($this->Closes->format('H'), $this->Closes->format('i'));
+        $Start->setTime($this->Opens->format('H'), $this->Opens->format('i'), 0);
 
         if ($this->straddles) {
             $qty++;
@@ -241,8 +241,8 @@ class Daily implements Interfaces\Interval
         $closing = $this->Entity->getMeta('closing', $this->defaults['closing']);
 
         // @todo validate
-        $this->Opens  = new \DateTime($opening);
-        $this->Closes = new \DateTime($closing);
+        $this->Opens  = new \DateTime($opening . ":00");
+        $this->Closes = new \DateTime($closing . ":00");
 
         $openHour = intval($this->Opens->format('H'));
         $endHour  = intval($this->Closes->format('H'));
@@ -251,9 +251,13 @@ class Daily implements Interfaces\Interval
         if ($openHour === $endHour) {
             $openMin = intval($this->Opens->format('i'));
             $endMin  = intval($this->Closes->format('i'));
-            $this->straddles = ($openMin > $endMin);
+
+            // awkward inverse logic. If the end is greater than start straddles is false. We use the flipped logic
+            // so on an exact match the
+            $this->straddles = !($endMin > $openMin);
         } else {
-            $this->straddles = ($openHour > $endHour);
+            $this->straddles = ($endHour < $openHour);
         }
+
     }
 }
