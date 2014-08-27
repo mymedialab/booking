@@ -39,10 +39,10 @@ class hotelTest extends \Codeception\TestCase\Test
         $Evening   = $this->Factory->getIntervalFactory()->get('daily');
         $Evening->configure("16:00", "00:00", 'evening', 'evenings', 'evening'); // Note you now can't book an afternoon AND evening.
 
-        $MaintainenceOne = $this->Factory->getPeriodFactory()->get('generic');
+        $MaintainenceOne = $this->Factory->getPeriodFactory()->getStandalone();
         $MaintainenceOne->begins(new \DateTime('2014-10-20'));
         $MaintainenceOne->ends(new \DateTime('2014-10-30'));
-        $MaintainenceTwo = $this->Factory->getPeriodFactory()->get('generic');
+        $MaintainenceTwo = $this->Factory->getPeriodFactory()->getStandalone();
         $MaintainenceTwo->begins(new \DateTime('2015-02-20'));
         $MaintainenceTwo->ends(new \DateTime('2015-02-30'));
 
