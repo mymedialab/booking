@@ -77,7 +77,7 @@ class General
     public function getPeriodFactory()
     {
         return $this->cache(function () {
-            return new Period();
+            return new Period($this->getIntervalFactory());
         }, 'PeriodFactory');
     }
     public function getIntervalFactory()

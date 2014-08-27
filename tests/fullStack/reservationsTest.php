@@ -150,7 +150,7 @@ class reservationsTest extends \Codeception\TestCase\Test
 
         // Repeat every other week ad infinitum
         $Interval = $this->Booking->getInterval('weekly');
-        $Interval->stagger(2);
+        $Interval->setStagger(2);
 
         $Reservation = $this->Booking->createBlockReservation($Resource, $Period, $Interval);
         $this->assertTrue(is_string("No exceptions so far!")); // always passes, just making sure we can get to here!

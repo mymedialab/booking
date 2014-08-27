@@ -19,7 +19,7 @@ class IntervalMeta
     private $name;
     /** @Column */
     private $value;
-    /** @ManyToOne(targetEntity="MML\Booking\Intervals\Base", inversedBy="IntervalMeta") */
+    /** @ManyToOne(targetEntity="MML\Booking\Models\Interval", inversedBy="IntervalMeta") */
     private $Interval;
 
     public function getId()

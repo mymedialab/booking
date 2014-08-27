@@ -8,31 +8,40 @@ use MML\Booking\Periods;
 
 class Period
 {
+    protected $IntervalFactory;
+
     protected $periods = array(
+        'generic' => '\\MML\\Booking\\Periods\\Generic',
         'daily' => '\\MML\\Booking\\Periods\\Daily'
     );
 
-    public function get($periodName, array $options = null)
+    public function __construct(Interval $IntervalFactory)
     {
-        // @todo missing function
-        return new Periods\Generic;
+        $this->IntervalFactory = $IntervalFactory;
+    }
+
+    public function get($type, array $options = null)
+    {
+        if (!array_key_exists($type, $this->periods)) {
+            throw new Exceptions\Booking("Could not find Period of type $type");
+        }
+
+        $Interval = $this->IntervalFactory->get($type);
+        return new $this->periods[$type]($Interval);
     }
 
     public function getFor(Models\Resource $Resource, $name)
     {
-        $Interval = $Resource->getInterval($name);
-        $type = strtolower($Interval->getType());
+        $Interval = $this->IntervalFactory->getFrom($Resource, $name);
 
+        $classname = explode('\\', get_class($Interval));
+        $type = strtolower(end($classname));
+
+        // @todo this jiggery pokery may not be neccesary. Think I can get down to one period type.
         if (!array_key_exists($type, $this->periods)) {
             throw new Exceptions\Booking("Could not find Period of type $type for resource {$Resource->getName()}");
         }
 
         return new $this->periods[$type]($Interval);
-    }
-
-    public function getAllFor(Models\Resource $Resource)
-    {
-        // @todo missing function
-        return array(new Periods\Generic, new Periods\Weekly);
     }
 }

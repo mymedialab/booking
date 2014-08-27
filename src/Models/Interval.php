@@ -1,19 +1,15 @@
 <?php
-namespace MML\Booking\Intervals;
+namespace MML\Booking\Models;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
-use MML\Booking\Models;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * @Entity
  * @Table(name="booking_intervals")
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="type", type="string")
- * @DiscriminatorMap({"daily" = "Daily", "weekly" = "Weekly", "generic" = "Generic"})
  */
-class Base
+class Interval implements Interfaces\IntervalPersistence
 {
     /**
      * @id @Column(type="integer")
@@ -21,13 +17,13 @@ class Base
     */
     private $id;
     /** @Column */
+    protected $type;
+    /** @Column */
     protected $name;
     /** @Column */
     protected $plural;
     /** @Column */
     protected $singular;
-
-    protected $type = 'Generic';
 
     /**
      * @OneToMany(targetEntity="MML\Booking\Models\IntervalMeta", mappedBy="IntervalMeta", cascade={"persist", "remove"}))
@@ -77,45 +73,51 @@ class Base
     {
         return $this->type;
     }
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
 
-    public function addResource(Models\Resource $Resource)
+    public function addResource(Resource $Resource)
     {
         $this->Resources[] = $Resource;
     }
     public function newMeta($name, $value)
     {
-        $Meta = new Models\IntervalMeta;
+        $Meta = new IntervalMeta;
         $Meta->setName(strtolower($name));
         $Meta->setValue($value);
 
         // Might have been overridden. Important to call setter method.
         $this->addMeta($Meta);
     }
-    public function addMeta(Models\IntervalMeta $Meta)
+    public function addMeta(IntervalMeta $Meta)
     {
         $Meta->setInterval($this); // synchronously updating inverse side
         $this->IntervalMeta[] = $Meta;
     }
-    public function removeMeta(Models\IntervalMeta $Meta)
+
+    public function removeMeta($name)
     {
-        return $this->IntervalMeta->removeElement($Meta);
+        $Meta = $this->getMeta($name);
+        if ($Meta) {
+            return $this->IntervalMeta->removeElement($Meta);
+        } else {
+            return false; // soft fail as the intended consequence occurs. (The meta is not attached.)
+        }
     }
 
     public function getMeta($name, $returnOnMissing = null)
     {
         foreach ($this->IntervalMeta as $Meta) {
             if (strtolower($Meta->getName()) === strtolower($name)) {
-                return $Meta;
+                return $Meta->getValue();
             }
         }
-        if (is_null($returnOnMissing)) {
-            throw new Exceptions\Booking("IntervalMeta '{$name}' not found");
-        } else {
-            return $returnOnMissing;
-        }
-    }
 
-    protected function updateMeta($name, $value)
+        return $returnOnMissing;
+    }
+    public function setMeta($name, $value)
     {
         $name = strtolower($name);
         $Meta = $this->getMeta($name, false);

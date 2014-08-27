@@ -42,7 +42,7 @@ class Resource
     */
     private $BlockReservations;
     /**
-     * @ManyToMany(targetEntity="MML\Booking\Intervals\Base", inversedBy="Resources")
+     * @ManyToMany(targetEntity="MML\Booking\Models\Interval", inversedBy="Resources")
      * @JoinTable(name="booking_resource_intervals",
      *      joinColumns={@JoinColumn(name="resource_id", referencedColumnName="id")},
      *      inverseJoinColumns={@JoinColumn(name="interval_id", referencedColumnName="id")}
@@ -96,7 +96,7 @@ class Resource
 
         return $this->BlockReservations->matching($Criteria);
     }
-    public function addInterval(Interfaces\Interval $Interval)
+    public function addInterval(Interval $Interval)
     {
         $Interval->addResource($this); // synchronously updating inverse side
         $this->Intervals[] = $Interval;
@@ -124,7 +124,7 @@ class Resource
     {
         $this->friendlyName = $newName;
     }
-    public function hasInterval(Interfaces\Interval $Interval)
+    public function hasInterval(Interval $Interval)
     {
         foreach ($this->Intervals as $MyInterval) {
             if ($MyInterval->getId() === $Interval->getId()) {

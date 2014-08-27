@@ -40,11 +40,12 @@ class Setup
     {
         $Doctrine = $this->Factory->getDoctrine();
         foreach ($bookingIntervals as $Interval) {
-            $Doctrine->persist($Interval);
-            if ($Resource->hasInterval($Interval)) {
+            $Entity = $Interval->getEntity();
+            $Doctrine->persist($Entity);
+            if ($Resource->hasInterval($Entity)) {
                 continue;
             }
-            $Resource->addInterval($Interval);
+            $Resource->addInterval($Entity);
         }
     }
 
