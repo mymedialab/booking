@@ -53,4 +53,13 @@ class Base
     {
         return $this->Entity->getFriendlyName();
     }
+
+    public function setAffectedQuantity($qty)
+    {
+        $this->Entity->setAffectedQuantity($qty);
+    }
+    public function getAffectedQuantity()
+    {
+        return $this->Entity->getAffectedQuantity();
+    }
 }

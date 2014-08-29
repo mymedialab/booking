@@ -24,7 +24,7 @@ class Availability implements Interfaces\AvailabilityPersistence
     /** @Column(type="boolean") */
     private $available = true;
     /** @Column(type="integer") */
-    private $affectedQuantity;
+    private $affectedQuantity = 0;
     /** @Column(type="datetime") */
     private $created;
     /** @Column(type="datetime") */

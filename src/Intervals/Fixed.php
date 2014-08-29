@@ -17,7 +17,7 @@ class Fixed extends Base implements Interfaces\Interval
         'plural'   => 'Fixed Period',
     );
 
-    public function configure(\DateTime $Start, \DateTime $End, $wty = null, $name = null, $plural = null, $singular = null)
+    public function configure(\DateTime $Start, \DateTime $End, $name = null, $plural = null, $singular = null)
     {
         $this->Entity->setMeta('start', $Start->format('Y-m-d H:i:s'));
         $this->Entity->setMeta('end', $End->format('Y-m-d H:i:s'));

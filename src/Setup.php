@@ -92,9 +92,12 @@ class Setup
         if (!is_null($name)) {
             $Availability->setFriendlyName($name);
         }
+        if (!is_null($qty)) {
+            $Availability->setAffectedQuantity($qty);
+        }
 
         $Interval = $this->Factory->getInterval('fixed');
-        $Interval->configure($Period->getStart(), $Period->getEnd(), $qty, $name, $plural, $singular);
+        $Interval->configure($Period->getStart(), $Period->getEnd(), $name, $plural, $singular);
         $Availability->setAvailableInterval($Interval);
         $Resource->addAvailability($Availability);
         $Doctrine = $this->Factory->getDoctrine();
