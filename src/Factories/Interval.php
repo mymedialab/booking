@@ -28,6 +28,12 @@ class Interval
         return $this->createInterval($intervalName, $Entity);
     }
 
+    public function wrap(Interfaces\IntervalPersistence $Entity)
+    {
+        $type = ucfirst(strtolower($Entity->getType()));
+        return $this->createInterval($type, $Entity);
+    }
+
     public function getFrom(Models\Resource $Resource, $name)
     {
         foreach ($Resource->allAvailability() as $Availability) {
@@ -42,7 +48,7 @@ class Interval
                 "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}"
             );
         }
-        $type = strtolower($Entity->getType());
+        $type = ucfirst(strtolower($Entity->getType()));
 
         return $this->createInterval($type, $Entity);
     }

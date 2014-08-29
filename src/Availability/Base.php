@@ -2,16 +2,19 @@
 namespace MML\Booking\Availability;
 
 use MML\Booking\Interfaces;
+use MML\Booking\Factories;
 
 /**
  */
 class Base
 {
     protected $Entity;
+    protected $Factory;
 
-    public function __construct(Interfaces\AvailabilityPersistence $Entity)
+    public function __construct(Interfaces\AvailabilityPersistence $Entity, Factories\General $Factory)
     {
         $this->Entity = $Entity;
+        $this->Factory = $Factory;
     }
     public function getEntity()
     {
@@ -36,11 +39,11 @@ class Base
         return $this->Entity->getAvailableInterval();
     }
 
-    public function getIsAvailable()
+    public function getAvailable()
     {
         return $this->Entity->getAvailable();
     }
-    public function setIsAvailable($boolean = true)
+    public function setAvailable($boolean = true)
     {
         return $this->Entity->setAvailable($boolean);
     }

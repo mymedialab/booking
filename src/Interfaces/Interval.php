@@ -70,4 +70,6 @@ interface Interval
      * @return DateTime $Start   When the period ends
      */
     public function calculateStart(\DateTime $End, $qty = 1);
+
+    public function getType();
 }

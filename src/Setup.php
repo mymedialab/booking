@@ -88,7 +88,7 @@ class Setup
         $singular = null
     ) {
         $Availability = $this->Factory->getAvailability('fixed');
-        $Availability->setIsAvailable(false);
+        $Availability->setAvailable(false);
         if (!is_null($name)) {
             $Availability->setFriendlyName($name);
         }

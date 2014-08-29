@@ -24,13 +24,13 @@ class Availability
             throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
         }
 
-        $available = $this->resourcesAvailable($Resource, $Period);
+        $available = $this->resourcesForPeriod($Resource, $Period);
         if ($available === 0) {
             return false;
         }
 
-        $taken     = $this->singleReservations($Resource, $Period);
-        $taken    += $this->blockBooking($Resource, $Period);
+        $taken  = $this->singleReservations($Resource, $Period);
+        $taken += $this->blockBooking($Resource, $Period);
 
         // If we've got enough rooms not taken, we have availability!
         return (($available - $taken) >= $qty);
@@ -73,13 +73,39 @@ class Availability
      * @param  Interfaces\Period $Period
      * @return integer
      */
-    protected function resourcesAvailable(Models\Resource $Resource, Interfaces\Period $Period)
+    protected function resourcesForPeriod(Models\Resource $Resource, Interfaces\Period $Period)
     {
-        $total = intval($Resource->getQuantity());
-        if ($total === 0) {
+        $qty = intval($Resource->getQuantity());
+        if ($qty === 0) {
+            // regardless of availability, there's none!
             return 0;
         }
 
+        $Factory = $this->Factory->getAvailabilityFactory();
+        $Availabilities = $Factory->getAllFor($Resource);
+
+        $total = 0;
+        foreach ($Availabilities as $Availability) {
+            // @todo this seems too flimsy and easy to break. What about overlapping periods? Eg days / mornings?
+            if ($Availability->getAvailable()) {
+                $total += $this->resourcesAvailable($Availability, $Period, $qty);
+            } else {
+                $total -= $this->resourcesAvailable($Availability, $Period, $qty);
+            }
+        }
         return $total;
+    }
+
+    protected function resourcesAvailable(Interfaces\Availability $Availability, Interfaces\Period $Period, $resourceTotal)
+    {
+        $qty = intval($Availability->getAffectedQuantity());
+        if ($qty === 0) {
+            $qty = $resourceTotal;
+        }
+        if ($Availability->overlaps($Period)) {
+            return $qty;
+        } else {
+            return 0;
+        }
     }
 }

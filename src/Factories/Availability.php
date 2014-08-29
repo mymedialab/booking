@@ -5,6 +5,7 @@ use MML\Booking;
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 use MML\Booking\Intervals;
+use MML\Booking\Factories;
 use MML\Booking\Models;
 
 class Availability
@@ -12,7 +13,7 @@ class Availability
     protected $IntervalFactory;
     protected $GeneralFactory;
 
-    public function __construct(Interval $IntervalFactory, General $GeneralFactory)
+    public function __construct(Interval $IntervalFactory, Factories\General $GeneralFactory)
     {
         $this->IntervalFactory = $IntervalFactory;
         $this->GeneralFactory  = $GeneralFactory;
@@ -39,12 +40,24 @@ class Availability
         return $this->createWrapper($type, $Entity);
     }
 
+    public function getAllFor(Models\Resource $Resource)
+    {
+        $all = array();
+
+        foreach ($Resource->allAvailability() as $Entity) {
+            $type = strtolower($Entity->getType());
+            $all[] = $this->createWrapper($type, $Entity);
+        }
+
+        return $all;
+    }
+
     protected function createWrapper($name, Interfaces\AvailabilityPersistence $Entity)
     {
         $class= "MML\\Booking\\Availability\\{$name}";
 
         if (class_exists($class)) {
-            return new $class($Entity);
+            return new $class($Entity, $this->GeneralFactory);
         } else {
             throw new Exceptions\Booking("Factories\\Availability::getFrom Unknown Availability type $name requested");
         }

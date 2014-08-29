@@ -100,4 +100,8 @@ abstract class Base
     {
         return $this->Entity->setSingular($name);
     }
+    public function getType()
+    {
+        return $this->Entity->getType();
+    }
 }
