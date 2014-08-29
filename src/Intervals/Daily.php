@@ -169,23 +169,23 @@ class Daily extends Base implements Interfaces\Interval
         $opening = $this->Entity->getMeta('opening', $this->defaults['opening']);
         $closing = $this->Entity->getMeta('closing', $this->defaults['closing']);
 
-        // @todo validate
+        $pattern = "/\d{2}:\d{2}/";
+        if (!preg_match($pattern, $opening)) {
+            throw new Exceptions\Booking("Intervals\\Daily::setup encountered malformed opening $opening");
+        }
+        if (!preg_match($pattern, $closing)) {
+            throw new Exceptions\Booking("Intervals\\Daily::setup encountered malformed closing $closing");
+        }
         $this->Opens  = new \DateTime($opening . ":00");
         $this->Closes = new \DateTime($closing . ":00");
 
         $openHour = intval($this->Opens->format('H'));
         $endHour  = intval($this->Closes->format('H'));
 
-        // @todo could replace with date_diff?
-        if ($openHour === $endHour) {
-            $openMin = intval($this->Opens->format('i'));
-            $endMin  = intval($this->Closes->format('i'));
-
-            // awkward inverse logic. If the end is greater than start straddles is false. We use the flipped logic
-            // so on an exact match the
-            $this->straddles = !($endMin > $openMin);
+        if ($this->Opens >= $this->Closes) {
+            $this->straddles = true;
         } else {
-            $this->straddles = ($endHour < $openHour);
+            $this->straddles = false;
         }
     }
 }
