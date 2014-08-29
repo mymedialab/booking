@@ -93,20 +93,28 @@ try {
     $DoubleRoom = $Booking->getResource('hotel_double_room');
     $Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5, 'Maintainence - Oct 2014');
     $Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5, 'Maintainence - Feb 2015');
-die(0);
+
 
     // try a booking!
     $Start = new \DateTime('24-06-2018');
     $Resource = $Booking->getResource('hotel_double_room');
     $Period   = $Booking->getPeriodFor($Resource, 'nightly');
-
     $Period->begins($Start);
     $Period->repeat(3);
 
-    $reserved = false;
-    $i = 10;
+    $Reservation = $Booking->createReservation($Resource, $Period, 3);
+    $Reservation = $Booking->createReservation($Resource, $Period, 4);
 
-    $Reservation = $Booking->createReservation($Resource, $Period, 7);
+    try {
+        // this one should throw an exception as all the rooms are now booked for this period
+        $Reservation = $Booking->createReservation($Resource, $Period, 1);
+        die('Exception not thrown! O NOES!');
+    } catch (Booking\Exceptions\Booking $e) {
+        if ($e->getMessage() !== 'Double Room does not have enough availability for the selected period') {
+            throw $e;
+        }
+    }
+
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";

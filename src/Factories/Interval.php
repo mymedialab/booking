@@ -30,7 +30,18 @@ class Interval
 
     public function getFrom(Models\Resource $Resource, $name)
     {
-        $Entity = $Resource->getInterval($name);
+        foreach ($Resource->allAvailability() as $Availability) {
+            $Entity = $Availability->getBookingInterval($name, false);
+            if ($Entity) {
+                break;
+            }
+        }
+
+        if (!$Entity) {
+            throw new Exceptions\Booking(
+                "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}"
+            );
+        }
         $type = strtolower($Entity->getType());
 
         return $this->createInterval($type, $Entity);
@@ -43,7 +54,7 @@ class Interval
         if (class_exists($class)) {
             return new $class($Entity);
         } else {
-            throw new Exceptions\Booking("Factories\\Interval::getFrom Unknown Interval $name requested");
+            throw new Exceptions\Booking("Factories\\Interval Unknown Interval $name requested");
         }
     }
 }

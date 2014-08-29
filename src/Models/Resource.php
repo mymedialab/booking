@@ -110,6 +110,10 @@ class Resource
         $this->friendlyName = $newName;
     }
 
+    public function allAvailability()
+    {
+        return $this->Availability;
+    }
     public function getAvailability($name)
     {
         foreach ($this->Availability as $Availability) {

@@ -110,16 +110,16 @@ class Availability implements Interfaces\AvailabilityPersistence
         return $this->affectedQuantity;
     }
 
-    public function getBookingInterval($name)
+    public function getBookingInterval($name, $default = null)
     {
         foreach ($this->BookingIntervals as $Interval) {
             if (strtolower($Interval->getName()) === strtolower($name)) {
-                // @todo wrap this up
+                // @todo wrap this up? Currently this is just the model, should it be wrapped in it's type wrapper?
                 return $Interval;
             }
         }
 
-        throw new Exceptions\Booking("Resource::getInterval Unknown Interval $name");
+        return $default;
     }
     public function hasBookingInterval(Interfaces\IntervalPersistence $Interval)
     {
