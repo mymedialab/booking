@@ -31,6 +31,7 @@ class Resource
     private $modified;
     /** @Column(type="integer") */
     private $quantity;
+
     /**
      * @OneToMany(targetEntity="MML\Booking\Models\Reservation", mappedBy="Resource")
      * @OrderBy({"start" = "DESC"})
@@ -42,21 +43,21 @@ class Resource
     */
     private $BlockReservations;
     /**
-     * @ManyToMany(targetEntity="MML\Booking\Models\Interval", inversedBy="Resources")
-     * @JoinTable(name="booking_resource_intervals",
+     * @ManyToMany(targetEntity="MML\Booking\Models\Availability", inversedBy="Resources")
+     * @JoinTable(name="booking_resource_availability",
      *      joinColumns={@JoinColumn(name="resource_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@JoinColumn(name="interval_id", referencedColumnName="id")}
+     *      inverseJoinColumns={@JoinColumn(name="availability_id", referencedColumnName="id")}
      *      )
     */
-    private $Intervals;
+    private $Availability;
 
     public function __construct()
     {
         $this->Reservations = new ArrayCollection();
         $this->BlockReservations = new ArrayCollection();
         $this->Intervals = new ArrayCollection();
+        $this->Availability = new ArrayCollection();
     }
-
     public function getId()
     {
         return $this->id;
@@ -96,22 +97,6 @@ class Resource
 
         return $this->BlockReservations->matching($Criteria);
     }
-    public function addInterval(Interval $Interval)
-    {
-        $Interval->addResource($this); // synchronously updating inverse side
-        $this->Intervals[] = $Interval;
-    }
-    public function getInterval($name)
-    {
-        foreach ($this->Intervals as $Interval) {
-            if (strtolower($Interval->getName()) === strtolower($name)) {
-                return $Interval;
-            }
-        }
-
-        throw new Exceptions\Booking("Resource::getInterval Unknown Interval $name");
-    }
-
     public function setName($newName)
     {
         $this->name = $newName;
@@ -124,17 +109,23 @@ class Resource
     {
         $this->friendlyName = $newName;
     }
-    public function hasInterval(Interval $Interval)
+
+    public function getAvailability($name)
     {
-        foreach ($this->Intervals as $MyInterval) {
-            if ($MyInterval->getId() === $Interval->getId()) {
-                return true;
+        foreach ($this->Availability as $Availability) {
+            if (strtolower($Availability->getName()) === strtolower($name)) {
+                return $Availability;
             }
         }
-        return false;
+
+        throw new Exceptions\Booking("Resource::getAvailability Unknown Availability $name");
     }
-
-
+    public function addAvailability(Interfaces\Availability $Availability)
+    {
+        $Entity = $Availability->getEntity();
+        $Entity->addResource($this); // synchronously updating inverse side
+        $this->Availability[] = $Entity;
+    }
     /**
      *  @PrePersist
      *  @PreUpdate

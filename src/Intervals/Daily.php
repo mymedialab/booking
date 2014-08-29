@@ -187,6 +187,5 @@ class Daily extends Base implements Interfaces\Interval
         } else {
             $this->straddles = ($endHour < $openHour);
         }
-
     }
 }

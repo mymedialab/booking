@@ -24,14 +24,19 @@ class Availability
             throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
         }
 
-        $taken = $this->singleReservation($Resource, $Period);
-        $taken += $this->blockBooking($Resource, $Period);
+        $available = $this->resourcesAvailable($Resource, $Period);
+        if ($available === 0) {
+            return false;
+        }
+
+        $taken     = $this->singleReservations($Resource, $Period);
+        $taken    += $this->blockBooking($Resource, $Period);
 
         // If we've got enough rooms not taken, we have availability!
-        return (($Resource->getQuantity() - $taken) >= $qty);
+        return (($available - $taken) >= $qty);
     }
 
-    protected function singleReservation(Models\Resource $Resource, Interfaces\Period $Period)
+    protected function singleReservations(Models\Resource $Resource, Interfaces\Period $Period)
     {
         $Doctrine = $this->Factory->getDoctrine();
 
@@ -59,5 +64,22 @@ class Availability
         }
 
         return $count;
+    }
+
+    /**
+     * Counts resources available for reservation (eg, not under maitainence or out of action).
+     *
+     * @param  Models\Resource   $Resource
+     * @param  Interfaces\Period $Period
+     * @return integer
+     */
+    protected function resourcesAvailable(Models\Resource $Resource, Interfaces\Period $Period)
+    {
+        $total = intval($Resource->getQuantity());
+        if ($total === 0) {
+            return 0;
+        }
+
+        return $total;
     }
 }

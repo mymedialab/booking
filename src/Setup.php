@@ -24,29 +24,40 @@ class Setup
 
     public function createResource($name, $friendlyName, $quantityAvailable = 1)
     {
-        $Doctrine = $this->Factory->getDoctrine();
         $Resource = $this->Factory->getEmptyResource('Resource');
 
         $Resource->setName($name);
         $Resource->setFriendlyName($friendlyName);
         $Resource->setQuantity($quantityAvailable);
-        $Doctrine->persist($Resource);
+
+        $Doctrine = $this->Factory->getDoctrine();
         $Doctrine->flush();
 
         return $Resource;
     }
 
+    /**
+     * This is a simpler version of addAvailabilityWindow(...). This does the same thing but the availability window is
+     * always allow.
+     *
+     * @param ModelsResource $Resource         [description]
+     * @param array          $bookingIntervals [description]
+     */
     public function addBookingIntervals(Models\Resource $Resource, array $bookingIntervals)
     {
-        $Doctrine = $this->Factory->getDoctrine();
+        $Availability = $this->Factory->getAvailability('always');
+
         foreach ($bookingIntervals as $Interval) {
-            $Entity = $Interval->getEntity();
-            $Doctrine->persist($Entity);
-            if ($Resource->hasInterval($Entity)) {
-                continue;
+            if (!($Interval instanceof Interfaces\Interval)) {
+                throw new Exceptions\Booking("Invalid Interval passed to Setup::addBookingIntervals");
             }
-            $Resource->addInterval($Entity);
+            $Availability->addBookingInterval($Interval);
         }
+
+        $Resource->addAvailability($Availability);
+
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->flush();
     }
 
     public function addAvailabilityWindow(
@@ -57,8 +68,36 @@ class Setup
         // @todo missing function
     }
 
-    public function markUnavailable(Models\Resource $Resource, Interfaces\Period $Period, $qty = null)
-    {
-        // @todo missing function
+    /**
+     * Marks a resource or group of resources as unavailable
+     *
+     * @param  ModelsResource   $Resource The resource to mark unavailable
+     * @param  InterfacesPeriod $Period   The Period for which that resource is unavailable
+     * @param  integer          $qty      How many of that resource are accounted for in this period
+     * @param  string           $name     A friendly name for this period to write to the database
+     * @param  string           $plural   A friendly plural name for this period to write to the database
+     * @param  string           $singular A friendly singular name for this period to write to the database
+     * @return null
+     */
+    public function markUnavailable(
+        Models\Resource $Resource,
+        Interfaces\Period $Period,
+        $qty = null,
+        $name = null,
+        $plural = null,
+        $singular = null
+    ) {
+        $Availability = $this->Factory->getAvailability('fixed');
+        $Availability->setIsAvailable(false);
+        if (!is_null($name)) {
+            $Availability->setFriendlyName($name);
+        }
+
+        $Interval = $this->Factory->getInterval('fixed');
+        $Interval->configure($Period->getStart(), $Period->getEnd(), $qty, $name, $plural, $singular);
+        $Availability->setAvailableInterval($Interval);
+        $Resource->addAvailability($Availability);
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->flush();
     }
 }

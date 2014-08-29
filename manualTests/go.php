@@ -12,7 +12,7 @@ set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
         'errstr'     => $errstr,
         'errfile'    => $errfile,
         'errline'    => $errline,
-        'errcontext' => $errcontext,
+        // 'errcontext' => $errcontext,
     ]);
     echo "\n";
     exit(1);
@@ -91,9 +91,9 @@ try {
     }
 
     $DoubleRoom = $Booking->getResource('hotel_double_room');
-    $Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5);
-    $Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5);
-
+    $Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5, 'Maintainence - Oct 2014');
+    $Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5, 'Maintainence - Feb 2015');
+die(0);
 
     // try a booking!
     $Start = new \DateTime('24-06-2018');
@@ -115,7 +115,7 @@ try {
         'errstr'     => $e->getMessage(),
         'errfile'    => $e->getFile(),
         'errline'    => $e->getLine(),
-        'errcontext' => $e->getTraceAsString(),
+        // 'errcontext' => $e->getTraceAsString(),
     ]);
     echo "\n";
     exit(1);

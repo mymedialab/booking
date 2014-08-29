@@ -1,5 +1,6 @@
 [
   "MML\\Booking\\Models\\BlockReservation",
+  "MML\\Booking\\Models\\Availability",
   "MML\\Booking\\Models\\Interval",
   "MML\\Booking\\Models\\IntervalMeta",
   "MML\\Booking\\Models\\Resource",

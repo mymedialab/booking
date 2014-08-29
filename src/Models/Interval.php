@@ -29,15 +29,26 @@ class Interval implements Interfaces\IntervalPersistence
      * @OneToMany(targetEntity="MML\Booking\Models\IntervalMeta", mappedBy="IntervalMeta", cascade={"persist", "remove"}))
     */
     protected $IntervalMeta;
+
     /**
-     * @ManyToMany(targetEntity="MML\Booking\Models\Resource", mappedBy="Intervals")
+     * An interval links to an availability window if it's to be used to calculate when a resource is available.
+     *
+     * @OneToMany(targetEntity="MML\Booking\Models\Availability", mappedBy="AvailableInterval")
     */
-    protected $Resources;
+    protected $AvailabilityWindow;
+
+    /**
+     * Resource availability can have multiple booking intervals available. eg hourly, morning, afternoon etc.
+     *
+     * @ManyToMany(targetEntity="MML\Booking\Models\Availability", mappedBy="BookingIntervals")
+    */
+    protected $BookingAvailability;
 
     protected $Factory;
 
     public function __construct()
     {
+        $this->Availablity  = new ArrayCollection();
         $this->IntervalMeta = new ArrayCollection();
     }
 
@@ -78,19 +89,34 @@ class Interval implements Interfaces\IntervalPersistence
         $this->type = $type;
     }
 
-    public function addResource(Resource $Resource)
+    public function setAvailabilityWindow(Availability $Availability)
     {
-        $this->Resources[] = $Resource;
+        $this->AvailabilityWindow = $Availability;
     }
+    public function getAvailabilityWindow()
+    {
+        return $this->AvailabilityWindow;
+    }
+
+    public function addBookingAvailability(Availability $Availability)
+    {
+        $this->BookingAvailability[] = $Availability;
+    }
+    public function removeBookingAvailability(Availability $Availability)
+    {
+        $this->BookingAvailability->removeElement($Availability);
+    }
+
     public function newMeta($name, $value)
     {
         $Meta = new IntervalMeta;
         $Meta->setName(strtolower($name));
         $Meta->setValue($value);
 
-        // Might have been overridden. Important to call setter method.
+        // addMeta might have been overridden. Important to call setter method.
         $this->addMeta($Meta);
     }
+
     public function addMeta(IntervalMeta $Meta)
     {
         $Meta->setInterval($this); // synchronously updating inverse side

@@ -83,8 +83,27 @@ class General
     public function getIntervalFactory()
     {
         return $this->cache(function () {
-            return new Interval();
+            return new Interval($this);
         }, 'IntervalFactory');
+    }
+
+    public function getAvailabilityFactory()
+    {
+        return $this->cache(function () {
+            return new Availability($this->getIntervalFactory(), $this);
+        }, 'AvailabilityFactory');
+    }
+
+    public function getAvailability($name)
+    {
+        $Factory = $this->getAvailabilityFactory();
+        return $Factory->getNew($name);
+    }
+
+    public function getInterval($name)
+    {
+        $Factory = $this->getIntervalFactory();
+        return $Factory->get($name);
     }
 
     public function getReservationAvailability()
@@ -96,10 +115,18 @@ class General
 
     public function getEmptyResource()
     {
-        return new Models\Resource;
+        $Doctrine = $this->getDoctrine();
+        $Resource = new Models\Resource;
+        $Doctrine->persist($Resource);
+
+        return $Resource;
     }
     public function getEmptyReservation()
     {
-        return new Models\Reservation;
+        $Doctrine = $this->getDoctrine();
+        $Reservation = new Models\Reservation;
+        $Doctrine->persist($Reservation);
+
+        return $Reservation;
     }
 }

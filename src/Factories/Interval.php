@@ -9,17 +9,21 @@ use MML\Booking\Models;
 
 class Interval
 {
-    protected $classes = array(
-        'daily'   => 'MML\\Booking\\Intervals\\Daily',
-        'weekly'  => 'MML\\Booking\\Intervals\\Weekly',
-        'generic' => 'MML\\Booking\\Intervals\\Generic',
-    );
+    protected $GeneralFactory;
+
+    public function __construct(General $Factory)
+    {
+        $this->GeneralFactory = $Factory;
+    }
 
     public function get($intervalName)
     {
-        $intervalName = strtolower($intervalName);
+        $intervalName = ucfirst(strtolower($intervalName));
         $Entity = new Models\Interval();
-        $Entity->setType(ucfirst($intervalName));
+        $Entity->setType($intervalName);
+
+        $Doctrine = $this->GeneralFactory->getDoctrine();
+        $Doctrine->persist($Entity);
 
         return $this->createInterval($intervalName, $Entity);
     }
@@ -34,8 +38,10 @@ class Interval
 
     protected function createInterval($name, Interfaces\IntervalPersistence $Entity)
     {
-        if (array_key_exists($name, $this->classes)) {
-            return new $this->classes[$name]($Entity);
+        $class = 'MML\\Booking\\Intervals\\' . $name;
+
+        if (class_exists($class)) {
+            return new $class($Entity);
         } else {
             throw new Exceptions\Booking("Factories\\Interval::getFrom Unknown Interval $name requested");
         }
