@@ -117,7 +117,7 @@ class Resource
     public function getAvailability($name)
     {
         foreach ($this->Availability as $Availability) {
-            if (strtolower($Availability->getName()) === strtolower($name)) {
+            if (strtolower($Availability->getFriendlyName()) === strtolower($name)) {
                 return $Availability;
             }
         }

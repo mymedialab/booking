@@ -21,8 +21,8 @@ class hotelTest extends \Codeception\TestCase\Test
         global $fullStackTestConfig;
 
         $this->Factory  = new MML\Booking\Factories\General($fullStackTestConfig);
-        $this->Booking  = new MML\Booking\App($fullStackTestConfig);
-        $this->Setup    = new MML\Booking\Setup($fullStackTestConfig);
+        $this->Booking  = new MML\Booking\App(null, $this->Factory);
+        $this->Setup    = new MML\Booking\Setup(null, $this->Factory);
         $this->Doctrine = $this->Factory->getDoctrine();
     }
 
@@ -47,7 +47,7 @@ class hotelTest extends \Codeception\TestCase\Test
         $MaintainenceTwo->ends(new \DateTime('2015-02-30'));
 
         $rooms = array(
-            'hotel_double_room'   => array('friendly' => 'Double Room', 'qty' => 10),
+            'hotel_double_room'   => array('friendly' => 'Double Room', 'qty' => 7),
             'hotel_superior_room' => array('friendly' => 'Superior Double Room', 'qty' => 5),
             'hotel_penthouse'     => array('friendly' => 'Penthouse Suite', 'qty' => 1),
         );
@@ -66,7 +66,61 @@ class hotelTest extends \Codeception\TestCase\Test
         }
 
         $DoubleRoom = $this->Booking->getResource('hotel_double_room');
-        $this->Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5);
-        $this->Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5);
+        $this->Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5, 'Maintainence - Oct 2014');
+        $this->Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5, 'Maintainence - Feb 2015');
+    }
+
+    public function testSimpleReservation()
+    {
+        // try a booking!
+        $Start = new \DateTime('24-06-2018');
+        $Resource = $this->Booking->getResource('hotel_double_room');
+        $Period   = $this->Booking->getPeriodFor($Resource, 'nightly');
+        $Period->begins($Start);
+        $Period->repeat(3);
+
+        $reservations = $this->Booking->createReservation($Resource, $Period, 2);
+        $this->assertEquals(2, count($reservations));
+        $reservations = $this->Booking->createReservation($Resource, $Period, 4);
+        $this->assertEquals(4, count($reservations));
+        $Reservation = $this->Booking->createReservation($Resource, $Period, 1);
+        $this->assertTrue(!is_array($Reservation));
+
+        try {
+            $Reservation = $this->Booking->createReservation($Resource, $Period, 1);
+            // this one should throw an exception as all the rooms are now booked for this period
+        } catch (Exceptions\Booking $e) {
+            $this->assertEquals($e->getMessage(), 'Double Room does not have enough availability for the selected period');
+            return;
+        }
+
+        $this->fail('missing expected exception');
+    }
+
+    /**
+     * In this test we attempt to book during a maintenance window when 5 rooms are out of action.
+     * @return [type] [description]
+     */
+    public function testConflictingReservation()
+    {
+        // try a booking!
+        $Start = new \DateTime('2014-10-22');
+        $Resource = $this->Booking->getResource('hotel_double_room');
+        $Period   = $this->Booking->getPeriodFor($Resource, 'nightly');
+        $Period->begins($Start);
+        $Period->repeat(3);
+
+        $reservations = $this->Booking->createReservation($Resource, $Period, 2);
+        $this->assertEquals(2, count($reservations));
+
+        try {
+            $Reservation = $this->Booking->createReservation($Resource, $Period, 1);
+            // this one should throw an exception as all the rooms are now booked for this period
+        } catch (Exceptions\Booking $e) {
+            $this->assertEquals($e->getMessage(), 'Double Room does not have enough availability for the selected period');
+            return;
+        }
+
+        $this->fail('missing expected exception');
     }
 }

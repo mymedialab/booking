@@ -53,13 +53,17 @@ class App
 
         $Doctrine = $this->Factory->getDoctrine();
 
+        $reservations = array();
         for ($i=0; $i < $qty; $i++) {
             $Reservation = $this->Factory->getEmptyReservation();
             $Reservation->hydrateFrom($Resource, $Period);
             $Doctrine->persist($Reservation);
+            $reservations[] = $Reservation;
         }
 
         $Doctrine->flush();
+
+        return ($qty === 1) ? $reservations[0] : $reservations;
     }
 
     public function createBlockReservation(Models\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
