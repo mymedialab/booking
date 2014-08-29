@@ -26,7 +26,7 @@ class Interval implements Interfaces\IntervalPersistence
     protected $singular;
 
     /**
-     * @OneToMany(targetEntity="MML\Booking\Models\IntervalMeta", mappedBy="IntervalMeta", cascade={"persist", "remove"}))
+     * @OneToMany(targetEntity="MML\Booking\Models\IntervalMeta", mappedBy="Interval", cascade={"persist", "remove"}))
     */
     protected $IntervalMeta;
 

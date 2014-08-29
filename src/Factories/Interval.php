@@ -36,7 +36,13 @@ class Interval
 
     public function getFrom(Models\Resource $Resource, $name)
     {
-        foreach ($Resource->allAvailability() as $Availability) {
+        $Availabilities = $Resource->allAvailability();
+        if (!count($Availabilities)) {
+            throw new Exceptions\Booking(
+                "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}. No Availabilites set."
+            );
+        }
+        foreach ($Availabilities as $Availability) {
             $Entity = $Availability->getBookingInterval($name, false);
             if ($Entity) {
                 break;
