@@ -33,6 +33,7 @@ class WeekDay extends Base implements Interfaces\Interval
         return $this->nearestTo($RoughEnd, $closing[0], $closing[1]);
     }
 
+    // @todo unit test! Found a tricksy bug where I had 7 in place of teh 6. Write a test!
     protected function nearestTo(\DateTime $Rough, $targetHour, $targetMinute)
     {
         $Exact = clone $Rough;
@@ -41,7 +42,7 @@ class WeekDay extends Base implements Interfaces\Interval
         $day = intval($Exact->format('w'));
         if ($day === 0) { // Sunday is not a weekday. Roll-on Monday
             $Exact->modify('+1 day');
-        } elseif ($day === 7) { // Saturday is not a weekday. Roll back to Friday.
+        } elseif ($day === 6) { // Saturday is not a weekday. Roll back to Friday.
             $Exact->modify('-1 day');
         }
 
@@ -59,6 +60,7 @@ class WeekDay extends Base implements Interfaces\Interval
             $qty--; // for one interval, we keep the same day UNLESS we pass midnight.
         }
 
+        // @todo Should this be exception-y if it goes onto a weekend?
         if ($qty > 0) {
             $End->modify("+{$qty} days");
         }
@@ -122,7 +124,7 @@ class WeekDay extends Base implements Interfaces\Interval
             $this->Entity->setMeta('closes', $this->closes);
         }
 
-        $Opens  = new \DateTime($$this->opens . ":00");
+        $Opens  = new \DateTime($this->opens . ":00");
         $Closes = new \DateTime($this->closes . ":00");
 
         if ($Opens >= $Closes) {

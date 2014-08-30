@@ -88,11 +88,14 @@ class Availability
         foreach ($Availabilities as $Availability) {
             // @todo this seems too flimsy and easy to break. What about overlapping periods? Eg days / mornings?
             if ($Availability->getAvailable()) {
+                // this is a window of availability. Ensure the reservation period is fully inside it
                 $total += $this->resourcesAvailable($Availability, $Period, $qty, 'contains');
             } else {
+                // this is a time when the place is closed. Ensure no part of the reservation is within the window
                 $total -= $this->resourcesAvailable($Availability, $Period, $qty, 'overlaps');
             }
         }
+
         return $total;
     }
 
@@ -102,6 +105,7 @@ class Availability
         if ($qty === 0) {
             $qty = $resourceTotal;
         }
+
         if ($Availability->$method($Period)) {
             return $qty;
         } else {

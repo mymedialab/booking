@@ -32,11 +32,11 @@ class leisureCentreTest extends \Codeception\TestCase\Test
         $Weekday  = $this->Factory->getIntervalFactory()->get('weekday');
         $Weekday->configure($opensAt, $closesAt);
 
-        // $Saturday = $this->Factory->getIntervalFactory()->get('dayOfWeek');
-        // $Saturday->configure('saturday', $opensAt, "18:00");
+        $Saturday = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Saturday->configure('saturday', $opensAt, "18:00");
 
-        // $Sunday   = $this->Factory->getIntervalFactory()->get('dayOfWeek');
-        // $Sunday->configure('sunday', "10:00", "16:00");
+        $Sunday   = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Sunday->configure('sunday', "10:00", "16:00");
 
         $Hourly    = $this->Factory->getIntervalFactory()->get('hourly');
         $Hourly->configure("00");
@@ -62,8 +62,8 @@ class leisureCentreTest extends \Codeception\TestCase\Test
         foreach ($resources as $name => $details) {
            $Resource = $this->Setup->createResource($name, $details['friendly'], $details['qty']);
            $this->Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly, $Morning, $Afternoon, $Evening));
-           // $this->Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly, $Morning, $Afternoon));
-           // $this->Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
+           $this->Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly, $Morning, $Afternoon));
+           $this->Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
         }
     }
 
@@ -122,6 +122,51 @@ class leisureCentreTest extends \Codeception\TestCase\Test
             // this one should throw an exception as all the rooms are now booked for this period
         } catch (Exceptions\Booking $e) {
             $this->assertEquals($e->getMessage(), 'Squash Court does not have enough availability for the selected period');
+            return;
+        }
+
+        $this->fail('missing expected exception');
+    }
+
+    public function testSaturdayBookingFailsAfterSix()
+    {
+        $Court  = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $Period = $this->Booking->getPeriodFor($Court, 'hourly');
+
+        $OK      = new \DateTime('2014-08-30 17:00');
+        $TooLate = new \DateTime('2014-08-30 18:00');
+
+        $Period->begins($OK);
+        $Reservation = $this->Booking->createReservation($Court, $Period);
+
+        try {
+            $Period->begins($TooLate);
+            $Reservation = $this->Booking->createReservation($Court, $Period);
+            // this one should throw an exception as all the rooms are now booked for this period
+        } catch (Exceptions\Booking $e) {
+            $this->assertEquals($e->getMessage(), 'Indoor Tennis Court does not have enough availability for the selected period');
+            return;
+        }
+        $this->fail('missing expected exception');
+    }
+
+    public function testSundayBookingFailsAfterFour()
+    {
+        $Court  = $this->Booking->getResource('leisureCentre_grass_tennis_court');
+        $Period = $this->Booking->getPeriodFor($Court, 'hourly');
+
+        $Sat = new \DateTime('2014-08-30 17:00');
+        $Sun = new \DateTime('2014-08-31 17:00');
+
+        $Period->begins($Sat);
+        $Reservation = $this->Booking->createReservation($Court, $Period);
+
+        try {
+            $Period->begins($Sun);
+            $Reservation = $this->Booking->createReservation($Court, $Period);
+            // this one should throw an exception as all the rooms are now booked for this period
+        } catch (Exceptions\Booking $e) {
+            $this->assertEquals($e->getMessage(), 'Grass Tennis Court does not have enough availability for the selected period');
             return;
         }
 
