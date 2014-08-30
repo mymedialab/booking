@@ -27,7 +27,7 @@ class Fixed extends Base implements Interfaces\Availability
     }
 
     /**
-     * @todo unit tests
+     * @todo unit tests (don't forget to test when end / start is the same!)
      */
     public function overlaps(Interfaces\Period $Period)
     {
@@ -40,6 +40,26 @@ class Fixed extends Base implements Interfaces\Availability
         // if start or end of $Period are between our start and end points, return true
         if ( ($Period->getStart() > $Start && $Period->getStart() < $End) ||
             ($Period->getEnd() > $Start && $Period->getEnd() < $End)
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    /**
+     * @todo unit tests (don't forget to test when end / start is the same!)
+     */
+    public function contains(Interfaces\Period $Period)
+    {
+        $IntervalFactory = $this->Factory->getIntervalFactory();
+        $Interval = $IntervalFactory->wrap($this->getAvailableInterval());
+
+        $Start = $Interval->getNearestStart($Period->getEnd());
+        $End   = $Interval->getNearestEnd($Period->getStart());
+
+        // if start and end of $Period are between our start and end points, return true
+        if ( ($Period->getStart() >= $Start && $Period->getStart() < $End) &&
+            ($Period->getEnd() > $Start && $Period->getEnd() =< $End)
         ) {
             return true;
         } else {

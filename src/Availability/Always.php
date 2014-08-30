@@ -21,4 +21,9 @@ class Always extends Base implements Interfaces\Availability
         // WHAT PART OF ALWAYS DID YOU NOT UNDERSTAND?
         return true;
     }
+    public function contains(Interfaces\Period $Period)
+    {
+        // WHAT PART OF ALWAYS DID YOU NOT UNDERSTAND?
+        return true;
+    }
 }

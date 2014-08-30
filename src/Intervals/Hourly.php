@@ -87,6 +87,7 @@ class Hourly extends Base implements Interfaces\Interval
         $this->singular   = is_null($singular) ? $this->singular : $singular;
 
         $this->hourStarts = $hourStarts;
+        $this->setup(true);
     }
 
     public function setup($reconfigured = false)

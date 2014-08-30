@@ -30,6 +30,7 @@ class Interval
 
     public function wrap(Interfaces\IntervalPersistence $Entity)
     {
+        // @todo caps problem BOIY! Stop trying to solve the worlds problems! Let em shot themselves instead of doing it for them!
         $type = ucfirst(strtolower($Entity->getType()));
         return $this->createInterval($type, $Entity);
     }

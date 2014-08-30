@@ -146,12 +146,14 @@ class Interval implements Interfaces\IntervalPersistence
     public function setMeta($name, $value)
     {
         $name = strtolower($name);
-        $Meta = $this->getMeta($name, false);
 
-        if ($Meta) {
-            $Meta->setValue($value);
-        } else {
-            $this->newMeta($name, $value);
+        foreach ($this->IntervalMeta as $Meta) {
+            if (strtolower($Meta->getName()) === strtolower($name)) {
+                $Meta->setValue($value);
+                return;
+            }
         }
+
+        $this->newMeta($name, $value);
     }
 }

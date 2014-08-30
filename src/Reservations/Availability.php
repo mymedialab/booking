@@ -88,21 +88,21 @@ class Availability
         foreach ($Availabilities as $Availability) {
             // @todo this seems too flimsy and easy to break. What about overlapping periods? Eg days / mornings?
             if ($Availability->getAvailable()) {
-                $total += $this->resourcesAvailable($Availability, $Period, $qty);
+                $total += $this->resourcesAvailable($Availability, $Period, $qty, 'contains');
             } else {
-                $total -= $this->resourcesAvailable($Availability, $Period, $qty);
+                $total -= $this->resourcesAvailable($Availability, $Period, $qty, 'overlaps');
             }
         }
         return $total;
     }
 
-    protected function resourcesAvailable(Interfaces\Availability $Availability, Interfaces\Period $Period, $resourceTotal)
+    protected function resourcesAvailable(Interfaces\Availability $Availability, Interfaces\Period $Period, $resourceTotal, $method)
     {
         $qty = intval($Availability->getAffectedQuantity());
         if ($qty === 0) {
             $qty = $resourceTotal;
         }
-        if ($Availability->overlaps($Period)) {
+        if ($Availability->$method($Period)) {
             return $qty;
         } else {
             return 0;

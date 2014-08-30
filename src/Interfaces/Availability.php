@@ -14,5 +14,6 @@ interface Availability
     public function getAvailable();
     public function setAvailable($boolean = true);
 
+    public function contains(Period $Period);
     public function overlaps(Period $Period);
 }

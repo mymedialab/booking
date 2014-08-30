@@ -9,17 +9,11 @@ class Setup
     protected $Factory;
 
     /**
-     * Messy paradigm. Uses DI to get hold of a factory for ease of testing, but makes it optional so consuming
-     * applications needn't worry. If you want to over-ride our config settings, pass in your key-value pairs in  the
-     * settings array. If you need super-fine-grained control, pass in a factory.
-     *
-     * @param array   $settings
-     *
      * @param Factory $Factory
      */
-    public function __construct(array $settings = null, Factories\General $Factory = null)
+    public function __construct(Factories\General $Factory)
     {
-        $this->Factory = is_null($Factory) ? new Factories\General($settings) : $Factory;
+        $this->Factory = $Factory;
     }
 
     public function createResource($name, $friendlyName, $quantityAvailable = 1)
@@ -60,12 +54,37 @@ class Setup
         $Doctrine->flush();
     }
 
+    /**
+     * @todo We're using this in a "dumb" way. One resource per availability window. Could it be that we want an
+     * availability to work for multiple resources? (eg opening hours for all facilities) If so, we should expose
+     * availability in a different function. (Probably leave this one as a handy shortcut?) If not, we should make the
+     * database match the usage patterns and make resources a one-to-many with availability by adding a resource_id to
+     * the availability table. At the minute, we behave as if this is 1:M, but the relationship is M:M. Likely to shoot
+     * ourselves in the foot!
+     *
+     * @param ModelsResource     $Resource            [description]
+     * @param InterfacesInterval $AvailablilityWindow [description]
+     * @param array              $bookingIntervals    [description]
+     */
     public function addAvailabilityWindow(
         Models\Resource $Resource,
         Interfaces\Interval $AvailablilityWindow,
         array $bookingIntervals
     ) {
-        // @todo missing function
+        $Availability = $this->Factory->getAvailability('IntervalBacked');
+        $Availability->setAvailableInterval($AvailablilityWindow);
+
+        foreach ($bookingIntervals as $Interval) {
+            if (!($Interval instanceof Interfaces\Interval)) {
+                throw new Exceptions\Booking("Invalid Interval passed to Setup::addBookingIntervals");
+            }
+            $Availability->addBookingInterval($Interval);
+        }
+
+        $Resource->addAvailability($Availability);
+
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->flush();
     }
 
     /**
