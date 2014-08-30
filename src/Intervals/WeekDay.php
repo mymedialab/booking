@@ -1,6 +1,7 @@
 <?php
 namespace MML\Booking\Intervals;
 
+use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 
 /**
@@ -15,7 +16,8 @@ class WeekDay extends Base implements Interfaces\Interval
     protected $opens    = '09:00';
     protected $closes   = '17:00';
 
-    protected $regex = '/[0-5][0-9]/';
+    protected $regex = '/^[0-5][0-9]:[0-5][0-9]$/';
+    protected $straddles = false;
 
     // @todo unit tests
     public function getNearestStart(\DateTime $RoughStart)
@@ -53,7 +55,10 @@ class WeekDay extends Base implements Interfaces\Interval
         $End = clone $Start;
         $End->setTime($closing[0], $closing[1], '00');
 
-        $qty--;
+        if (!$this->straddles) {
+            $qty--; // for one interval, we keep the same day UNLESS we pass midnight.
+        }
+
         if ($qty > 0) {
             $End->modify("+{$qty} days");
         }
@@ -68,7 +73,10 @@ class WeekDay extends Base implements Interfaces\Interval
         $Start = clone $End;
         $Start->setTime($opening[0], $opening[1], '00');
 
-        $qty--;
+        if (!$this->straddles) {
+            $qty--; // for one interval, we keep the same day UNLESS we pass midnight.
+        }
+
         if ($qty > 0) {
             $Start->modify("-{$qty} days");
         }
@@ -112,6 +120,15 @@ class WeekDay extends Base implements Interfaces\Interval
             $this->closes = $closes;
         } else {
             $this->Entity->setMeta('closes', $this->closes);
+        }
+
+        $Opens  = new \DateTime($$this->opens . ":00");
+        $Closes = new \DateTime($this->closes . ":00");
+
+        if ($Opens >= $Closes) {
+            $this->straddles = true;
+        } else {
+            $this->straddles = false;
         }
     }
 }

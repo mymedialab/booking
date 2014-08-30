@@ -142,7 +142,7 @@ class Daily extends Base implements Interfaces\Interval
     public function configure($startTime, $endTime, $name = null, $plural = null, $singular = null)
     {
         // @todo bad regex Eejit! a time can't be any old digit! Test Better!
-        $regex = '/\d{2}:\d{2}/';
+        $regex = '/^\d{2}:\d{2}$/';
         if (!preg_match($regex, $startTime) || !preg_match($regex, $endTime)) {
             throw new Exceptions\Booking("Daily::configure Invalid format submitted for time.");
         }
@@ -170,7 +170,7 @@ class Daily extends Base implements Interfaces\Interval
         $opening = $this->Entity->getMeta('opening', $this->defaults['opening']);
         $closing = $this->Entity->getMeta('closing', $this->defaults['closing']);
 
-        $pattern = "/\d{2}:\d{2}/";
+        $pattern = "/^\d{2}:\d{2}$/";
         if (!preg_match($pattern, $opening)) {
             throw new Exceptions\Booking("Intervals\\Daily::setup encountered malformed opening $opening");
         }
