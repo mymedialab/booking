@@ -20,6 +20,8 @@ class App
         $this->Factory = $Factory;
     }
 
+    // @todo search resources. eg get all starting with 1_ etc
+
     public function getResource($name)
     {
         $Doctrine = $this->Factory->getDoctrine();

@@ -16,6 +16,16 @@ class Setup
         $this->Factory = $Factory;
     }
 
+    /**
+     * Creates a new resource. The name / friendlyName combo is so that you can have a unique application-level name, and
+     * a non-unique user facing name. In this fashion if you have, for example, multiple sites you could name things
+     * siteOne_example_resource with a friendly name of Example Resource to be displayed to users looking at siteOne.
+     *
+     * @param  string  $name              The application-level name
+     * @param  string  $friendlyName      A friendly name to show to users
+     * @param  integer $quantityAvailable defaults to 1
+     * @return Models\Resource            The created resource
+     */
     public function createResource($name, $friendlyName, $quantityAvailable = 1)
     {
         $Resource = $this->Factory->getEmptyResource('Resource');
