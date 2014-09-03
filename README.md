@@ -8,6 +8,64 @@ Watch this space: `    `
 
 (*Alright, you can stop watching now. just come back later.*)
 
+## Setup
+
+ 1. Add to composer.json. This is not going on packagist until the API's settled down, so for now use at your own risk
+    thusly:
+
+        {
+            "repositories": [
+                {
+                    "type": "git",
+                    "url":  "https://github.com/mymedialab/booking.git"
+                }
+            ],
+            "require": {
+                "mml/booking": "0.0.1@dev"
+            }
+        }
+
+ 2. Setup your database. **WARNING This could be destructive**. Doctrine is used to manage the database and expects a
+    database of its very own. When you run the update **any existing tables will be dropped**. The easiest way to do the
+    install is to copy the install script found in `vendor/mml/booking/Utilities/installSchema.php` and modify it with
+    your own database details. You'll want to then run that and your DB is all setup.
+
+ 3. Integrate into your UI. I find the easiest way to do this is to register a new serviceprovider which creates the
+    General Factory, The main App and the Setup model if you need it. From there, those API's should give you all you
+    need. For Laravel a provider may look like this:
+
+        <?php
+        namespace Acme\Awesomeness;
+
+        use Illuminate\Support\ServiceProvider;
+
+        class BookingServiceProvider extends ServiceProvider
+        {
+            public function register()
+            {
+                $this->app->singleton('BookingFactory', function()
+                {
+                    $dbSettings = array(
+                        'mysqlUser'     => 'aUser',
+                        'mysqlPassword' => 'some super secret passphrase',
+                        'mysqlDatabase' => 'my_own_database',
+                        'mysqlHost'     => 'localhost'
+                    );
+
+                    return new \MML\Booking\Factories\General($dbSettings);
+                });
+                $this->app->bind('Booking', function()
+                {
+                    return new \MML\Booking\App(\App::make('BookingFactory'));
+                });
+                $this->app->bind('BookingSetup', function()
+                {
+                    return new \MML\Booking\Setup(\App::make('BookingFactory'));
+                });
+            }
+        }
+
+    For other frameworks, you know what you're about, the above should point you right.
 
 ## Caveats and Gotchas
 
@@ -28,3 +86,20 @@ time to be 09:59:59 or adjust the start time to be 10:00:01 and then we could mo
 
 BUT then the API consumer would (probably) need to magically tweak the date / time every time it's presented to the end
 user.
+
+## Projects todos.
+
+Lots.
+
+Some specifics are scattered around the code base (`grep todo src` if you want to get a feel for it) other, more general
+items are below. These should give you an idea of just how in-development this dev stability project is!
+
+ * Database intereaction: I LOVE DOCTRINE. But you may not. Can we make this not rely so heavily on it? abstract out the
+   models etc. Most of them are interface based already, but maybe give a general schema and fit a few other popular
+   ORM's out-of-the-box?
+
+ * More database stuff. This shouldn't require its own DB. Even if we stick with Doctrine, can we somehow use a  table
+   prefix and a cleverer installer? Would be nice to have a co-habiting system. Maybe need to move away from in-file
+   specification?
+
+ * Block booking still not done. (meta: will this comment rot soon? I intend to sort this next!)

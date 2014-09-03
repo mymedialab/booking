@@ -5,7 +5,13 @@ use MML\Booking;
 
 require __DIR__ . "/../vendor/autoload.php";
 
-$overrideSettings = array(/* Put any database-details in here */);
+$overrideSettings = array(/*
+    Put your database-details in here */
+    'mysqlUser'     => 'root',
+    'mysqlPassword' => '',
+    'mysqlDatabase' => 'titwood_booking',
+    'mysqlHost'     => 'localhost',
+);
 $additionalEntities = array(/* Put your namespaced custom entities in here */);
 
 $standardClasses = json_decode(file_get_contents(__DIR__ . '/classes.json'), true);
