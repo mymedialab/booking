@@ -124,12 +124,19 @@ class Resource
 
         throw new Exceptions\Booking("Resource::getAvailability Unknown Availability $name");
     }
+
     public function addAvailability(Interfaces\Availability $Availability)
     {
         $Entity = $Availability->getEntity();
         $Entity->addResource($this); // synchronously updating inverse side
         $this->Availability[] = $Entity;
     }
+
+    public function removeAvailability(Interfaces\Availability $Availability)
+    {
+        return $this->Availability->removeElement($Availability);
+    }
+
     /**
      *  @PrePersist
      *  @PreUpdate
