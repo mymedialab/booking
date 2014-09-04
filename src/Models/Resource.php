@@ -132,7 +132,7 @@ class Resource
         $this->Availability[] = $Entity;
     }
 
-    public function removeAvailability(Interfaces\Availability $Availability)
+    public function removeAvailability(Interfaces\AvailabilityPersistence $Availability)
     {
         return $this->Availability->removeElement($Availability);
     }
