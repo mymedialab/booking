@@ -127,15 +127,14 @@ class Minutes extends Base implements Interfaces\Interval
         $this->dayStarts = is_null($dayStarts) ? $this->dayStarts : $dayStarts;
         $this->duration  = $numberMinutes;
 
+        $this->Entity->setName($this->name);
+        $this->Entity->setPlural($this->plural);
+        $this->Entity->setSingular($this->singular);
         $this->setup(true);
     }
 
     public function setup($reconfigured = false)
     {
-        $this->Entity->setName($this->name);
-        $this->Entity->setPlural($this->plural);
-        $this->Entity->setSingular($this->singular);
-
         // if we've just been reconfigured, this needs to be overwritten so don't fetch
         $starts   = ($reconfigured) ? false : $this->Entity->getMeta('dayStarts', false);
         $duration = ($reconfigured) ? false : $this->Entity->getMeta('duration', false);

@@ -87,15 +87,16 @@ class Hourly extends Base implements Interfaces\Interval
         $this->singular   = is_null($singular) ? $this->singular : $singular;
 
         $this->hourStarts = $hourStarts;
+
+        $this->Entity->setName($this->name);
+        $this->Entity->setPlural($this->plural);
+        $this->Entity->setSingular($this->singular);
+
         $this->setup(true);
     }
 
     public function setup($reconfigured = false)
     {
-        $this->Entity->setName($this->name);
-        $this->Entity->setPlural($this->plural);
-        $this->Entity->setSingular($this->singular);
-
         // if we've just been reconfigured, this needs to be overwritten so don't fetch
         $starts = ($reconfigured) ? false : $this->Entity->getMeta('hourStarts', false);
 

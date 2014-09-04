@@ -100,14 +100,16 @@ class WeekDay extends Base implements Interfaces\Interval
 
         $this->opens = $opens;
         $this->closes = $closes;
+
+        $this->Entity->setName($this->name);
+        $this->Entity->setPlural($this->plural);
+        $this->Entity->setSingular($this->singular);
+
         $this->setup(true);
     }
 
     protected function setup($reconfigured = false)
     {
-        $this->Entity->setName($this->name);
-        $this->Entity->setPlural($this->plural);
-        $this->Entity->setSingular($this->singular);
 
         // if we've just been reconfigured, this needs to be overwritten so don't fetch
         $opens  = ($reconfigured) ? false : $this->Entity->getMeta('opens', false);

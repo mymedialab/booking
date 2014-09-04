@@ -108,14 +108,29 @@ class DayOfWeek extends Base implements Interfaces\Interval
         $this->opens = $opens;
         $this->closes = $closes;
         $this->day = $this->translate($day, 'int');
-        $this->setup(true);
+        $this->save();
     }
 
-    protected function setup($reconfigured = false)
+    protected function save()
     {
         $this->Entity->setName($this->name);
         $this->Entity->setPlural($this->plural);
         $this->Entity->setSingular($this->singular);
+        $this->Entity->setMeta('day', $this->day);
+        $this->Entity->setMeta('opens', $this->opens);
+        $this->Entity->setMeta('closes', $this->closes);
+    }
+
+    /**
+     * called by __construct
+     *
+     * @return null
+     */
+    protected function setup()
+    {
+        $this->name     = $this->Entity->getName()     ? $this->Entity->getName()     : $this->name;
+        $this->plural   = $this->Entity->getPlural()   ? $this->Entity->getPlural()   : $this->plural;
+        $this->singular = $this->Entity->getSingular() ? $this->Entity->getSingular() : $this->singular;
 
         $properties = array(
             'day'    => '/^[0-6]$/',
@@ -124,11 +139,9 @@ class DayOfWeek extends Base implements Interfaces\Interval
         );
 
         foreach ($properties as $id => $regex) {
-            $value  = ($reconfigured) ? false : $this->Entity->getMeta($id, false);
+            $value  = $this->Entity->getMeta($id, false);
             if ($value && preg_match($regex, $value)) {
                 $this->$id = $value;
-            } else {
-                $this->Entity->setMeta($id, $this->$id);
             }
         }
 
@@ -140,6 +153,8 @@ class DayOfWeek extends Base implements Interfaces\Interval
         } else {
             $this->straddles = false;
         }
+
+        $this->save();
     }
 
     protected function translate($day, $output = 'string')

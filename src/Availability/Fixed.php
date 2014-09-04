@@ -38,7 +38,7 @@ class Fixed extends Base implements Interfaces\Availability
         $End   = $Interval->getNearestEnd($Period->getStart());
 
         // if start or end of $Period are between our start and end points, return true
-        if ( ($Period->getStart() > $Start && $Period->getStart() < $End) ||
+        if (($Period->getStart() > $Start && $Period->getStart() < $End) ||
             ($Period->getEnd() > $Start && $Period->getEnd() < $End)
         ) {
             return true;
@@ -58,8 +58,8 @@ class Fixed extends Base implements Interfaces\Availability
         $End   = $Interval->getNearestEnd($Period->getStart());
 
         // if start and end of $Period are between our start and end points, return true
-        if ( ($Period->getStart() >= $Start && $Period->getStart() < $End) &&
-            ($Period->getEnd() > $Start && $Period->getEnd() =< $End)
+        if (($Period->getStart() >= $Start && $Period->getStart() < $End) &&
+            ($Period->getEnd() > $Start && $Period->getEnd() <= $End)
         ) {
             return true;
         } else {
