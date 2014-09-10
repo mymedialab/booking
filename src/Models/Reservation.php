@@ -29,6 +29,15 @@ class Reservation
     private $modified;
     /** @ManyToOne(targetEntity="MML\Booking\Models\Resource", inversedBy="Reservations") */
     private $Resource;
+    /**
+     * @OneToMany(targetEntity="MML\Booking\Models\ReservationMeta", mappedBy="Reservation", cascade={"persist", "remove"}))
+    */
+    private $ReservationMeta;
+
+    public function __contruct()
+    {
+        $this->ReservationMeta = new ArrayCollection();
+    }
 
     public function getId()
     {

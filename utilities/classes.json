@@ -4,5 +4,6 @@
   "MML\\Booking\\Models\\Interval",
   "MML\\Booking\\Models\\IntervalMeta",
   "MML\\Booking\\Models\\Resource",
-  "MML\\Booking\\Models\\Reservation"
+  "MML\\Booking\\Models\\Reservation",
+  "MML\\Booking\\Models\\ReservationMeta"
 ]
