@@ -20,6 +20,10 @@ interface ReservationPersistence
     public function getCreated();
     public function getModified();
 
+    public function getMeta($name, $default = null);
+    public function setMeta($name, $value);
+    public function removeMeta($name);
+
     /**
      * Shorthand method to avoid having to hydrate all properties yo'sel'
      *

@@ -73,6 +73,52 @@ class Reservation implements Interfaces\ReservationPersistence
         $this->end = $Date;
     }
 
+
+    public function getMeta($name, $default = null)
+    {
+        $Meta = $this->findMeta($name);
+
+        if ($Meta) {
+            return $Meta->getValue();
+        } else {
+            return $default;
+        }
+    }
+
+    public function setMeta($name, $value)
+    {
+        $Meta = $this->findMeta($name);
+
+        if (is_null($Meta)) {
+            $Meta = new ReservationMeta;
+            $this->ReservationMeta[] = $Meta;
+        }
+
+        $Meta->setName($name);
+        $Meta->setValue($value);
+    }
+
+    public function removeMeta($name)
+    {
+        $Meta = $this->findMeta($name);
+
+        if (!is_null($Meta)) {
+            $this->ReservationMeta->removeElement($Meta);
+        }
+    }
+
+    protected function findMeta($name)
+    {
+        foreach ($this->ReservationMeta as $Existing) {
+            if (strtolower($name) === strtolower($Existing->getName())) {
+                return $Meta;
+            }
+        }
+
+        return null;
+    }
+
+
     public function setResource(Interfaces\ResourcePersistence $Resource)
     {
         $this->Resource = $Resource;
