@@ -9,7 +9,7 @@ $overrideSettings = array(/*
     Put your database-details in here */
     'mysqlUser'     => 'root',
     'mysqlPassword' => '',
-    'mysqlDatabase' => 'titwood_booking',
+    'mysqlDatabase' => 'your_db_name',
     'mysqlHost'     => 'localhost',
 );
 $additionalEntities = array(/* Put your namespaced custom entities in here */);
