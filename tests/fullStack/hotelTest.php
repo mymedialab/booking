@@ -21,8 +21,8 @@ class hotelTest extends \Codeception\TestCase\Test
         global $fullStackTestConfig;
 
         $this->Factory  = new MML\Booking\Factories\General($fullStackTestConfig);
-        $this->Booking  = new MML\Booking\App(null, $this->Factory);
-        $this->Setup    = new MML\Booking\Setup(null, $this->Factory);
+        $this->Booking  = new MML\Booking\App($this->Factory);
+        $this->Setup    = new MML\Booking\Setup($this->Factory);
         $this->Doctrine = $this->Factory->getDoctrine();
     }
 
@@ -122,5 +122,16 @@ class hotelTest extends \Codeception\TestCase\Test
         }
 
         $this->fail('missing expected exception');
+    }
+
+    public function testGetReservations()
+    {
+        $Start = new \DateTime('2014-10-01');
+        $End   = new \DateTime('2014-10-30');
+        $Resource = $this->Booking->getResource('hotel_double_room');
+        $reservations = $this->Booking->getReservations($Resource, $Start, $End);
+
+        $this->assertTrue(is_array($reservations), 'Is array returned?');
+        $this->assertEquals(2, count($reservations), 'Are correct quantity of reservations returned?');
     }
 }

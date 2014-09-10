@@ -100,6 +100,13 @@ class General
         return $Factory->getNew($name);
     }
 
+    public function getReservationFinder()
+    {
+        return $this->cache(function () {
+            return new Reservations\Finder($this);
+        }, 'ReservationsFinder');
+    }
+
     public function getInterval($name)
     {
         $Factory = $this->getIntervalFactory();

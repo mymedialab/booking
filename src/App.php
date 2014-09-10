@@ -70,7 +70,8 @@ class App
 
     public function getReservations(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
-        // @todo
+        $Finder = $this->Factory->getReservationFinder();
+        return $Finder->resourceBetween($Resource, $Start, $End);
     }
 
     public function getInterval($identifier)

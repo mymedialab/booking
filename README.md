@@ -103,3 +103,6 @@ items are below. These should give you an idea of just how in-development this d
    specification?
 
  * Block booking still not done. (meta: will this comment rot soon? I intend to sort this next!)
+
+ * Database quickly builds up cruft because of the many-to-many's everywhere. I should cascade removals better. Should
+   it be optional?
