@@ -5,6 +5,41 @@ use MML\Booking;
 
 require __DIR__ . "/../vendor/autoload.php";
 
+function expectThrow($id, $fn, $message = null)
+{
+    try {
+        $fn();
+        // this one should throw an exception as all the rooms are now booked for this period
+    } catch (Booking\Exceptions\Booking $e) {
+        if ($message && $message !== $e->getMessage()) {
+            die("invalid message from exception $id \n\n");
+        }
+        return;
+    }
+
+    die("missing expected exception $id \n\n");
+}
+
+function assertEquals($a, $b)
+{
+    if ($a !== $b) {
+        echo "following are unequal: ";
+        var_dump($a);
+        var_dump($b);
+        echo "\n";
+        die();
+    }
+}
+
+function assertTrue($x) {
+    if ($x !== true) {
+        echo "Following is not true: ";
+        var_dump($x);
+        echo "\n";
+        die();
+    }
+}
+
 set_error_handler(function($errno, $errstr, $errfile, $errline, $errcontext) {
     echo "UNCAUGHT ERROR MUPPET!\n";
     print_r([
@@ -50,89 +85,103 @@ $Connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
 
 /// test begins...
 try {
-    $Booking  = new Booking\App(null, $Factory);
-    $Setup    = new Booking\Setup(null, $Factory);
+    $Booking  = new Booking\App($Factory);
+    $Setup    = new Booking\Setup($Factory);
 
-    $Day       = $Factory->getIntervalFactory()->get('daily');
-    $Day->configure("09:00", "17:00");
-    $Nightly   = $Factory->getIntervalFactory()->get('daily');
-    $Nightly->configure("13:00", "09:00", 'nightly', 'nights', 'night');
-    $Morning   = $Factory->getIntervalFactory()->get('daily');
-    $Morning->configure("09:00", "13:00", 'morning', 'mornings', 'morning');
-    $Afternoon = $Factory->getIntervalFactory()->get('daily');
-    $Afternoon->configure("13:00", "17:00", 'afternoon', 'afternoons', 'afternoon');
-    $Evening   = $Factory->getIntervalFactory()->get('daily');
-    $Evening->configure("16:00", "00:00", 'evening', 'evenings', 'evening'); // Note you now can't book an afternoon AND evening.
+    $opensAt  = "08:00";
+        $closesAt = "20:00";
 
-    $MaintainenceOne = $Factory->getPeriodFactory()->getStandalone();
-    $MaintainenceOne->begins(new \DateTime('2014-10-20'));
-    $MaintainenceOne->ends(new \DateTime('2014-10-30'));
-    $MaintainenceTwo = $Factory->getPeriodFactory()->getStandalone();
-    $MaintainenceTwo->begins(new \DateTime('2015-02-20'));
-    $MaintainenceTwo->ends(new \DateTime('2015-02-30'));
+        $Weekday  = $Factory->getIntervalFactory()->get('weekday');
+        $Weekday->configure($opensAt, $closesAt);
 
-    $rooms = array(
-        'hotel_double_room'   => array('friendly' => 'Double Room', 'qty' => 7),
-        'hotel_superior_room' => array('friendly' => 'Superior Double Room', 'qty' => 5),
-        'hotel_penthouse'     => array('friendly' => 'Penthouse Suite', 'qty' => 1),
-    );
-    $facilities = array(
-        'hotel_conference_suite'        => array('friendly' => 'Conference Suite', 'qty' => 2),
-        'hotel_large_conference_suite'  => array('friendly' => 'Large Conference Suite', 'qty' => 1),
-    );
+        $Saturday = $Factory->getIntervalFactory()->get('dayOfWeek');
+        $Saturday->configure('saturday', $opensAt, "18:00");
 
-    foreach ($rooms as $name => $details) {
-       $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-       $Setup->addBookingIntervals($Resource, array($Nightly));
-    }
-    foreach ($facilities as $name => $details) {
-       $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-       $Setup->addBookingIntervals($Resource, array($Day, $Afternoon, $Morning, $Evening));
-    }
+        $Sunday   = $Factory->getIntervalFactory()->get('dayOfWeek');
+        $Sunday->configure('sunday', "10:00", "16:00");
 
-    $DoubleRoom = $Booking->getResource('hotel_double_room');
-    $Setup->markUnavailable($DoubleRoom, $MaintainenceOne, 5, 'Maintainence - Oct 2014');
-    $Setup->markUnavailable($DoubleRoom, $MaintainenceTwo, 5, 'Maintainence - Feb 2015');
+        $Hourly    = $Factory->getIntervalFactory()->get('hourly');
+        $Hourly->configure("00");
 
+        $Morning   = $Factory->getIntervalFactory()->get('daily');
+        $Morning->configure("08:00", "12:00");
 
-    // try a booking!
-    $Start = new \DateTime('24-06-2018');
-    $Resource = $Booking->getResource('hotel_double_room');
-    $Period   = $Booking->getPeriodFor($Resource, 'nightly');
-    $Period->begins($Start);
-    $Period->repeat(3);
+        $Afternoon = $Factory->getIntervalFactory()->get('daily');
+        $Afternoon->configure("12:00", "16:00");
 
-    $Reservation = $Booking->createReservation($Resource, $Period, 3);
-    $Reservation = $Booking->createReservation($Resource, $Period, 4);
+        $Evening   = $Factory->getIntervalFactory()->get('daily');
+        $Evening->configure("16:00", "20:00");
 
-    try {
-        // this one should throw an exception as all the rooms are now booked for this period
-        $Reservation = $Booking->createReservation($Resource, $Period, 1);
-        die('Exception 1 not thrown! O NOES!');
-    } catch (Booking\Exceptions\Booking $e) {
-        if ($e->getMessage() !== 'Double Room does not have enough availability for the selected period') {
-            throw $e;
+        $resources = array(
+            'leisureCentre_squash_court'          => array('friendly' => 'Squash Court', 'qty' => 3),
+            'leisureCentre_indoor_tennis_court'   => array('friendly' => 'Indoor Tennis Court', 'qty' => 10),
+            'leisureCentre_grass_tennis_court'    => array('friendly' => 'Grass Tennis Court', 'qty' => 4),
+            // @todo Linked resources one precludes the other. Use Doctrine's inheritance? OUT OF SCOPE
+            'leisureCentre_swimming_pool'         => array('friendly' => 'Swimming Pool', 'qty' => 1),
+            'leisureCentre_half_pool'             => array('friendly' => 'Half Pool', 'qty' => 2),
+        );
+
+        foreach ($resources as $name => $details) {
+           $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
+           $Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly, $Morning, $Afternoon, $Evening));
+           $Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly, $Morning, $Afternoon));
+           $Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
         }
-    }
 
-    // Now we'll book a room during a maintainenece window. Should have two available, then fail to book more.
-    $Start = new \DateTime('2014-10-22');
-    $Resource = $Booking->getResource('hotel_double_room');
-    $Period   = $Booking->getPeriodFor($Resource, 'nightly');
-    $Period->begins($Start);
-    $Period->repeat(3);
+        $RoughStart = new \DateTime('2015-09-04 10:15');
+        $Court  = $Booking->getResource('leisureCentre_squash_court');
+        assertTrue(!is_null($Court), 'Resource not found');
+        $Period = $Booking->getPeriodFor($Court, 'hourly');
 
-    $Reservation = $Booking->createReservation($Resource, $Period, 2);
+        $Period->begins($RoughStart);
+        $Start = $Period->getStart();
+        $End   = $Period->getEnd();
 
-    try {
-        // this one should throw an exception as all the rooms are now booked for this period
-        $Reservation = $Booking->createReservation($Resource, $Period, 1);
-        die("\nException 2 not thrown! O NOES!\n\n");
-    } catch (Booking\Exceptions\Booking $e) {
-        if ($e->getMessage() !== 'Double Room does not have enough availability for the selected period') {
-            throw $e;
-        }
-    }
+        assertEquals('04/09/2015 10:00:00', $Start->format('d/m/Y H:i:s'));
+        assertEquals('04/09/2015 11:00:00', $End->format('d/m/Y H:i:s'));
+
+        $RoughStart = new \DateTime('2015-09-04 10:15');
+        $Court  = $Booking->getResource('leisureCentre_squash_court');
+        $Period = $Booking->getPeriodFor($Court, 'hourly');
+
+        $Period->begins($RoughStart);
+        $reservations = $Booking->createReservation($Court, $Period, 2);
+        assertEquals(2, count($reservations));
+
+
+        expectThrow('court full', function() use($Court, $Period, $Booking) {
+            $reservations = $Booking->createReservation($Court, $Period, 2);
+        }, 'Squash Court does not have enough availability for the selected period');
+
+        // trying to reserve from 07:00 - 09:00. Place doesn't open til 8!
+        $RoughStart = new \DateTime('2015-09-04 07:00');
+        $Court  = $Booking->getResource('leisureCentre_squash_court');
+        $Period = $Booking->getPeriodFor($Court, 'hourly');
+
+        $Period->begins($RoughStart);
+        $Period->repeat(2);
+
+        expectThrow('Too early', function() use($Court, $Period, $Booking) {
+            $Reservation = $Booking->createReservation($Court, $Period);
+        }, 'Squash Court does not have enough availability for the selected period');
+
+        $Tennis  = $Booking->getResource('leisureCentre_grass_tennis_court');
+        $Period = $Booking->getPeriodFor($Tennis, 'hourly');
+
+        $Fri = new \DateTime('2014-08-29 18:00');
+        $SatEarly = new \DateTime('2014-08-30 17:00');
+        $SatLate = new \DateTime('2014-08-30 18:00');
+
+        $Period->begins($Fri);
+        $Reservation = $Booking->createReservation($Tennis, $Period);
+
+        $Period->begins($SatEarly);
+        $Reservation = $Booking->createReservation($Tennis, $Period);
+
+        $Period->begins($SatLate);
+        expectThrow('closes early saturdays', function() use($Tennis, $Period, $Booking) {
+            $Reservation = $Booking->createReservation($Tennis, $Period);
+        }, 'Grass Tennis Court does not have enough availability for the selected period');
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";
