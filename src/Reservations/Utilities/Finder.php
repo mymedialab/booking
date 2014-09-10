@@ -1,5 +1,5 @@
 <?php
-namespace MML\Booking\Reservations;
+namespace MML\Booking\Reservations\Utilities;
 
 use MMl\Booking\Models;
 

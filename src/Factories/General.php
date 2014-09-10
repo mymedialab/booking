@@ -103,7 +103,7 @@ class General
     public function getReservationFinder()
     {
         return $this->cache(function () {
-            return new Reservations\Finder($this);
+            return new Reservations\Utilities\Finder($this);
         }, 'ReservationsFinder');
     }
 
@@ -116,7 +116,7 @@ class General
     public function getReservationAvailability()
     {
         return $this->cache(function () {
-            return new Reservations\Availability($this);
+            return new Reservations\Utilities\Availability($this);
         }, 'ReservationsAvailability');
     }
 
