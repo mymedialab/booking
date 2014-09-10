@@ -12,7 +12,7 @@ use MML\Booking\Interfaces;
  * @HasLifecycleCallbacks
  * @Table(name="booking_reservations")
  */
-class Reservation
+class Reservation implements Interfaces\ReservationPersistence
 {
     /**
      * @id @Column(type="integer")
@@ -73,7 +73,7 @@ class Reservation
         $this->end = $Date;
     }
 
-    public function setResource(Resource $Resource)
+    public function setResource(Interfaces\ResourcePersistence $Resource)
     {
         $this->Resource = $Resource;
     }
@@ -94,7 +94,7 @@ class Reservation
      * @param  InterfacesPeriod $Period   The period to reseerve for
      * @return $this
      */
-    public function hydrateFrom(Resource $Resource, Interfaces\Period $Period)
+    public function hydrateFrom(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
     {
         if ($this->start || $this->end) {
             throw new Exceptions\Booking("Cannot create new reservation on top of non-empty model");

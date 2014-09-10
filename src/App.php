@@ -28,19 +28,19 @@ class App
         return $Doctrine->getRepository('MML\\Booking\\Models\\Resource')->findOneBy(array('name' => $name));
     }
 
-    public function checkAvailability(Models\Resource $Resource, Interfaces\Period $Period)
+    public function checkAvailability(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
     {
         $Availability = $this->Factory->getReservationAvailability();
         return $Availability->check($Resource, $Period);
     }
 
-    public function getPeriodFor(Models\Resource $Resource, $periodName)
+    public function getPeriodFor(Interfaces\ResourcePersistence $Resource, $periodName)
     {
         $Locator = $this->Factory->getPeriodFactory();
         return $Locator->getFor($Resource, $periodName);
     }
 
-    public function createReservation(Models\Resource $Resource, Interfaces\Period $Period, $qty = 1)
+    public function createReservation(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, $qty = 1)
     {
         $Availability = $this->Factory->getReservationAvailability();
 
@@ -63,12 +63,12 @@ class App
         return ($qty === 1) ? $reservations[0] : $reservations;
     }
 
-    public function createBlockReservation(Models\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
+    public function createBlockReservation(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
     {
         // @todo
     }
 
-    public function getReservations(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
+    public function getReservations(Interfaces\ResourcePersistence $Resource, \DateTime $Start, \DateTime $End)
     {
         $Finder = $this->Factory->getReservationFinder();
         return $Finder->resourceBetween($Resource, $Start, $End);

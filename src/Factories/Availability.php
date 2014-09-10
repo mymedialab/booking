@@ -32,7 +32,7 @@ class Availability
         return $this->createWrapper($name, $Entity);
     }
 
-    public function getFrom(Models\Resource $Resource, $name)
+    public function getFrom(Interfaces\ResourcePersistence $Resource, $name)
     {
         $Entity = $Resource->getAvailability($name);
         $type = strtolower($Entity->getType());
@@ -40,7 +40,7 @@ class Availability
         return $this->createWrapper($type, $Entity);
     }
 
-    public function getAllFor(Models\Resource $Resource)
+    public function getAllFor(Interfaces\ResourcePersistence $Resource)
     {
         $all = array();
 

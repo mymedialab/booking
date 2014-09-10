@@ -12,6 +12,15 @@ class Finder
         $this->Factory = $Factory;
     }
 
+    /**
+     * [resourceBetween description]
+     * @param  ModelsResource $Resource [description]
+     * @param  DateTime       $Start    [description]
+     * @param  DateTime       $End      [description]
+     * @return [type]                   [description]
+     *
+     * @todo  if we can ever decouple this from Doctrine, change the typehint to an interface
+     */
     public function resourceBetween(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
         $Doctrine = $this->Factory->getDoctrine();

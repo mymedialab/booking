@@ -3,6 +3,7 @@ namespace MML\Booking\Factories;
 
 use MML\Booking;
 use MML\Booking\Exceptions;
+use MML\Booking\Interfaces;
 use MML\Booking\Models;
 use MML\Booking\Periods;
 
@@ -26,7 +27,7 @@ class Period
         return new Periods\IntervalBacked($Interval);
     }
 
-    public function getFor(Models\Resource $Resource, $name)
+    public function getFor(Interfaces\ResourcePersistence $Resource, $name)
     {
         $Interval = $this->IntervalFactory->getFrom($Resource, $name);
         return new Periods\IntervalBacked($Interval);

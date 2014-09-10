@@ -15,7 +15,7 @@ class Availability
         $this->Factory = $Factory;
     }
 
-    public function check(Models\Resource $Resource, Interfaces\Period $Period, $qty = 1)
+    public function check(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, $qty = 1)
     {
         if (intval($qty) <= 0) {
             throw new Exceptions\Booking("Availability::check requires a positive integer quantity");
@@ -36,7 +36,7 @@ class Availability
         return (($available - $taken) >= $qty);
     }
 
-    protected function singleReservations(Models\Resource $Resource, Interfaces\Period $Period)
+    protected function singleReservations(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
     {
         $Doctrine = $this->Factory->getDoctrine();
 
@@ -53,7 +53,7 @@ class Availability
         return intval($Query->getSingleScalarResult());
     }
 
-    protected function blockBooking(Models\Resource $Resource, Interfaces\Period $Period)
+    protected function blockBooking(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
     {
         $count = 0;
 
@@ -69,11 +69,11 @@ class Availability
     /**
      * Counts resources available for reservation (eg, not under maitainence or out of action).
      *
-     * @param  Models\Resource   $Resource
-     * @param  Interfaces\Period $Period
+     * @param  Interfaces\ResourcePersistence    $Resource
+     * @param  Interfaces\Period                $Period
      * @return integer
      */
-    protected function resourcesForPeriod(Models\Resource $Resource, Interfaces\Period $Period)
+    protected function resourcesForPeriod(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
     {
         $qty = intval($Resource->getQuantity());
         if ($qty === 0) {

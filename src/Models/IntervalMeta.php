@@ -2,7 +2,7 @@
 namespace MML\Booking\Models;
 
 /**
- *
+ * @todo  make an interface and use it. Want portability, Boiy!
  * DOCTRINE CONFIG
  *
  * @Entity

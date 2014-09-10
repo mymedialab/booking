@@ -89,11 +89,11 @@ class Availability implements Interfaces\AvailabilityPersistence
     {
         return $this->modified;
     }
-    public function addResource(Resource $Resource)
+    public function addResource(Interfaces\ResourcePersistence $Resource)
     {
         $this->Resources[] = $Resource;
     }
-    public function setAvailableInterval(Interval $Interval)
+    public function setAvailableInterval(Interfaces\IntervalPersistence $Interval)
     {
         $this->AvailableInterval = $Interval;
     }

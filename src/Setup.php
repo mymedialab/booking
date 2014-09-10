@@ -44,10 +44,10 @@ class Setup
      * This is a simpler version of addAvailabilityWindow(...). This does the same thing but the availability window is
      * always allow.
      *
-     * @param ModelsResource $Resource         [description]
-     * @param array          $bookingIntervals [description]
+     * @param Interfaces\ResourcePersistence $Resource
+     * @param array                         $bookingIntervals
      */
-    public function addBookingIntervals(Models\Resource $Resource, array $bookingIntervals)
+    public function addBookingIntervals(Interfaces\ResourcePersistence $Resource, array $bookingIntervals)
     {
         $Availability = $this->Factory->getAvailability('always');
 
@@ -72,12 +72,12 @@ class Setup
      * the availability table. At the minute, we behave as if this is 1:M, but the relationship is M:M. Likely to shoot
      * ourselves in the foot!
      *
-     * @param ModelsResource     $Resource            [description]
-     * @param InterfacesInterval $AvailablilityWindow [description]
-     * @param array              $bookingIntervals    [description]
+     * @param Interfaces\ResourcePersistence    $Resource
+     * @param Interfaces\Interval               $AvailablilityWindow
+     * @param array                             $bookingIntervals
      */
     public function addAvailabilityWindow(
-        Models\Resource $Resource,
+        Interfaces\ResourcePersistence $Resource,
         Interfaces\Interval $AvailablilityWindow,
         array $bookingIntervals
     ) {
@@ -100,16 +100,16 @@ class Setup
     /**
      * Marks a resource or group of resources as unavailable
      *
-     * @param  ModelsResource   $Resource The resource to mark unavailable
-     * @param  InterfacesPeriod $Period   The Period for which that resource is unavailable
-     * @param  integer          $qty      How many of that resource are accounted for in this period
-     * @param  string           $name     A friendly name for this period to write to the database
-     * @param  string           $plural   A friendly plural name for this period to write to the database
-     * @param  string           $singular A friendly singular name for this period to write to the database
+     * @param  Interfaces\ResourcePersistence   $Resource The resource to mark unavailable
+     * @param  Interfaces\Period                $Period   The Period for which that resource is unavailable
+     * @param  integer                          $qty      How many of that resource are accounted for in this period
+     * @param  string                           $name     A friendly name for this period to write to the database
+     * @param  string                           $plural   A friendly plural name for this period to write to the database
+     * @param  string                           $singular A friendly singular name for this period to write to the database
      * @return null
      */
     public function markUnavailable(
-        Models\Resource $Resource,
+        Interfaces\ResourcePersistence $Resource,
         Interfaces\Period $Period,
         $qty = null,
         $name = null,

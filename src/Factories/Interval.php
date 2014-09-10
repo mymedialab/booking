@@ -35,7 +35,7 @@ class Interval
         return $this->createInterval($type, $Entity);
     }
 
-    public function getFrom(Models\Resource $Resource, $name)
+    public function getFrom(Interfaces\ResourcePersistence $Resource, $name)
     {
         $Availabilities = $Resource->allAvailability();
         if (!count($Availabilities)) {

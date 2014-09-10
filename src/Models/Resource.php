@@ -14,7 +14,7 @@ use MML\Booking\Interfaces;
  * @HasLifecycleCallbacks
  * @Table(name="booking_resources")
  */
-class Resource
+class Resource implements Interfaces\ResourcePersistence
 {
     /**
      * @id @Column(type="integer")
