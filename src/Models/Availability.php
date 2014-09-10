@@ -44,6 +44,10 @@ class Availability implements Interfaces\AvailabilityPersistence
      *      )
     */
     private $BookingIntervals;
+    /**
+     * @ManyToMany(targetEntity="MML\Booking\Models\Resource", mappedBy="Availability")
+    */
+    private $Resources;
 
     protected $Factory;
 
@@ -114,7 +118,6 @@ class Availability implements Interfaces\AvailabilityPersistence
     {
         foreach ($this->BookingIntervals as $Interval) {
             if (strtolower($Interval->getName()) === strtolower($name)) {
-                // @todo wrap this up? Currently this is just the model, should it be wrapped in it's type wrapper?
                 return $Interval;
             }
         }
