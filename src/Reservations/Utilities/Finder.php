@@ -24,7 +24,13 @@ class Finder
     public function resourceBetween(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
         $Doctrine = $this->Factory->getDoctrine();
-        $Query = $Doctrine->createQuery('SELECT R FROM \MML\Booking\Models\Reservation R WHERE R.start >= :start AND R.end <= :end');
+        $Query = $Doctrine->createQuery(
+            'SELECT
+                R FROM \MML\Booking\Models\Reservation R
+             WHERE
+                (R.start >= :start AND R.start <= :end) OR
+                (R.end >= :start AND R.end <= :end)'
+        );
 
         $Query->setParameter('start', $Start);
         $Query->setParameter('end', $End);
