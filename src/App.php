@@ -53,8 +53,8 @@ class App
         $reservations = array();
         for ($i=0; $i < $qty; $i++) {
             $Reservation = $this->Factory->getEmptyReservation();
-            $Reservation->hydrateFrom($Resource, $Period);
-            $Doctrine->persist($Reservation);
+            $Reservation->setupFrom($Resource, $Period);
+            $Doctrine->persist($Reservation->getEntity());
             $reservations[] = $Reservation;
         }
 

@@ -94,6 +94,13 @@ class General
         }, 'AvailabilityFactory');
     }
 
+    public function getReservationFactory()
+    {
+        return $this->cache(function () {
+            return new Reservation($this);
+        }, 'ReservationFactory');
+    }
+
     public function getAvailability($name)
     {
         $Factory = $this->getAvailabilityFactory();
@@ -128,12 +135,10 @@ class General
 
         return $Resource;
     }
-    public function getEmptyReservation()
+    public function getEmptyReservation($name = 'plain')
     {
-        $Doctrine = $this->getDoctrine();
-        $Reservation = new Models\Reservation;
-        $Doctrine->persist($Reservation);
 
-        return $Reservation;
+        $Factory = $this->getReservationFactory();
+        return $Factory->getNew($name);
     }
 }

@@ -8,7 +8,7 @@ use MML\Booking\Factories;
  */
 interface Reservation
 {
-    public function __construct(AvailabilityPersistence $Entity, Factories\General $GeneralFactory);
+    public function __construct(ReservationPersistence $Entity, Factories\General $GeneralFactory);
 
     public function setStart(\DateTime $Date);
     public function getStart();
@@ -27,4 +27,7 @@ interface Reservation
 
     public function getCreated();
     public function getModified();
+    public function setupFrom(ResourcePersistence $Resource, Period $Period);
+
+    public function getEntity();
 }

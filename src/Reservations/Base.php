@@ -7,10 +7,12 @@ use MML\Booking\Factories;
 abstract class Base implements Interfaces\Reservation
 {
     protected $Entity;
+    protected $Factory;
 
     public function __construct(Interfaces\ReservationPersistence $Entity, Factories\General $GeneralFactory)
     {
         $this->Entity = $Entity;
+        $this->Factory = $GeneralFactory;
     }
 
     public function setStart(\DateTime $Date)
@@ -44,5 +46,13 @@ abstract class Base implements Interfaces\Reservation
     public function getModified()
     {
         return $this->Entity->getModified();
+    }
+    public function setupFrom(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    {
+        return $this->Entity->hydrateFrom($Resource, $Period);
+    }
+    public function getEntity()
+    {
+        return $this->Entity;
     }
 }

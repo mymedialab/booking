@@ -29,6 +29,9 @@ class Reservation implements Interfaces\ReservationPersistence
     private $modified;
     /** @ManyToOne(targetEntity="MML\Booking\Models\Resource", inversedBy="Reservations") */
     private $Resource;
+    /** @Column */
+    private $type;
+
     /**
      * @OneToMany(targetEntity="MML\Booking\Models\ReservationMeta", mappedBy="Reservation", cascade={"persist", "remove"}))
     */
@@ -71,6 +74,15 @@ class Reservation implements Interfaces\ReservationPersistence
     public function setEnd(\DateTime $Date)
     {
         $this->end = $Date;
+    }
+
+    public function getType()
+    {
+        return $this->type;
+    }
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 
 
@@ -129,6 +141,7 @@ class Reservation implements Interfaces\ReservationPersistence
      */
     public function prePersist()
     {
+        $this->type = $this->type ? $this->type : 'Plain';
         $this->created = $this->created ? $this->created : new \DateTime();
         $this->modified = new \DateTime();
     }
