@@ -54,7 +54,6 @@ class App
         for ($i=0; $i < $qty; $i++) {
             $Reservation = $this->Factory->getEmptyReservation();
             $Reservation->setupFrom($Resource, $Period);
-            $Doctrine->persist($Reservation->getEntity());
             $reservations[] = $Reservation;
         }
 
