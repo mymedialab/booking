@@ -27,6 +27,34 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($out, $Exact->format('Y-m-d H:i:s'));
     }
 
+    /**
+     * This is currently breaking in an applicaiton
+     */
+    public function testSunday()
+    {
+        // test direct configuration
+        $this->Object->configure('sunday', '09:00', '17:00');
+        $Rough = new \DateTime('2014-09-11 10:30');
+        $Start = $this->Object->getNearestStart($Rough);
+        $End   = $this->Object->calculateEnd($Start);
+
+        $this->assertEquals('Sun', $Start->format('D'));
+        $this->assertEquals('2014-09-14 09:00', $Start->format('Y-m-d H:i'));
+
+        // Test from persistence layer
+        $this->Persist->expects($this->exactly(3))->method('getMeta')
+            ->will($this->returnValueMap(array(
+                array('day', false, 0),
+                array('opens', false, '09:00'),
+                array('closes', false, '17:00'),
+            )));
+
+        $NewThing = new DayOfWeek($this->Persist);
+        $NewStart = $NewThing->getNearestStart($Rough);
+        $this->assertEquals('Sun', $NewStart->format('D'));
+        $this->assertEquals('2014-09-14 09:00', $NewStart->format('Y-m-d H:i'));
+    }
+
     public function nearesrStartData()
     {
         return array(

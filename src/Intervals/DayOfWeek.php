@@ -140,7 +140,8 @@ class DayOfWeek extends Base implements Interfaces\Interval
 
         foreach ($properties as $id => $regex) {
             $value  = $this->Entity->getMeta($id, false);
-            if ($value && preg_match($regex, $value)) {
+            // must strict compare as day could be integer 0 (falsy)
+            if ($value !== false && preg_match($regex, $value)) {
                 $this->$id = $value;
             }
         }
