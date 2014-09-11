@@ -35,7 +35,7 @@ class Availability
     public function wrap(Interfaces\AvailabilityPersistence $Availability)
     {
         $type = $Availability->getType();
-        return $this->createWrapper($type, $Entity);
+        return $this->createWrapper($type, $Availability);
     }
     public function getFrom(Interfaces\ResourcePersistence $Resource, $name)
     {
