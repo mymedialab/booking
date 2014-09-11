@@ -80,7 +80,7 @@ class Base
                 $Doctrine->remove($Interval);
             }
         }
-        $Doctrine->remove($Availability);
+        $Doctrine->remove($this->Entity);
     }
 
     protected function intervalHasOneRelation(Interfaces\IntervalPersistence $Interval)
