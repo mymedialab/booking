@@ -24,7 +24,7 @@ class Base
     public function getBookingInterval($name)
     {
         $IntervalFactory = $this->Factory->getIntervalFactory();
-        $Entity = $this->Entity->getBookingInterval($ame);
+        $Entity = $this->Entity->getBookingInterval($name);
         if ($Entity) {
             return $IntervalFactory->wrap($Entity);
         } else {
