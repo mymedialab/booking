@@ -109,3 +109,5 @@ items are below. These should give you an idea of just how in-development this d
 
  * The Interval / Reservation meta are basically the same table. Could we put a pivot column on there? Seems a bit
    over-normalised to me, one indirection too far. But it might just make us more portable and easily extensible?
+
+ * This is a biggie: Simplify! A Lot! We should provide well tested convenience wrappers for common types of usage.

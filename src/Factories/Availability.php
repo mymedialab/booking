@@ -32,10 +32,15 @@ class Availability
         return $this->createWrapper($name, $Entity);
     }
 
+    public function wrap(Interfaces\AvailabilityPersistence $Availability)
+    {
+        $type = $Availability->getType();
+        return $this->createWrapper($type, $Entity);
+    }
     public function getFrom(Interfaces\ResourcePersistence $Resource, $name)
     {
         $Entity = $Resource->getAvailability($name);
-        $type = strtolower($Entity->getType());
+        $type = $Entity->getType();
 
         return $this->createWrapper($type, $Entity);
     }
@@ -45,7 +50,7 @@ class Availability
         $all = array();
 
         foreach ($Resource->allAvailability() as $Entity) {
-            $type = strtolower($Entity->getType());
+            $type = $Entity->getType();
             $all[] = $this->createWrapper($type, $Entity);
         }
 
