@@ -61,4 +61,6 @@ interface IntervalPersistence
      * @param string $name
      */
     public function setSingular($name);
+
+    public function allBookingAvailability()
 }

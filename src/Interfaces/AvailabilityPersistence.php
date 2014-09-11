@@ -7,6 +7,7 @@ interface AvailabilityPersistence
 
     public function addResource(ResourcePersistence $Resource);
 
+    public function allBookingIntervals();
     public function hasBookingInterval(IntervalPersistence $Interval);
     public function addBookingInterval(IntervalPersistence $Interval);
     public function getBookingInterval($name, $default = null);

@@ -48,7 +48,7 @@ class Interval implements Interfaces\IntervalPersistence
 
     public function __construct()
     {
-        $this->Availablity  = new ArrayCollection();
+        $this->BookingAvailability  = new ArrayCollection();
         $this->IntervalMeta = new ArrayCollection();
     }
 
@@ -96,6 +96,11 @@ class Interval implements Interfaces\IntervalPersistence
     public function getAvailabilityWindow()
     {
         return $this->AvailabilityWindow;
+    }
+
+    public function allBookingAvailability()
+    {
+        return $this->BookingAvailability;
     }
 
     public function addBookingAvailability(Availability $Availability)

@@ -65,4 +65,34 @@ class Base
     {
         return $this->Entity->getAffectedQuantity();
     }
+
+    public function destroy()
+    {
+        $Doctrine = $this->Factory->getDoctrine();
+
+        $Interval = $this->Entity->getAvailableInterval();
+        if ($this->intervalHasOneRelation($Interval)) {
+            $Doctrine->remove($Interval);
+        }
+
+        foreach ($this->Entity->allBookingIntervals() as $Interval) {
+            if ($this->intervalHasOneRelation($Interval)) {
+                $Doctrine->remove($Interval);
+            }
+        }
+        $Doctrine->remove($Availability);
+    }
+
+    protected function intervalHasOneRelation(Interfaces\IntervalPersistence $Interval)
+    {
+        $count = 0;
+        if ($Interval->getAvailabilityWindow()) {
+            ++$count;
+        }
+        foreach ($Interval->allBookingAvailability()) {
+            ++$count;
+        }
+
+        return ($count < 2);
+    }
 }

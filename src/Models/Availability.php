@@ -114,6 +114,11 @@ class Availability implements Interfaces\AvailabilityPersistence
         return $this->affectedQuantity;
     }
 
+    public function allBookingIntervals()
+    {
+        return $this->BookingIntervals;
+    }
+
     public function getBookingInterval($name, $default = null)
     {
         foreach ($this->BookingIntervals as $Interval) {

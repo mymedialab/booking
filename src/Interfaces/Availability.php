@@ -16,4 +16,6 @@ interface Availability
 
     public function contains(Period $Period);
     public function overlaps(Period $Period);
+
+    public function destroy();
 }
