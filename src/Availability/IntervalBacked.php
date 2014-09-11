@@ -31,9 +31,9 @@ class IntervalBacked extends Base implements Interfaces\Availability
         list($Start, $End) = $this->getAvailabilityStartAndEnd($Period);
 
         return (
-            ($Period->getStart() > $Start && $Period->getStart() < $End) ||
-            ($Period->getEnd()   > $Start && $Period->getEnd()   < $End) ||
-            ($Period->getStart() < $Start && $Period->getEnd()   > $End)
+            ($Period->getStart() >= $Start && $Period->getStart() <= $End) ||
+            ($Period->getEnd()   >= $Start && $Period->getEnd()   <= $End) ||
+            ($Period->getStart() <= $Start && $Period->getEnd()   >= $End)
         );
     }
 
