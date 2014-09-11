@@ -21,6 +21,16 @@ class Base
         return $this->Entity;
     }
 
+    public function getBookingInterval($name)
+    {
+        $IntervalFactory = $this->Factory->getIntervalFactory();
+        $Entity = $this->Entity->getBookingInterval($ame);
+        if ($Entity) {
+            return $IntervalFactory->wrap($Entity);
+        } else {
+            return null;
+        }
+    }
     public function hasBookingInterval(Interfaces\Interval $Interval)
     {
         return $this->Entity->hasBookingInterval($Interval->getName());
@@ -29,7 +39,6 @@ class Base
     {
         return $this->Entity->addBookingInterval($Interval->getEntity());
     }
-
     public function setAvailableInterval(Interfaces\Interval $Interval)
     {
         return $this->Entity->setAvailableInterval($Interval->getEntity());
@@ -85,6 +94,7 @@ class Base
 
     protected function intervalHasOneRelation(Interfaces\IntervalPersistence $Interval)
     {
+        // @todo lets write some tests here! This seems shaky.
         $count = 0;
         if ($Interval->getAvailabilityWindow()) {
             ++$count;
