@@ -89,7 +89,7 @@ class Base
         if ($Interval->getAvailabilityWindow()) {
             ++$count;
         }
-        foreach ($Interval->allBookingAvailability()) {
+        foreach ($Interval->allBookingAvailability() as $ignored) {
             ++$count;
         }
 

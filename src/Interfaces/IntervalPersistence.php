@@ -62,5 +62,5 @@ interface IntervalPersistence
      */
     public function setSingular($name);
 
-    public function allBookingAvailability()
+    public function allBookingAvailability();
 }
