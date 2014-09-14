@@ -18,7 +18,6 @@ class Interval
 
     public function get($intervalName)
     {
-        $intervalName = ucfirst(strtolower($intervalName));
         $Entity = new Models\Interval();
         $Entity->setType($intervalName);
 
@@ -30,8 +29,7 @@ class Interval
 
     public function wrap(Interfaces\IntervalPersistence $Entity)
     {
-        // @todo caps problem BOIY! Stop trying to solve the worlds problems! Let em shot themselves instead of doing it for them!
-        $type = ucfirst(strtolower($Entity->getType()));
+        $type = $Entity->getType();
         return $this->createInterval($type, $Entity);
     }
 
@@ -55,7 +53,7 @@ class Interval
                 "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}"
             );
         }
-        $type = ucfirst(strtolower($Entity->getType()));
+        $type = $Entity->getType();
 
         return $this->createInterval($type, $Entity);
     }

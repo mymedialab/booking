@@ -1,6 +1,7 @@
 <?php
 
 use MML\Booking\Exceptions;
+use Codeception\Module\FullStackHelper as Helper;
 
 class reservationsTest extends \Codeception\TestCase\Test
 {
@@ -13,12 +14,12 @@ class reservationsTest extends \Codeception\TestCase\Test
 
     protected function _before()
     {
-        global $fullStackTestConfig;
-        $Factory = new MML\Booking\Factories\General($fullStackTestConfig);
-        $this->Booking = new MML\Booking\App($fullStackTestConfig);
+        Helper::wipeEntireDb();
+        $Factory = new MML\Booking\Factories\General(Helper::getDbConf());
+        $this->Booking = new MML\Booking\App($Factory);
         $this->Doctrine = $Factory->getDoctrine();
 
-        $Setup = new MML\Booking\Setup($fullStackTestConfig);
+        $Setup = new MML\Booking\Setup($Factory);
 
         $resources = array(
             'double_room' => array('friendly' => 'Double Room', 'qty' => 10),
@@ -27,13 +28,21 @@ class reservationsTest extends \Codeception\TestCase\Test
         foreach ($resources as $name => $details) {
             $Resource = $this->Booking->getResource($name);
             if (!$Resource) {
-                // you wouldn't usually do this inline! This would be a pre-release step. Probably.
                 $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-                $Nightly  = $Factory->getIntervalFactory()->get('daily');
+                $Hourly  = $Factory->getIntervalFactory()->get('Hourly');
+                $Hourly->configure('00');
+                $Nightly  = $Factory->getIntervalFactory()->get('Daily');
                 $Nightly->configure("13:00", "09:00", "nightly", "nights", "night");
-                $Setup->addBookingIntervals($Resource, array($Nightly));
+                $Setup->addBookingIntervals($Resource, array($Nightly, $Hourly));
             }
         }
+    }
+
+    protected function reservedResourceCount(MML\Booking\Models\Resource $Resource)
+    {
+        $Query = $this->Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id ');
+        $Query->setParameter('resource_id', $Resource->getId());
+        return intval($Query->getSingleScalarResult());
     }
 
     public function testAddBooking()
@@ -46,7 +55,7 @@ class reservationsTest extends \Codeception\TestCase\Test
          */
         $Start = new \DateTime('24-06-2018');
         $Resource = $this->Booking->getResource('double_room');
-        $Period   = $this->Booking->getPeriodFor($Resource, 'night');
+        $Period   = $this->Booking->getPeriodFor($Resource, 'nightly');
 
         // reserve for three nights
         $Period->begins($Start);
@@ -61,28 +70,25 @@ class reservationsTest extends \Codeception\TestCase\Test
     public function testAddBookingFailsIfAlreadyTaken()
     {
         $Resource = $this->Booking->getResource('conference_suite');
-        $Query = $this->Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id ');
-        $Query->setParameter('resource_id', $Resource->getId());
-
-        $this->assertEquals(0, intval($Query->getSingleScalarResult()));
+        $this->assertEquals(0, $this->reservedResourceCount($Resource));
 
         $Start = new \DateTime('24-06-2018');
-        $Period = $this->Booking->getPeriodFor($Resource, 'night');
+        $Period = $this->Booking->getPeriodFor($Resource, 'nightly');
 
         // reserve for three nights
         $Period->begins($Start);
         $Period->repeat(3);
         $Reservation = $this->Booking->createReservation($Resource, $Period);
 
-        $this->assertEquals(1, intval($Query->getSingleScalarResult()));
+        $this->assertEquals(1, $this->reservedResourceCount($Resource));
 
         // now for that test...
         try {
             $NewResource = $this->Booking->getResource('conference_suite');
             $Reservation = $this->Booking->createReservation($NewResource, $Period);
         } catch (Exceptions\Unavailable $e) {
-            $this->assertEquals('Conference Suite is not available for the selected period', $e->getMessage());
-            $this->assertEquals(1, intval($Query->getSingleScalarResult()));
+            $this->assertEquals('Conference Suite does not have enough availability for the selected period', $e->getMessage());
+            $this->assertEquals(1, $this->reservedResourceCount($Resource));
             return;
         }
 
@@ -92,21 +98,19 @@ class reservationsTest extends \Codeception\TestCase\Test
     public function testMultipleAvailabilityWorks()
     {
         $Resource = $this->Booking->getResource('double_room');
-        $Query = $this->Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id ');
-        $Query->setParameter('resource_id', $Resource->getId());
-
-        $this->assertEquals(1, intval($Query->getSingleScalarResult()));
+        $this->assertEquals(0, $this->reservedResourceCount($Resource));
 
         $Start = new \DateTime('24-06-2018');
-        $Period = $this->Booking->getPeriodFor($Resource, 'night');
+        $Period = $this->Booking->getPeriodFor($Resource, 'nightly');
         $Period->begins($Start);
         $Period->repeat(3);
 
         // should be able to reserve ten rooms...
-        for ($i = 2; $i <= 10; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $NewResource = $this->Booking->getResource('double_room');
             $Reservation = $this->Booking->createReservation($NewResource, $Period);
-            $this->assertEquals($i, intval($Query->getSingleScalarResult()));
+            $this->assertEquals($i, $this->reservedResourceCount($Resource));
+
         }
 
         // but the 11th should fail
@@ -114,8 +118,8 @@ class reservationsTest extends \Codeception\TestCase\Test
             $NewResource = $this->Booking->getResource('double_room');
             $Reservation = $this->Booking->createReservation($NewResource, $Period);
         } catch (Exceptions\Unavailable $e) {
-            $this->assertEquals('Double Room is not available for the selected period', $e->getMessage());
-            $this->assertEquals(10, intval($Query->getSingleScalarResult()));
+            $this->assertEquals('Double Room does not have enough availability for the selected period', $e->getMessage());
+            $this->assertEquals(10, $this->reservedResourceCount($Resource));
             return;
         }
 
@@ -163,7 +167,7 @@ class reservationsTest extends \Codeception\TestCase\Test
          */
         $Night   = new \DateTime('24-08-2018');
         $Resource  = $this->Booking->getResource('double_room');
-        $Period = $this->Booking->getPeriodFor($Resource, 'night');
+        $Period = $this->Booking->getPeriodFor($Resource, 'nightly');
         $Period->begins($Night);
 
         $available = $this->Booking->checkAvailability($Resource, $Period);

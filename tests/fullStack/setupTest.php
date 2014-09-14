@@ -1,25 +1,14 @@
 <?php
 
+use Codeception\Module\FullStackHelper as Helper;
 
 class setupTest extends \Codeception\TestCase\Test
 {
-   /**
-    * @var \FullStackTester
-    */
-    protected $tester;
-
-    protected function _before()
-    {
-    }
-
-    protected function _after()
-    {
-    }
-
     // tests - just ensuring they're error free for now
     public function testCreateResource()
     {
-        $Setup = new MML\Booking\Setup;
+        $Factory = new MML\Booking\Factories\General(Helper::getDbConf());
+        $Setup = new MML\Booking\Setup($Factory);
         try {
 
             $Setup->createResource('double_room', 'Double Room', 3);

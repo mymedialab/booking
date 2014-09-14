@@ -1,6 +1,7 @@
 <?php
 
 use MML\Booking\Exceptions;
+use Codeception\Module\FullStackHelper as Helper;
 
 /**
  * This is an example use-case for a hotel.
@@ -18,9 +19,7 @@ class hotelTest extends \Codeception\TestCase\Test
 
     protected function _before()
     {
-        global $fullStackTestConfig;
-
-        $this->Factory  = new MML\Booking\Factories\General($fullStackTestConfig);
+        $this->Factory  = new MML\Booking\Factories\General(Helper::getDbConf());
         $this->Booking  = new MML\Booking\App($this->Factory);
         $this->Setup    = new MML\Booking\Setup($this->Factory);
         $this->Doctrine = $this->Factory->getDoctrine();

@@ -18,7 +18,7 @@ class DayOfWeek extends Base implements Interfaces\Interval
     protected $day      = 1; // Monday by default. internally we use numeric ordering. Externally, whatever strtotime
                              // accepts.
 
-    protected $regex = '/^[0-1][0-9]:[0-5][0-9]$/';
+    protected $regex = '/^[0-2][0-9]:[0-5][0-9]$/';
     protected $straddles = false;
 
     public function getNearestStart(\DateTime $RoughStart)
