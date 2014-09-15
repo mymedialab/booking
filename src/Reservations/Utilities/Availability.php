@@ -43,7 +43,7 @@ class Availability
         if ($Period->forcePerSecond()) {
             $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start > :start AND r.start < :end) OR (r.end > :start AND r.end < :end))');
         } else {
-            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start >= :start AND r.start <= :end) OR (r.end >= :start AND r.end <= :end))');
+            $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start >= :start AND r.start < :end) OR (r.end > :start AND r.end <= :end))');
         }
 
         $Query->setParameter('resource_id', $Resource->getId());
