@@ -37,11 +37,19 @@ class Base
     }
     public function addBookingInterval(Interfaces\Interval $Interval)
     {
-        return $this->Entity->addBookingInterval($Interval->getEntity());
+        $Doctrine = $this->Factory->getDoctrine();
+        $Entity = $Interval->getEntity();
+        $Doctrine->persist($Entity);
+
+        return $this->Entity->addBookingInterval($Entity);
     }
     public function setAvailableInterval(Interfaces\Interval $Interval)
     {
-        return $this->Entity->setAvailableInterval($Interval->getEntity());
+        $Doctrine = $this->Factory->getDoctrine();
+        $Entity = $Interval->getEntity();
+        $Doctrine->persist($Entity);
+
+        return $this->Entity->setAvailableInterval($Entity);
     }
     public function getAvailableInterval()
     {

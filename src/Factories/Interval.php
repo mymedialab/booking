@@ -21,9 +21,7 @@ class Interval
         $Entity = new Models\Interval();
         $Entity->setType($intervalName);
 
-        $Doctrine = $this->GeneralFactory->getDoctrine();
-        $Doctrine->persist($Entity);
-
+        // can't persist here in case we need transient entities.
         return $this->createInterval($intervalName, $Entity);
     }
 
