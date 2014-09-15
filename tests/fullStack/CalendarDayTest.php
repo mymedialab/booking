@@ -56,4 +56,35 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
         $this->assertEquals($data, $this->Object->availabilityFor($Resource));
     }
+
+    public function testWithReservations()
+    {
+        $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $Period   = $this->Booking->getPeriodFor($Resource, 'hourly');
+
+        $Period->begins(new \DateTime('2014/09/04 10:00:00'));
+        $Period->repeat(2);
+
+        // one booking from 10:00 -> 12:00. Should still leave one court available.
+        $Reservation = $this->Booking->createReservation($Resource, $Period);
+
+        $Period->repeat(1);
+        // one booking from 10:00 -> 11:00. Should use the last court
+        $Reservation = $this->Booking->createReservation($Resource, $Period);
+
+        $Period->begins(new \DateTime('2014/09/04 17:00:00'));
+        $Period->repeat(2);
+        // Two bookings from 17:00 -> 19:00. Should use all courts
+        $Reservation = $this->Booking->createReservation($Resource, $Period, 2);
+
+        $dataFile = __DIR__ . "/../_data/bookedDay.json";
+
+        $this->assertTrue(is_file($dataFile), "file not found");
+        $data = json_decode(file_get_contents($dataFile), true);
+        $this->assertTrue(is_array($data), "file invalid");
+
+        $this->Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
+        $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $this->assertEquals($data, $this->Object->availabilityFor($Resource));
+    }
 }
