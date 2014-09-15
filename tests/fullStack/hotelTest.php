@@ -27,6 +27,8 @@ class hotelTest extends \Codeception\TestCase\Test
 
     public function testSetup()
     {
+        Helper::wipeEntireDb();
+
         $Day       = $this->Factory->getIntervalFactory()->get('daily');
         $Day->configure("09:00", "17:00");
         $Nightly   = $this->Factory->getIntervalFactory()->get('daily');

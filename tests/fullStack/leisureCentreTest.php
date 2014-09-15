@@ -25,6 +25,7 @@ class leisureCentreTest extends \Codeception\TestCase\Test
 
     public function testSetup()
     {
+        Helper::wipeEntireDb();
         $opensAt  = "08:00";
         $closesAt = "20:00";
 
