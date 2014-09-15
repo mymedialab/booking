@@ -23,7 +23,9 @@ class Finder
      */
     public function resourceBetween(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
+        $ReservationFactory = $this->Factory->getReservationFactory();
         $Doctrine = $this->Factory->getDoctrine();
+
         $Query = $Doctrine->createQuery(
             'SELECT
                 R FROM \MML\Booking\Models\Reservation R
@@ -35,6 +37,11 @@ class Finder
         $Query->setParameter('start', $Start);
         $Query->setParameter('end', $End);
 
-        return $Query->getResult();
+        $return = array();
+        foreach ($Query->getResult() as $ReservationEntity) {
+            $return[] = $ReservationFactory->wrap($ReservationEntity);
+        }
+
+        return $return;
     }
 }
