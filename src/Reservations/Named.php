@@ -9,7 +9,7 @@ class Named extends Base implements Interfaces\Reservation
     public function __construct(Interfaces\ReservationPersistence $Entity, Factories\General $GeneralFactory)
     {
         parent::__construct($Entity, $GeneralFactory);
-        $this->Entity->type = 'Named';
+        $this->Entity->setType('Named');
     }
     public function setName($name)
     {

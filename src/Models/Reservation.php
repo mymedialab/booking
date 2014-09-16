@@ -2,6 +2,7 @@
 namespace MML\Booking\Models;
 
 use MML\Booking\Interfaces;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Holds data for an existing reservation
@@ -37,7 +38,7 @@ class Reservation implements Interfaces\ReservationPersistence
     */
     private $ReservationMeta;
 
-    public function __contruct()
+    public function __construct()
     {
         $this->ReservationMeta = new ArrayCollection();
     }

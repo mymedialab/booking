@@ -51,6 +51,14 @@ abstract class Base implements Interfaces\Reservation
     {
         return $this->Entity->hydrateFrom($Resource, $Period);
     }
+    public function addMeta($name, $value)
+    {
+        return $this->Entity->setMeta($name, $value);
+    }
+    public function getMeta($name, $default = null)
+    {
+        return $this->Entity->getMeta($name, $default);
+    }
     public function getEntity()
     {
         return $this->Entity;

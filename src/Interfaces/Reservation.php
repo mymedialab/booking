@@ -29,5 +29,8 @@ interface Reservation
     public function getModified();
     public function setupFrom(ResourcePersistence $Resource, Period $Period);
 
+    public function addMeta($name, $value);
+    public function getMeta($name, $default = null);
+
     public function getEntity();
 }
