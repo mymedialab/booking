@@ -31,10 +31,14 @@ function assertEquals($a, $b)
     }
 }
 
-function assertTrue($x) {
+function assertTrue($x, $comment = null) {
     if ($x !== true) {
         echo "Following is not true: ";
-        var_dump($x);
+        if ($comment) {
+            echo $comment;
+        } else {
+            var_dump($x);
+        }
         echo "\n";
         die();
     }
@@ -83,105 +87,65 @@ foreach ($Schema->listTables() as $Table) {
 
 $Connection->executeQuery('SET FOREIGN_KEY_CHECKS = 1;');
 
+$Booking  = new Booking\App($Factory);
+$Setup    = new Booking\Setup($Factory);
+
 /// test begins...
 try {
-    $Booking  = new Booking\App($Factory);
-    $Setup    = new Booking\Setup($Factory);
 
-    $opensAt  = "08:00";
-        $closesAt = "20:00";
+    $Object = new Booking\Calendar\Day($Factory);
 
-        $Weekday  = $Factory->getIntervalFactory()->get('weekday');
-        $Weekday->configure($opensAt, $closesAt);
+    $Weekday = $Factory->getIntervalFactory()->get('weekday');
+    $Weekday->configure('09:00', "20:00");
 
-        $Saturday = $Factory->getIntervalFactory()->get('dayOfWeek');
-        $Saturday->configure('saturday', $opensAt, "18:00");
+    $Saturday = $Factory->getIntervalFactory()->get('dayOfWeek');
+    $Saturday->configure('saturday', '09:00', "18:00");
 
-        $Sunday   = $Factory->getIntervalFactory()->get('dayOfWeek');
-        $Sunday->configure('sunday', "10:00", "16:00");
+    $Sunday = $Factory->getIntervalFactory()->get('dayOfWeek');
+    $Sunday->configure('sunday', "10:00", "16:00");
 
-        $Hourly    = $Factory->getIntervalFactory()->get('hourly');
-        $Hourly->configure("00");
+    $Hourly = $Factory->getIntervalFactory()->get('hourly');
+    $Hourly->configure("00");
 
-        $Morning   = $Factory->getIntervalFactory()->get('daily');
-        $Morning->configure("08:00", "12:00");
+    $Resource = $Setup->createResource('leisureCentre_indoor_tennis_court', 'Indoor Tennis Court', 2);
+    $Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly));
+    $Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly));
+    $Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
 
-        $Afternoon = $Factory->getIntervalFactory()->get('daily');
-        $Afternoon->configure("12:00", "16:00");
+    $Resource = $Booking->getResource('leisureCentre_indoor_tennis_court');
+    $Period   = $Booking->getPeriodFor($Resource, 'hourly');
 
-        $Evening   = $Factory->getIntervalFactory()->get('daily');
-        $Evening->configure("16:00", "20:00");
+    $Period->begins(new \DateTime('2014/09/04 10:00:00'));
+    $Period->repeat(2);
 
-        $resources = array(
-            'leisureCentre_squash_court'          => array('friendly' => 'Squash Court', 'qty' => 3),
-            'leisureCentre_indoor_tennis_court'   => array('friendly' => 'Indoor Tennis Court', 'qty' => 10),
-            'leisureCentre_grass_tennis_court'    => array('friendly' => 'Grass Tennis Court', 'qty' => 4),
-            // @todo Linked resources one precludes the other. Use Doctrine's inheritance? OUT OF SCOPE
-            'leisureCentre_swimming_pool'         => array('friendly' => 'Swimming Pool', 'qty' => 1),
-            'leisureCentre_half_pool'             => array('friendly' => 'Half Pool', 'qty' => 2),
-        );
+    // one booking from 10:00 -> 12:00. Should still leave one court available.
+    $Reservation = $Booking->createReservation($Resource, $Period);
 
-        foreach ($resources as $name => $details) {
-           $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-           $Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly, $Morning, $Afternoon, $Evening));
-           $Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly, $Morning, $Afternoon));
-           $Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
-        }
+    $Period->repeat(1);
+    // one booking from 10:00 -> 11:00. Should use the last court
+    $Reservation = $Booking->createReservation($Resource, $Period);
 
-        $RoughStart = new \DateTime('2015-09-04 10:15');
-        $Court  = $Booking->getResource('leisureCentre_squash_court');
-        assertTrue(!is_null($Court), 'Resource not found');
-        $Period = $Booking->getPeriodFor($Court, 'hourly');
+    $Period->begins(new \DateTime('2014/09/04 17:00:00'));
+    $Period->repeat(2);
+    // Two bookings from 17:00 -> 19:00. Should use all courts
+    $Reservation = $Booking->createReservation($Resource, $Period, 2);
 
-        $Period->begins($RoughStart);
-        $Start = $Period->getStart();
-        $End   = $Period->getEnd();
+    $Reservations = $Booking->getReservations($Resource, new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
+    assertEquals(4, count($Reservations));
+    foreach ($Reservations as $Reservation) {
+        assertTrue(in_array($Reservation->getStart()->format('H:i'), array('10:00', '17:00')));
+        assertTrue(in_array($Reservation->getEnd()->format('H:i'), array('11:00', '12:00', '19:00')));
+    }
 
-        assertEquals('04/09/2015 10:00:00', $Start->format('d/m/Y H:i:s'));
-        assertEquals('04/09/2015 11:00:00', $End->format('d/m/Y H:i:s'));
+    $dataFile = __DIR__ . "/../tests/_data/bookedDay.json";
 
-        $RoughStart = new \DateTime('2015-09-04 10:15');
-        $Court  = $Booking->getResource('leisureCentre_squash_court');
-        $Period = $Booking->getPeriodFor($Court, 'hourly');
+    assertTrue(is_file($dataFile), "file not found");
+    $data = json_decode(file_get_contents($dataFile), true);
+    assertTrue(is_array($data), "file invalid");
 
-        $Period->begins($RoughStart);
-        $reservations = $Booking->createReservation($Court, $Period, 2);
-        assertEquals(2, count($reservations));
-
-
-        expectThrow('court full', function() use($Court, $Period, $Booking) {
-            $reservations = $Booking->createReservation($Court, $Period, 2);
-        }, 'Squash Court does not have enough availability for the selected period');
-
-        // trying to reserve from 07:00 - 09:00. Place doesn't open til 8!
-        $RoughStart = new \DateTime('2015-09-04 07:00');
-        $Court  = $Booking->getResource('leisureCentre_squash_court');
-        $Period = $Booking->getPeriodFor($Court, 'hourly');
-
-        $Period->begins($RoughStart);
-        $Period->repeat(2);
-
-        expectThrow('Too early', function() use($Court, $Period, $Booking) {
-            $Reservation = $Booking->createReservation($Court, $Period);
-        }, 'Squash Court does not have enough availability for the selected period');
-
-        $Tennis  = $Booking->getResource('leisureCentre_grass_tennis_court');
-        $Period = $Booking->getPeriodFor($Tennis, 'hourly');
-
-        $Fri = new \DateTime('2014-08-29 18:00');
-        $SatEarly = new \DateTime('2014-08-30 17:00');
-        $SatLate = new \DateTime('2014-08-30 18:00');
-
-        $Period->begins($Fri);
-        $Reservation = $Booking->createReservation($Tennis, $Period);
-
-        $Period->begins($SatEarly);
-        $Reservation = $Booking->createReservation($Tennis, $Period);
-
-        $Period->begins($SatLate);
-        expectThrow('closes early saturdays', function() use($Tennis, $Period, $Booking) {
-            $Reservation = $Booking->createReservation($Tennis, $Period);
-        }, 'Grass Tennis Court does not have enough availability for the selected period');
+    $Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
+    $Resource = $Booking->getResource('leisureCentre_indoor_tennis_court');
+    assertEquals($data, $Object->availabilityFor($Resource));
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";
