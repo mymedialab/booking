@@ -18,7 +18,7 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         $this->Booking  = new MML\Booking\App($this->Factory);
         $this->Setup    = new MML\Booking\Setup($this->Factory);
 
-        $this->Object = new MML\Booking\Calendar\Day($this->Factory);
+        $this->Object = $this->Factory->getDayCalendar();
     }
 
     // not even really a test. Just setup...

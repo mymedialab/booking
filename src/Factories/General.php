@@ -2,6 +2,7 @@
 namespace MML\Booking\Factories;
 
 use MML\Booking;
+use MML\Booking\Calendar;
 use MML\Booking\Models;
 use MML\Booking\Reservations;
 use Doctrine\ORM\Tools\Setup;
@@ -137,8 +138,12 @@ class General
     }
     public function getEmptyReservation($name = 'plain')
     {
-
         $Factory = $this->getReservationFactory();
         return $Factory->getNew($name);
+    }
+
+    public function getDayCalendar()
+    {
+        return new Calendar\Day($this);
     }
 }
