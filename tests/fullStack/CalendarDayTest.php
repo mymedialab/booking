@@ -87,4 +87,28 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
         $this->assertEquals($data, $this->Object->availabilityFor($Resource));
     }
+
+    public function testEmptyCalendarWeekends()
+    {
+        $satFile = __DIR__ . "/../_data/emptySaturday.json";
+
+        $this->assertTrue(is_file($satFile));
+        $satData = json_decode(file_get_contents($satFile), true);
+        $this->assertTrue(is_array($satData));
+
+        $sunFile = __DIR__ . "/../_data/emptySunday.json";
+
+        $this->assertTrue(is_file($sunFile));
+        $sunData = json_decode(file_get_contents($sunFile), true);
+        $this->assertTrue(is_array($sunData));
+
+        $this->Object->setBounds(new \DateTime('2014/09/13 00:00:00'), new \DateTime('2014/09/14 00:00:00'));
+        $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $this->assertEquals($satData, $this->Object->availabilityFor($Resource));
+
+        $this->Object->setBounds(new \DateTime('2014/09/14 00:00:00'), new \DateTime('2014/09/15 00:00:00'));
+        $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $this->assertEquals($sunData, $this->Object->availabilityFor($Resource));
+    }
+
 }
