@@ -47,7 +47,7 @@ class ReservationMeta
     {
         $this->value = $value;
     }
-    public function setReservation($Reservation)
+    public function setReservation(Reservation $Reservation)
     {
         $this->Reservation = $Reservation;
     }

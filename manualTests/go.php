@@ -93,59 +93,36 @@ $Setup    = new Booking\Setup($Factory);
 /// test begins...
 try {
 
-    $Object = new Booking\Calendar\Day($Factory);
-
-    $Weekday = $Factory->getIntervalFactory()->get('weekday');
-    $Weekday->configure('09:00', "20:00");
-
-    $Saturday = $Factory->getIntervalFactory()->get('dayOfWeek');
-    $Saturday->configure('saturday', '09:00', "18:00");
-
-    $Sunday = $Factory->getIntervalFactory()->get('dayOfWeek');
-    $Sunday->configure('sunday', "10:00", "16:00");
-
-    $Hourly = $Factory->getIntervalFactory()->get('hourly');
-    $Hourly->configure("00");
-
-    $Resource = $Setup->createResource('leisureCentre_indoor_tennis_court', 'Indoor Tennis Court', 2);
-    $Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly));
-    $Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly));
-    $Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
-
-    $Resource = $Booking->getResource('leisureCentre_indoor_tennis_court');
-    $Period   = $Booking->getPeriodFor($Resource, 'hourly');
-
-    $Period->begins(new \DateTime('2014/09/04 10:00:00'));
-    $Period->repeat(2);
-
-    // one booking from 10:00 -> 12:00. Should still leave one court available.
-    $Reservation = $Booking->createReservation($Resource, $Period);
-
-    $Period->repeat(1);
-    // one booking from 10:00 -> 11:00. Should use the last court
-    $Reservation = $Booking->createReservation($Resource, $Period);
-
-    $Period->begins(new \DateTime('2014/09/04 17:00:00'));
-    $Period->repeat(2);
-    // Two bookings from 17:00 -> 19:00. Should use all courts
-    $Reservation = $Booking->createReservation($Resource, $Period, 2);
-
-    $Reservations = $Booking->getReservations($Resource, new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
-    assertEquals(4, count($Reservations));
-    foreach ($Reservations as $Reservation) {
-        assertTrue(in_array($Reservation->getStart()->format('H:i'), array('10:00', '17:00')));
-        assertTrue(in_array($Reservation->getEnd()->format('H:i'), array('11:00', '12:00', '19:00')));
+    $resources = array(
+        'double_room' => array('friendly' => 'Double Room', 'qty' => 10),
+    );
+    foreach ($resources as $name => $details) {
+        $Resource = $Booking->getResource($name);
+        if (!$Resource) {
+            $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
+            $Nightly  = $Factory->getIntervalFactory()->get('Daily');
+            $Nightly->configure("13:00", "09:00", "nightly", "nights", "night");
+            $Setup->addBookingIntervals($Resource, array($Nightly));
+        }
     }
 
-    $dataFile = __DIR__ . "/../tests/_data/bookedDay.json";
+    $Doctrine->flush();
 
-    assertTrue(is_file($dataFile), "file not found");
-    $data = json_decode(file_get_contents($dataFile), true);
-    assertTrue(is_array($data), "file invalid");
+    $Start = new \DateTime('24-06-2018');
+    $Resource = $Booking->getResource('double_room');
+    $Period   = $Booking->getPeriodFor($Resource, 'nightly');
+    $Period->begins($Start);
+    $Period->repeat(3);
 
-    $Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
-    $Resource = $Booking->getResource('leisureCentre_indoor_tennis_court');
-    assertEquals($data, $Object->availabilityFor($Resource));
+    $Reservation = $Booking->createReservation($Resource, $Period, 1);
+    $Reservation->addMeta('some_rubbish', 'this thing here');
+
+    assertEquals('this thing here', $Reservation->getMeta('some_rubbish'));
+    assertEquals('24-06-2018 13:00', $Reservation->getStart()->format('d-m-Y H:i'));
+    assertEquals('27-06-2018 09:00', $Reservation->getEnd()->format('d-m-Y H:i'));
+
+    $Doctrine->flush();
+    assertEquals(1, count($Reservation->allMeta()));
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";

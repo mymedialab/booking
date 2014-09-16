@@ -31,6 +31,7 @@ interface Reservation
 
     public function addMeta($name, $value);
     public function getMeta($name, $default = null);
+    public function allMeta();
 
     public function getEntity();
 }

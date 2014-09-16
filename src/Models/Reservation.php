@@ -32,7 +32,6 @@ class Reservation implements Interfaces\ReservationPersistence
     private $Resource;
     /** @Column */
     private $type;
-
     /**
      * @OneToMany(targetEntity="MML\Booking\Models\ReservationMeta", mappedBy="Reservation", cascade={"persist", "remove"}))
     */
@@ -86,6 +85,10 @@ class Reservation implements Interfaces\ReservationPersistence
         $this->type = $type;
     }
 
+    public function allMeta()
+    {
+        return $this->ReservationMeta;
+    }
 
     public function getMeta($name, $default = null)
     {
@@ -105,6 +108,7 @@ class Reservation implements Interfaces\ReservationPersistence
         if (is_null($Meta)) {
             $Meta = new ReservationMeta;
             $this->ReservationMeta[] = $Meta;
+            $Meta->setReservation($this); // synchronously updating inverse side
         }
 
         $Meta->setName($name);
@@ -124,7 +128,7 @@ class Reservation implements Interfaces\ReservationPersistence
     {
         foreach ($this->ReservationMeta as $Existing) {
             if (strtolower($name) === strtolower($Existing->getName())) {
-                return $Meta;
+                return $Existing;
             }
         }
 

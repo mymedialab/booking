@@ -52,8 +52,7 @@ class FullStackHelper extends \Codeception\Module
 
     public function seeExceptionThrown($exceptionName, $function)
     {
-        try
-        {
+        try {
             $function();
             return false;
         } catch (\Exception $e) {
