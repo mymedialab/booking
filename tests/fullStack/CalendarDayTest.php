@@ -85,7 +85,18 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
 
         $this->Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
-        $this->assertEquals($data, $this->Object->availabilityFor($Resource));
+
+        $output = $this->Object->availabilityFor($Resource);
+
+        $this->assertEquals(count($data), count($output));
+        foreach ($output as $i => $val) {
+            $this->assertEquals($data[$i]['status'], $val['status'], "mismatched status on row $i");
+            $this->assertEquals($data[$i]['start'], $val['start'], "mismatched start on row $i");
+            $this->assertEquals($data[$i]['end'], $val['end'], "mismatched end on row $i");
+            $this->assertEquals($data[$i]['existing'], count($val['existing']), "mismatched count on row $i");
+
+        }
+        $this->assertEquals(count($data), count($output));
     }
 
     public function testEmptyCalendarWeekends()

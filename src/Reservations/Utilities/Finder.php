@@ -26,12 +26,14 @@ class Finder
         $ReservationFactory = $this->Factory->getReservationFactory();
         $Doctrine = $this->Factory->getDoctrine();
 
+        // @todo this is fine and all; but can we make it so that we use relationships? Doubt Doctrine can optimise
+        // this at all. Building a calendar may just take a LOT of queries
         $Query = $Doctrine->createQuery(
             'SELECT
                 R FROM \MML\Booking\Models\Reservation R
              WHERE
-                (R.start >= :start AND R.start <= :end) OR
-                (R.end >= :start AND R.end <= :end)'
+                (R.start >= :start AND R.start < :end) OR
+                (R.end > :start AND R.end <= :end)'
         );
 
         $Query->setParameter('start', $Start);

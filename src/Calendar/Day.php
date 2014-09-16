@@ -36,33 +36,6 @@ class Day
         $this->Interval = $Interval;
     }
 
-    /**
-     * Returns a verbose breakdown of periods for the day.
-     *
-     * @return array each elememnt is a period in the format of
-     *                    [start => 'Y/m/d H:i:s', end => 'Y/m/d H:i:s'
-     */
-    public function buildEmpty()
-    {
-        $periods = array();
-        $Start = clone $this->Start;
-        while ($Start < $this->End) {
-            $IntervalEnd = $this->Interval->calculateEnd($Start);
-            if ($IntervalEnd <= $Start) {
-                // in case of faulty interval logic, don't loop forever
-                break;
-            }
-
-            $periods[] = array(
-                'start'  => $Start->format('Y/m/d H:i:s'), // Chosen as a format \DateTime construct understands
-                'end'    => $IntervalEnd->format('Y/m/d H:i:s')
-            );
-            $Start = $IntervalEnd;
-        }
-
-        return $periods;
-    }
-
      /**
      * Returns a verbose breakdown of periods for the day and the availability of the specifed resource.
      *
@@ -77,6 +50,7 @@ class Day
     {
         $OpeningTimes = $this->getOpeningTimes($Resource);
         $Availability = $this->Factory->getReservationAvailability();
+        $Finder       = $this->Factory->getReservationFinder();
         $Period       = $this->Factory->getPeriodFactory()->getStandalone();
         $Start        = clone $this->Start; // use a clone because we do modifications to it.
         $availability = array();
@@ -101,7 +75,8 @@ class Day
             $availability[] = array(
                 'status' => $status,
                 'start'  => $Start->format('Y/m/d H:i:s'),
-                'end'    => $IntervalEnd->format('Y/m/d H:i:s')
+                'end'    => $IntervalEnd->format('Y/m/d H:i:s'),
+                'existing' => $Finder->resourceBetween($Resource, $Start, $IntervalEnd)
             );
 
             $Start = $IntervalEnd;
