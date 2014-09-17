@@ -63,6 +63,10 @@ abstract class Base implements Interfaces\Reservation
     {
         return $this->Entity->allMeta();
     }
+    public function getId()
+    {
+        return $this->Entity->getId();
+    }
     public function getEntity()
     {
         return $this->Entity;
