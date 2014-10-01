@@ -70,8 +70,8 @@ class Availability
     /**
      * Counts resources available for reservation (eg, not under maitainence or out of action).
      *
-     * @param  Interfaces\ResourcePersistence    $Resource
-     * @param  Interfaces\Period                $Period
+     * @param  Interfaces\Resource  $Resource
+     * @param  Interfaces\Period    $Period
      * @return integer
      */
     protected function resourcesForPeriod(Interfaces\Resource $Resource, Interfaces\Period $Period)

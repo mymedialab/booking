@@ -19,9 +19,6 @@ interface Reservation
     public function getResource();
     /**
      * @param Resource $Resource [description]
-     *
-     * @todo eventually we may need an actual Resource model, not just the backing data. When the time comes, do what
-     * you must.
      */
     public function setResource(Resource $Resource);
 

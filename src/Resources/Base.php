@@ -110,7 +110,7 @@ class Base implements Interfaces\Resource
 
     /**
      * @param string $name The identifying name of the Availability being sought
-     * @return AvailabilityPersistence The specified availability
+     * @return Interfaces\Availability The specified availability
      *
      * @throws MML\Booking\Exceptions\Booking If an Availability by the given name is not retrieved
      */
@@ -122,7 +122,7 @@ class Base implements Interfaces\Resource
 
     /**
      * Adds an availability window to the resource
-     * @param InterfacesAvailability $Availability
+     * @param Interfaces\Availability $Availability
      */
     public function addAvailability(Interfaces\Availability $Availability)
     {
@@ -131,7 +131,7 @@ class Base implements Interfaces\Resource
 
     /**
      * Removes the supplied availability window from the resource
-     * @param AvailabilityPersistence $Availability
+     * @param Interfaces\Availability $Availability
      */
     public function removeAvailability(Interfaces\Availability $Availability)
     {
