@@ -31,31 +31,6 @@ class Interval
         return $this->createInterval($type, $Entity);
     }
 
-    public function getFrom(Interfaces\ResourcePersistence $Resource, $name)
-    {
-        $Availabilities = $Resource->allAvailability();
-        if (!count($Availabilities)) {
-            throw new Exceptions\Booking(
-                "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}. No Availabilites set."
-            );
-        }
-        foreach ($Availabilities as $Availability) {
-            $Entity = $Availability->getBookingInterval($name, false);
-            if ($Entity) {
-                break;
-            }
-        }
-
-        if (!$Entity) {
-            throw new Exceptions\Booking(
-                "Factories\\Interval Could not retrieve Interval $name from Resource {$Resource->getFriendlyName()}"
-            );
-        }
-        $type = $Entity->getType();
-
-        return $this->createInterval($type, $Entity);
-    }
-
     protected function createInterval($name, Interfaces\IntervalPersistence $Entity)
     {
         $class = 'MML\\Booking\\Intervals\\' . $name;

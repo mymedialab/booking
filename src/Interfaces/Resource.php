@@ -86,4 +86,10 @@ interface Resource
      * @return \DateTime
      */
     public function getModified();
+
+    /**
+     * Used to interface with ORM and other entities only.
+     * @return ResourcePersistence
+     */
+    public function getEntity();
 }

@@ -1,6 +1,7 @@
 <?php
 namespace MML\Booking\Reservations\Utilities;
 
+use MMl\Booking\Interfaces;
 use MMl\Booking\Models;
 
 class Finder
@@ -13,15 +14,14 @@ class Finder
     }
 
     /**
-     * [resourceBetween description]
-     * @param  ModelsResource $Resource [description]
-     * @param  DateTime       $Start    [description]
-     * @param  DateTime       $End      [description]
-     * @return [type]                   [description]
      *
-     * @todo  if we can ever decouple this from Doctrine, change the typehint to an interface
+     * @param  Resource $Resource [description]
+     * @param  DateTime $Start    [description]
+     * @param  DateTime $End      [description]
+     * @return [type]             [description]
+     *
      */
-    public function resourceBetween(Models\Resource $Resource, \DateTime $Start, \DateTime $End)
+    public function resourceBetween(Interfaces\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
         $ReservationFactory = $this->Factory->getReservationFactory();
         $Doctrine = $this->Factory->getDoctrine();
@@ -32,12 +32,14 @@ class Finder
             'SELECT
                 R FROM \MML\Booking\Models\Reservation R
              WHERE
-                (R.start >= :start AND R.start < :end) OR
-                (R.end > :start AND R.end <= :end)'
+                ((R.start >= :start AND R.start < :end) OR
+                (R.end > :start AND R.end <= :end))
+             AND R.Resource = :resource'
         );
 
         $Query->setParameter('start', $Start);
         $Query->setParameter('end', $End);
+        $Query->setParameter('resource', $Resource->getEntity());
 
         $return = array();
         foreach ($Query->getResult() as $ReservationEntity) {

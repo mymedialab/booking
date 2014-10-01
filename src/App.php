@@ -25,22 +25,28 @@ class App
     public function getResource($name)
     {
         $Doctrine = $this->Factory->getDoctrine();
-        return $Doctrine->getRepository('MML\\Booking\\Models\\Resource')->findOneBy(array('name' => $name));
+        $Entity = $Doctrine->getRepository('MML\\Booking\\Models\\Resource')->findOneBy(array('name' => $name));
+        if (!$Entity) {
+            return null;
+        }
+
+        $Factory = $this->Factory->getResourceFactory();
+        return $Factory->wrap($Entity);
     }
 
-    public function checkAvailability(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    public function checkAvailability(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
         $Availability = $this->Factory->getReservationAvailability();
         return $Availability->check($Resource, $Period);
     }
 
-    public function getPeriodFor(Interfaces\ResourcePersistence $Resource, $periodName)
+    public function getPeriodFor(Interfaces\Resource $Resource, $periodName)
     {
         $Locator = $this->Factory->getPeriodFactory();
         return $Locator->getFor($Resource, $periodName);
     }
 
-    public function createReservation(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, $qty = 1)
+    public function createReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, $qty = 1)
     {
         $Availability = $this->Factory->getReservationAvailability();
 
@@ -62,12 +68,12 @@ class App
         return ($qty === 1) ? $reservations[0] : $reservations;
     }
 
-    public function createBlockReservation(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
+    public function createBlockReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
     {
         // @todo
     }
 
-    public function getReservations(Interfaces\ResourcePersistence $Resource, \DateTime $Start, \DateTime $End)
+    public function getReservations(Interfaces\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
         $Finder = $this->Factory->getReservationFinder();
         return $Finder->resourceBetween($Resource, $Start, $End);

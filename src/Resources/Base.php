@@ -1,6 +1,7 @@
 <?php
 namespace MML\Booking\Resources;
 
+use Doctrine\Common\Collections\Collection;
 use MML\Booking\Interfaces;
 use MML\Booking\Factories;
 
@@ -72,7 +73,7 @@ class Base implements Interfaces\Resource
     }
 
     /**
-     * @return Array  of Interfaces\Reservation  All reservations associated with the Resource
+     * @return Array|Interfaces\Reservation[]  All reservations associated with the Resource
      */
     public function getReservations()
     {
@@ -81,7 +82,7 @@ class Base implements Interfaces\Resource
     }
 
     /**
-     * @return Array of Interfaces\BlockReservation All block reservations associated with the Resource
+     * @return Array|Interfaces\BlockReservation[] All block reservations associated with the Resource
      */
     public function getBlockReservations()
     {
@@ -90,7 +91,7 @@ class Base implements Interfaces\Resource
     }
 
     /**
-     * @return Array All block reservations associated with the Resourcewhich occur after the specified DateTime
+     * @return Array|Interfaces\BlockReservation[] All block reservations associated with the Resourcewhich occur after the specified DateTime
      */
     public function getBlockReservationsAfter(\DateTime $DateTime)
     {
@@ -99,7 +100,7 @@ class Base implements Interfaces\Resource
     }
 
     /**
-     * @return Array All availability associated with the Resource
+     * @return Array|Interfaces\Availability[] All availability associated with the Resource
      */
     public function allAvailability()
     {
@@ -152,7 +153,12 @@ class Base implements Interfaces\Resource
         return $this->Entity->getModified();
     }
 
-    protected function wrapEntities(array $Entities, $Factory)
+    public function getEntity()
+    {
+        return $this->Entity;
+    }
+
+    protected function wrapEntities(Collection $Entities, $Factory)
     {
         $Wrapped = array();
         foreach ($Entities as $Entity) {

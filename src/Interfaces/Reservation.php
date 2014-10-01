@@ -18,16 +18,16 @@ interface Reservation
 
     public function getResource();
     /**
-     * @param ResourcePersistence $Resource [description]
+     * @param Resource $Resource [description]
      *
      * @todo eventually we may need an actual Resource model, not just the backing data. When the time comes, do what
      * you must.
      */
-    public function setResource(ResourcePersistence $Resource);
+    public function setResource(Resource $Resource);
 
     public function getCreated();
     public function getModified();
-    public function setupFrom(ResourcePersistence $Resource, Period $Period);
+    public function setupFrom(Resource $Resource, Period $Period);
 
     public function addMeta($name, $value);
     public function getMeta($name, $default = null);

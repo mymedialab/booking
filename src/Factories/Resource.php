@@ -16,7 +16,7 @@ class Resource
 
     public function wrap(Interfaces\ResourcePersistence $Entity)
     {
-        return new Resource\Base($Entity, $this->Factory);
+        return new Resources\Base($Entity, $this->Factory);
     }
 
     public function getNew()

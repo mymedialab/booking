@@ -33,11 +33,12 @@ abstract class Base implements Interfaces\Reservation
     }
     public function getResource()
     {
-        return $this->Entity->getResource();
+        $Factory = $this->Factory->getResourceFactory();
+        return $Factory->wrap($this->Entity->getResource());
     }
-    public function setResource(Interfaces\ResourcePersistence $Resource)
+    public function setResource(Interfaces\Resource $Resource)
     {
-        return $this->Entity->setResource($Resource);
+        return $this->Entity->setResource($Resource->getEntity());
     }
     public function getCreated()
     {
@@ -47,9 +48,9 @@ abstract class Base implements Interfaces\Reservation
     {
         return $this->Entity->getModified();
     }
-    public function setupFrom(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    public function setupFrom(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
-        return $this->Entity->hydrateFrom($Resource, $Period);
+        return $this->Entity->hydrateFrom($Resource->getEntity(), $Period);
     }
     public function addMeta($name, $value)
     {

@@ -83,7 +83,7 @@ class Day
         return $availability;
     }
 
-    protected function isOpen(Interfaces\Resource $Resource, Interfaces\Period $Period, array $OpeningTimes)
+    protected function isOpen(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
         $open = false;
 
