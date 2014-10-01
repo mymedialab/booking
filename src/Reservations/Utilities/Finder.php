@@ -32,12 +32,14 @@ class Finder
             'SELECT
                 R FROM \MML\Booking\Models\Reservation R
              WHERE
-                (R.start >= :start AND R.start < :end) OR
-                (R.end > :start AND R.end <= :end)'
+                ((R.start >= :start AND R.start < :end) OR
+                (R.end > :start AND R.end <= :end))
+             AND R.Resource = :resource'
         );
 
         $Query->setParameter('start', $Start);
         $Query->setParameter('end', $End);
+        $Query->setParameter('resource', $Resource);
 
         $return = array();
         foreach ($Query->getResult() as $ReservationEntity) {
