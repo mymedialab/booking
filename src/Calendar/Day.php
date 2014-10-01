@@ -4,7 +4,6 @@ namespace MML\Booking\Calendar;
 use MML\Booking\Exceptions;
 use MML\Booking\Factories;
 use MML\Booking\Interfaces;
-use MML\Booking\Models\Resource;
 
 class Day
 {
@@ -46,9 +45,8 @@ class Day
      *               a calendar is drawn midnight to midnight but a resource is only available 9-5, active will be false
      *               for any period before 9 and after 5.
      */
-    public function availabilityFor(Resource $Resource)
+    public function availabilityFor(Interfaces\Resource $Resource)
     {
-        $OpeningTimes = $this->getOpeningTimes($Resource);
         $Availability = $this->Factory->getReservationAvailability();
         $Finder       = $this->Factory->getReservationFinder();
         $Period       = $this->Factory->getPeriodFactory()->getStandalone();
@@ -66,7 +64,7 @@ class Day
                 break;
             }
 
-            if ($this->isOpen($Resource, $Period, $OpeningTimes)) {
+            if ($this->isOpen($Resource, $Period)) {
                 $status = $Availability->check($Resource, $Period) ? 'available' : 'unavailable';
             } else {
                 $status = 'closed';
@@ -85,23 +83,11 @@ class Day
         return $availability;
     }
 
-    protected function getOpeningTimes(Resource $Resource)
-    {
-        $AvailabilityFactory = $this->Factory->getAvailabilityFactory();
-        $OpeningTimes = array();
-        foreach ($Resource->allAvailability() as $Entity) {
-            $Availability = $AvailabilityFactory->wrap($Entity);
-            $openingTimes[] = $Availability;
-        }
-
-        return $openingTimes;
-    }
-
-    protected function isOpen(Resource $Resource, Interfaces\Period $Period, array $OpeningTimes)
+    protected function isOpen(Interfaces\Resource $Resource, Interfaces\Period $Period, array $OpeningTimes)
     {
         $open = false;
 
-        foreach ($OpeningTimes as $Availability) {
+        foreach ($Resource->allAvailability() as $Availability) {
             if (!$Availability->getAvailable() && $Availability->overlaps($Period)) {
                 // if a closing time overlaps the start or end of a period, it is effectively closed.
                 if ($Availability->getAffectedQuantity() >= $Resource->getQuantity()) {

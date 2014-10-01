@@ -81,11 +81,8 @@ class Availability
             return 0;
         }
 
-        $Factory = $this->Factory->getAvailabilityFactory();
-        $Availabilities = $Factory->getAllFor($Resource);
-
         $total = 0;
-        foreach ($Availabilities as $Availability) {
+        foreach ($Resource->allAvailability() as $Availability) {
             // @todo this seems too flimsy and easy to break. What about overlapping periods? Eg days / mornings?
             if ($Availability->getAvailable()) {
                 // this is a window of availability. Ensure the reservation period is fully inside it
