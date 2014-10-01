@@ -68,8 +68,13 @@ class App
         return ($qty === 1) ? $reservations[0] : $reservations;
     }
 
-    public function createBlockReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
-    {
+    public function createBlockReservation(
+        Interfaces\Resource $Resource,
+        Interfaces\Interval $BookingInterval,
+        Interfaces\Interval $RecurringInterval,
+        \DateTime $FirstBooking,
+        \DateTime $Cutoff = null
+    ) {
         // @todo
     }
 

@@ -140,27 +140,6 @@ class reservationsTest extends \Codeception\TestCase\Test
         $this->assertTrue(is_string("No exceptions so far!")); // always passes, just making sure we can get to here!
     }
 
-    public function testRecurringBookings()
-    {
-        /**
-         * First test all the wiring, should get through without errors
-         */
-        $Resource = $this->Booking->getResource('conference_suite');
-
-        // start with setting up the first two hour booking
-        $FirstStart = new \DateTime('2018-06-24 10:00:00');
-        $Period     = $this->Booking->getPeriodFor($Resource, 'hourly');
-        $Period->begins($FirstStart);
-        $Period->repeat(2);
-
-        // Repeat every other week ad infinitum
-        $Interval = $this->Booking->getInterval('weekly');
-        $Interval->setStagger(2);
-
-        $Reservation = $this->Booking->createBlockReservation($Resource, $Period, $Interval);
-        $this->assertTrue(is_string("No exceptions so far!")); // always passes, just making sure we can get to here!
-    }
-
     public function testRoomAvailable()
     {
         /**
