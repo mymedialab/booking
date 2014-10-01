@@ -21,10 +21,8 @@ class Availability
 
     public function getNew($name)
     {
-        $name = strtolower($name);
-
         $Entity = new Models\Availability();
-        $Entity->setType(ucfirst($name));
+        $Entity->setType($name);
 
         $Doctrine = $this->GeneralFactory->getDoctrine();
         $Doctrine->persist($Entity);
