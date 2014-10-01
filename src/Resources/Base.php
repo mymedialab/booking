@@ -4,13 +4,15 @@ namespace MML\Booking\Resources;
 use MML\Booking\Interfaces;
 use MML\Booking\Factories;
 
-class Base
+class Base implements Interfaces\Resource
 {
     protected $Factory;
+    protected $Entity;
 
     public function __construct(Interfaces\ResourcePersistence $Entity, Factories\General $Factory)
     {
         $this->Factory = $Factory;
+        $this->Entity = $Entity;
     }
 
     /**

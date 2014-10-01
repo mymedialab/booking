@@ -76,7 +76,7 @@ interface Resource
      * Removes the supplied availability window from the resource
      * @param AvailabilityPersistence $Availability
      */
-    public function removeAvailability(AvailabilityPersistence $Availability);
+    public function removeAvailability(Availability $Availability);
 
     /**
      * @return \DateTime
