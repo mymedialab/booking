@@ -125,11 +125,10 @@ class Resource implements Interfaces\ResourcePersistence
         throw new Exceptions\Booking("Resource::getAvailability Unknown Availability $name");
     }
 
-    public function addAvailability(Interfaces\Availability $Availability)
+    public function addAvailability(Interfaces\AvailabilityPersistence $Availability)
     {
-        $Entity = $Availability->getEntity();
-        $Entity->addResource($this); // synchronously updating inverse side
-        $this->Availability[] = $Entity;
+        $Availability->addResource($this); // synchronously updating inverse side
+        $this->Availability[] = $Availability;
     }
 
     public function removeAvailability(Interfaces\AvailabilityPersistence $Availability)
