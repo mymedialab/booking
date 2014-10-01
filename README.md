@@ -111,7 +111,3 @@ items are below. These should give you an idea of just how in-development this d
    over-normalised to me, one indirection too far. But it might just make us more portable and easily extensible?
 
  * This is a biggie: Simplify! A Lot! We should provide well tested convenience wrappers for common types of usage.
-
- * Rethink The wrappers / entities a fair bit. Could tie in with the simplify job. Need ALL entities to be wrapped so
-   that a consuming application only worries about the App level implementations, not the Doctrine stuff. At the minute
-   you need to grok the whole stack to use it as you're constantly forced to transition between the two.
