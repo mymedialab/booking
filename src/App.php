@@ -84,4 +84,24 @@ class App
         $Provider = $this->Factory->getIntervalFactory();
         return $Provider->get($identifier);
     }
+
+    public function remove($Model)
+    {
+        if ($Model instanceof Interfaces\DoctrineEntity) {
+            $Entity = $Model;
+        } elseif (is_callable(array($Model, 'getEntity'))) {
+            $Entity = $Model->getEntity();
+        } else {
+            throw new Exceptions\Booking("Failed to persist removal. Entity type not known");
+        }
+
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->remove($Entity);
+    }
+
+    public function persist()
+    {
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->flush();
+    }
 }

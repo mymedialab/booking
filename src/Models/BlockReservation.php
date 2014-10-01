@@ -12,7 +12,7 @@ use MML\Booking\Interfaces;
  * @HasLifecycleCallbacks
  * @Table(name="booking_block_reservations")
  */
-class BlockReservation
+class BlockReservation implements Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")
