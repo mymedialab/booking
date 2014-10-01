@@ -44,6 +44,18 @@ class Interval implements Interfaces\IntervalPersistence, Interfaces\DoctrineEnt
     */
     protected $BookingAvailability;
 
+    /**
+     * @OneToMany(targetEntity="MML\Booking\Models\BlockReservation", mappedBy="BookingInterval")
+     * @OrderBy({"start" = "DESC"})
+    */
+    private $BlockReservationBookings;
+
+    /**
+     * @OneToMany(targetEntity="MML\Booking\Models\BlockReservation", mappedBy="RepeatInterval")
+     * @OrderBy({"start" = "DESC"})
+    */
+    private $BlockReservationRepeats;
+
     protected $Factory;
 
     public function __construct()

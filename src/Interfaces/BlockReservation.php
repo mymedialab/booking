@@ -4,11 +4,12 @@ namespace MML\Booking\Interfaces;
 interface BlockReservation
 {
     public function setupFrom(
-        ResourcePersistence $Resource,
+        Resource $Resource,
         Interval $BookingInterval,
         Interval $RecurringInterval,
         \DateTime $FirstBooking,
-        \DateTime $LastBooking = null
+        \DateTime $Cutoff = null,
+        $quantity = 1
     );
 
     /**

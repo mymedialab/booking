@@ -12,47 +12,65 @@ use MML\Booking\Interfaces;
  * @HasLifecycleCallbacks
  * @Table(name="booking_block_reservations")
  */
-class BlockReservation implements Interfaces\DoctrineEntity
+class BlockReservation implements Interfaces\BlockReservationPersistence, Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")
      * @GeneratedValue
     */
     private $id;
-    /** @Column(type="datetime") */
-    private $start;
-    /** @Column(type="datetime") */
+
+    /** @Column(type="integer") */
     private $quantity;
-    /** @Column(type="integer") */
-    private $stagger;
-    /** @Column(type="integer") */
-    private $interval;
-    /** @Column(type="string") */
-    private $created;
+
     /** @Column(type="datetime") */
-    private $modified;
+    private $FirstBooking;
+
+    /** @Column(type="datetime", nullable=true) */
+    private $Cutoff;
+
     /** @ManyToOne(targetEntity="MML\Booking\Models\Resource", inversedBy="BlockReservations") */
     private $Resource;
+
+    /** @ManyToOne(targetEntity="MML\Booking\Models\Interval", inversedBy="BlockReservationBookings") */
+    private $BookingInterval;
+
+    /** @ManyToOne(targetEntity="MML\Booking\Models\Interval", inversedBy="BlockReservationRepeats") */
+    private $RepeatInterval;
+
+    /** @Column(type="datetime") */
+    private $created;
+
+    /** @Column(type="datetime") */
+    private $modified;
 
     public function getId()
     {
         return $this->id;
     }
-    public function getStart()
-    {
-        return $this->start;
-    }
     public function getQuantity()
     {
         return $this->quantity;
     }
-    public function getInterval()
+    public function getBookingInterval()
     {
-        return $this->interval;
+        return $this->BookingInterval;
     }
-    public function getStagger()
+    public function getRepeatInterval()
     {
-        return $this->stagger;
+        return $this->RepeatInterval;
+    }
+    public function getResource()
+    {
+        return $this->Resource;
+    }
+    public function getFirstBooking()
+    {
+        return $this->FirstBooking;
+    }
+    public function getCutoff()
+    {
+        return $this->Cutoff;
     }
     public function getCreated()
     {
@@ -62,19 +80,30 @@ class BlockReservation implements Interfaces\DoctrineEntity
     {
         return $this->modified;
     }
-    public function getResource()
-    {
-        return $this->Resource;
-    }
 
-
-    public function setStart(\DateTime $Date)
+    public function setResource(Interfaces\ResourcePersistence $Resource)
     {
-        $this->start = $Date;
+        $this->Resource = $Resource;
     }
-    public function setEnd(\DateTime $Date)
+    public function setBookingInterval(Interfaces\IntervalPersistence $Interval)
     {
-        $this->end = $Date;
+        $this->BookingInterval = $Interval;
+    }
+    public function setRepeatInterval(Interfaces\IntervalPersistence $Interval)
+    {
+        $this->RepeatInterval = $Interval;
+    }
+    public function setFirstBooking(\DateTime $FirstBooking)
+    {
+        $this->FirstBooking = $FirstBooking;
+    }
+    public function setCutoff(\DateTime $Cutoff = null)
+    {
+        $this->Cutoff = $Cutoff;
+    }
+    public function setQuantity($quantity)
+    {
+        $this->quantity = $quantity;
     }
 
     /**
@@ -84,16 +113,5 @@ class BlockReservation implements Interfaces\DoctrineEntity
     {
         $this->created = $this->created ? $this->created : new \DateTime();
         $this->modified = new \DateTime();
-    }
-
-    /**
-     *
-     * @param  Interfaces\Period $Period [description]
-     * @return bool true means there is a booking conflict here.
-     */
-    public function overlaps(Interfaces\Period $Period)
-    {
-        // @todo figure out if any scheduled booking conflicts with the Period
-        return false;
     }
 }

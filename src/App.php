@@ -73,9 +73,17 @@ class App
         Interfaces\Interval $BookingInterval,
         Interfaces\Interval $RecurringInterval,
         \DateTime $FirstBooking,
-        \DateTime $Cutoff = null
+        \DateTime $Cutoff = null,
+        $quantity = 1
     ) {
-        // @todo
+        $Reservation = $this->Factory->getBlockBooking();
+        $Reservation->setupFrom($Resource, $BookingInterval, $RecurringInterval, $FirstBooking, $Cutoff, $quantity);
+
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->persist($Reservation->getEntity());
+        $Doctrine->persist($BookingInterval->getEntity());
+        $Doctrine->persist($RecurringInterval->getEntity());
+        $Doctrine->flush();
     }
 
     public function getReservations(Interfaces\Resource $Resource, \DateTime $Start, \DateTime $End)

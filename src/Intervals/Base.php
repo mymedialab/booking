@@ -10,7 +10,7 @@ abstract class Base
     protected $Entity;
 
     /**
-     * Sets the persistance layer required by the model.
+     * Sets the persistence layer required by the model.
      *
      * @param Interfaces\IntervalPersistence $Entity
      */

@@ -93,7 +93,7 @@ class Resource implements Interfaces\ResourcePersistence, Interfaces\DoctrineEnt
     public function getBlockReservationsAfter(\DateTime $DateTime)
     {
         $Criteria = Criteria::create();
-        $Criteria->where(Criteria::expr()->gt('start', $DateTime));
+        $Criteria->where(Criteria::expr()->gt('FirstBooking', $DateTime));
 
         return $this->BlockReservations->matching($Criteria);
     }
