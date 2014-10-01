@@ -23,17 +23,17 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $IntervalFactory = $this->Factory->getIntervalFactory();
 
         $RecurringInterval = $IntervalFactory->get('Weekly');
-        $BookingInterval   = $IntervalFactory->get('TimeOfDay');
+        $BookingInterval   = $IntervalFactory->get('Minutes');
 
-        $Resource = $Booking->getResource('blocktest_something');
-        $Start = date_create_from_format('04/09/1982', 'd/m/Y');
-        $End   = date_create_from_format('10/01/2011', 'd/m/Y');
+        $Resource = $this->Booking->getResource('blocktest_something');
+        $Start = date_create_from_format('d/m/Y', '04/09/1982');
+        $End   = date_create_from_format('d/m/Y', '10/01/2011');
 
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
-        $Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start, $End);
+        $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start, $End);
 
-        $Booking->persist();
+        $this->Booking->persist();
     }
 
     public function testAddInfiniteBlockBooking()
@@ -43,13 +43,13 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $RecurringInterval = $IntervalFactory->get('Weekly');
         $BookingInterval   = $IntervalFactory->get('TimeOfDay');
 
-        $Resource = $Booking->getResource('blocktest_something');
-        $Start = date_create_from_format('04/09/1982', 'd/m/Y');
+        $Resource = $this->Booking->getResource('blocktest_something');
+        $Start = date_create_from_format('d/m/Y', '04/09/1982');
 
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
-        $Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
+        $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
 
-        $Booking->persist();
+        $this->Booking->persist();
     }
 }
