@@ -1,7 +1,7 @@
 <?php
 namespace MML\Booking\Interfaces;
 
-interface ResourcePersistence
+interface Resource
 {
     /**
      * @return integer  Database ID
@@ -70,13 +70,13 @@ interface ResourcePersistence
      * Adds an availability window to the resource
      * @param InterfacesAvailability $Availability
      */
-    public function addAvailability(AvailabilityPersistence $Availability);
+    public function addAvailability(Availability $Availability);
 
     /**
      * Removes the supplied availability window from the resource
      * @param AvailabilityPersistence $Availability
      */
-    public function removeAvailability(AvailabilityPersistence $Availability);
+    public function removeAvailability(Availability $Availability);
 
     /**
      * @return \DateTime
@@ -86,4 +86,10 @@ interface ResourcePersistence
      * @return \DateTime
      */
     public function getModified();
+
+    /**
+     * Used to interface with ORM and other entities only.
+     * @return ResourcePersistence
+     */
+    public function getEntity();
 }

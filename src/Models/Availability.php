@@ -10,7 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @HasLifecycleCallbacks
  * @Table(name="booking_availability")
  */
-class Availability implements Interfaces\AvailabilityPersistence
+class Availability implements Interfaces\AvailabilityPersistence, Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")

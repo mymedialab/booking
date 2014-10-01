@@ -96,9 +96,9 @@ items are below. These should give you an idea of just how in-development this d
 
  * Database intereaction: I LOVE DOCTRINE. But you may not. Can we make this not rely so heavily on it? abstract out the
    models etc. Most of them are interface based already, but maybe give a general schema and fit a few other popular
-   ORM's out-of-the-box?
+   ORM's out-of-the-box? A good start would be to rename models folder to entities or doctrine persistence or something.
 
- * More database stuff. This shouldn't require its own DB. Even if we stick with Doctrine, can we somehow use a  table
+ * More database stuff. This shouldn't require its own DB. Even if we stick with Doctrine, can we somehow use a table
    prefix and a cleverer installer? Would be nice to have a co-habiting system. Maybe need to move away from in-file
    specification?
 
@@ -111,7 +111,3 @@ items are below. These should give you an idea of just how in-development this d
    over-normalised to me, one indirection too far. But it might just make us more portable and easily extensible?
 
  * This is a biggie: Simplify! A Lot! We should provide well tested convenience wrappers for common types of usage.
-
- * Rethink The wrappers / entities a fair bit. Could tie in with the simplify job. Need ALL entities to be wrapped so
-   that a consuming application only worries about the App level implementations, not the Doctrine stuff. At the minute
-   you need to grok the whole stack to use it as you're constantly forced to transition between the two.

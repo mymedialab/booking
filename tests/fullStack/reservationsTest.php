@@ -1,6 +1,7 @@
 <?php
 
 use MML\Booking\Exceptions;
+use MML\Booking\Interfaces;
 use Codeception\Module\FullStackHelper as Helper;
 
 class reservationsTest extends \Codeception\TestCase\Test
@@ -38,7 +39,7 @@ class reservationsTest extends \Codeception\TestCase\Test
         }
     }
 
-    protected function reservedResourceCount(MML\Booking\Models\Resource $Resource)
+    protected function reservedResourceCount(Interfaces\Resource $Resource)
     {
         $Query = $this->Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id ');
         $Query->setParameter('resource_id', $Resource->getId());

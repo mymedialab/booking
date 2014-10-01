@@ -13,7 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @HasLifecycleCallbacks
  * @Table(name="booking_reservations")
  */
-class Reservation implements Interfaces\ReservationPersistence
+class Reservation implements Interfaces\ReservationPersistence, Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")

@@ -1,6 +1,7 @@
 <?php
 namespace MML\Booking\Models;
 
+use MML\Booking\Interfaces;
 /**
  * Holds data for an existing reservation
  *
@@ -9,7 +10,7 @@ namespace MML\Booking\Models;
  * @Entity
  * @Table(name="booking_reservation_meta")
  */
-class ReservationMeta
+class ReservationMeta implements Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")

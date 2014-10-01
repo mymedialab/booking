@@ -1,6 +1,8 @@
 <?php
 namespace MML\Booking\Models;
 
+use MML\Booking\Interfaces;
+
 /**
  * @todo  make an interface and use it. Want portability, Boiy!
  * DOCTRINE CONFIG
@@ -8,7 +10,7 @@ namespace MML\Booking\Models;
  * @Entity
  * @Table(name="booking_interval_meta")
  */
-class IntervalMeta
+class IntervalMeta implements Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")

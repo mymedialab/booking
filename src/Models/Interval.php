@@ -9,7 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  * @Entity
  * @Table(name="booking_intervals")
  */
-class Interval implements Interfaces\IntervalPersistence
+class Interval implements Interfaces\IntervalPersistence, Interfaces\DoctrineEntity
 {
     /**
      * @id @Column(type="integer")

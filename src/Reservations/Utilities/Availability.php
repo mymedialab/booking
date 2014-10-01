@@ -15,7 +15,7 @@ class Availability
         $this->Factory = $Factory;
     }
 
-    public function check(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period, $qty = 1)
+    public function check(Interfaces\Resource $Resource, Interfaces\Period $Period, $qty = 1)
     {
         if (intval($qty) <= 0) {
             throw new Exceptions\Booking("Availability::check requires a positive integer quantity");
@@ -36,10 +36,11 @@ class Availability
         return (($available - $taken) >= $qty);
     }
 
-    protected function singleReservations(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    protected function singleReservations(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
         $Doctrine = $this->Factory->getDoctrine();
 
+        // @todo should this be moved into a custom repo or something?
         if ($Period->forcePerSecond()) {
             $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start > :start AND r.start < :end) OR (r.end > :start AND r.end < :end))');
         } else {
@@ -53,7 +54,7 @@ class Availability
         return intval($Query->getSingleScalarResult());
     }
 
-    protected function blockBooking(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    protected function blockBooking(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
         $count = 0;
 
@@ -69,11 +70,11 @@ class Availability
     /**
      * Counts resources available for reservation (eg, not under maitainence or out of action).
      *
-     * @param  Interfaces\ResourcePersistence    $Resource
-     * @param  Interfaces\Period                $Period
+     * @param  Interfaces\Resource  $Resource
+     * @param  Interfaces\Period    $Period
      * @return integer
      */
-    protected function resourcesForPeriod(Interfaces\ResourcePersistence $Resource, Interfaces\Period $Period)
+    protected function resourcesForPeriod(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
         $qty = intval($Resource->getQuantity());
         if ($qty === 0) {
@@ -81,11 +82,8 @@ class Availability
             return 0;
         }
 
-        $Factory = $this->Factory->getAvailabilityFactory();
-        $Availabilities = $Factory->getAllFor($Resource);
-
         $total = 0;
-        foreach ($Availabilities as $Availability) {
+        foreach ($Resource->allAvailability() as $Availability) {
             // @todo this seems too flimsy and easy to break. What about overlapping periods? Eg days / mornings?
             if ($Availability->getAvailable()) {
                 // this is a window of availability. Ensure the reservation period is fully inside it

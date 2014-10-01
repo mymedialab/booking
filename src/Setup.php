@@ -24,17 +24,18 @@ class Setup
      * @param  string  $name              The application-level name
      * @param  string  $friendlyName      A friendly name to show to users
      * @param  integer $quantityAvailable defaults to 1
-     * @return Models\Resource            The created resource
+     * @return Interfaces\Resource        The created resource
      */
     public function createResource($name, $friendlyName, $quantityAvailable = 1)
     {
-        $Resource = $this->Factory->getEmptyResource('Resource');
+        $Resource = $this->Factory->getEmptyResource();
 
         $Resource->setName($name);
         $Resource->setFriendlyName($friendlyName);
         $Resource->setQuantity($quantityAvailable);
 
         $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->persist($Resource->getEntity());
         $Doctrine->flush();
 
         return $Resource;
@@ -44,10 +45,10 @@ class Setup
      * This is a simpler version of addAvailabilityWindow(...). This does the same thing but the availability window is
      * always allow.
      *
-     * @param Interfaces\ResourcePersistence $Resource
-     * @param array                         $bookingIntervals
+     * @param Interfaces\Resource $Resource
+     * @param array               $bookingIntervals
      */
-    public function addBookingIntervals(Interfaces\ResourcePersistence $Resource, array $bookingIntervals)
+    public function addBookingIntervals(Interfaces\Resource $Resource, array $bookingIntervals)
     {
         $Availability = $this->Factory->getAvailability('always');
 
@@ -72,12 +73,12 @@ class Setup
      * the availability table. At the minute, we behave as if this is 1:M, but the relationship is M:M. Likely to shoot
      * ourselves in the foot!
      *
-     * @param Interfaces\ResourcePersistence    $Resource
-     * @param Interfaces\Interval               $AvailablilityWindow
-     * @param array                             $bookingIntervals
+     * @param Interfaces\Resource    $Resource
+     * @param Interfaces\Interval    $AvailablilityWindow
+     * @param array                  $bookingIntervals
      */
     public function addAvailabilityWindow(
-        Interfaces\ResourcePersistence $Resource,
+        Interfaces\Resource $Resource,
         Interfaces\Interval $AvailablilityWindow,
         array $bookingIntervals
     ) {
@@ -100,16 +101,16 @@ class Setup
     /**
      * Marks a resource or group of resources as unavailable
      *
-     * @param  Interfaces\ResourcePersistence   $Resource The resource to mark unavailable
-     * @param  Interfaces\Period                $Period   The Period for which that resource is unavailable
-     * @param  integer                          $qty      How many of that resource are accounted for in this period
-     * @param  string                           $name     A friendly name for this period to write to the database
-     * @param  string                           $plural   A friendly plural name for this period to write to the database
-     * @param  string                           $singular A friendly singular name for this period to write to the database
+     * @param  Interfaces\Resource   $Resource The resource to mark unavailable
+     * @param  Interfaces\Period     $Period   The Period for which that resource is unavailable
+     * @param  integer               $qty      How many of that resource are accounted for in this period
+     * @param  string                $name     A friendly name for this period to write to the database
+     * @param  string                $plural   A friendly plural name for this period to write to the database
+     * @param  string                $singular A friendly singular name for this period to write to the database
      * @return null
      */
     public function markUnavailable(
-        Interfaces\ResourcePersistence $Resource,
+        Interfaces\Resource $Resource,
         Interfaces\Period $Period,
         $qty = null,
         $name = null,
