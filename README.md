@@ -111,3 +111,8 @@ items are below. These should give you an idea of just how in-development this d
    over-normalised to me, one indirection too far. But it might just make us more portable and easily extensible?
 
  * This is a biggie: Simplify! A Lot! We should provide well tested convenience wrappers for common types of usage.
+
+ * Consistency-ify: Can we make it so that all the intervals just take a DateTime object and extract the info they need
+   from that? Thinking the case of (for example) block booking at the user end. Choose repeat weekly / fortnightly /
+   daily, then need special handling code in the users app to configure each interval. Wouldn't it be noce to do away
+   with that?

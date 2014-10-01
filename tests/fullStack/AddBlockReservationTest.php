@@ -29,6 +29,7 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $Start = date_create_from_format('d/m/Y', '04/09/1982');
         $End   = date_create_from_format('d/m/Y', '10/01/2011');
 
+        $RecurringInterval->configure($Start, $End, 'Recurring interval');
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
         $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start, $End);
@@ -46,6 +47,7 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $Resource = $this->Booking->getResource('blocktest_something');
         $Start = date_create_from_format('d/m/Y', '04/09/1982');
 
+        $RecurringInterval->configure($Start, $Start, 'Recurring interval');
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
         $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
