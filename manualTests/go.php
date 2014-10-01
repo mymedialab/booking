@@ -93,36 +93,23 @@ $Setup    = new Booking\Setup($Factory);
 /// test begins...
 try {
 
-    $resources = array(
-        'double_room' => array('friendly' => 'Double Room', 'qty' => 10),
-    );
-    foreach ($resources as $name => $details) {
-        $Resource = $Booking->getResource($name);
-        if (!$Resource) {
-            $Resource = $Setup->createResource($name, $details['friendly'], $details['qty']);
-            $Nightly  = $Factory->getIntervalFactory()->get('Daily');
-            $Nightly->configure("13:00", "09:00", "nightly", "nights", "night");
-            $Setup->addBookingIntervals($Resource, array($Nightly));
-        }
-    }
+    $Resource = $Setup->createResource('blocktest_something', 'This thing here', 2);
 
-    $Doctrine->flush();
+    $IntervalFactory = $Factory->getIntervalFactory();
 
-    $Start = new \DateTime('24-06-2018');
-    $Resource = $Booking->getResource('double_room');
-    $Period   = $Booking->getPeriodFor($Resource, 'nightly');
-    $Period->begins($Start);
-    $Period->repeat(3);
+    $RecurringInterval = $IntervalFactory->get('Daily');
+    $BookingInterval   = $IntervalFactory->get('TimeOfDay');
 
-    $Reservation = $Booking->createReservation($Resource, $Period, 1);
-    $Reservation->addMeta('some_rubbish', 'this thing here');
+    $Resource = $Booking->getResource('blocktest_something');
+    $Start = date_create_from_format('d/m/Y', '04/09/1982');
+        $End   = date_create_from_format('d/m/Y', '10/01/2011');
 
-    assertEquals('this thing here', $Reservation->getMeta('some_rubbish'));
-    assertEquals('24-06-2018 13:00', $Reservation->getStart()->format('d-m-Y H:i'));
-    assertEquals('27-06-2018 09:00', $Reservation->getEnd()->format('d-m-Y H:i'));
+    $RecurringInterval->configure('10:00', '12:30', 'This is the recurring interval');
+    $BookingInterval->configure('10:00', '12:30', 'some friendly name for booking interval');
 
-    $Doctrine->flush();
-    assertEquals(1, count($Reservation->allMeta()));
+    $Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start, $End); // no end!
+
+    $Booking->persist();
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";
