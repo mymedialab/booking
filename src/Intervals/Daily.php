@@ -3,6 +3,7 @@ namespace MML\Booking\Intervals;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\RegEx;
 
 /**
  * This interval can be used for anything which happens once a day. For example daily bookings of offices, nightly
@@ -146,9 +147,7 @@ class Daily extends Base implements Interfaces\Interval
      */
     public function configure($startTime, $endTime, $name = null, $plural = null, $singular = null)
     {
-        // @todo bad regex Eejit! a time can't be any old digit! Test Better!
-        $regex = '/^\d{2}:\d{2}$/';
-        if (!preg_match($regex, $startTime) || !preg_match($regex, $endTime)) {
+        if (!preg_match(RegEx::time, $startTime) || !preg_match(RegEx::time, $endTime)) {
             throw new Exceptions\Booking("Daily::configure Invalid format submitted for time.");
         }
         $this->Entity->setMeta('opening', $startTime);

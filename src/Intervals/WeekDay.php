@@ -3,6 +3,7 @@ namespace MML\Booking\Intervals;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\RegEx;
 
 /**
  *
@@ -16,7 +17,6 @@ class WeekDay extends Base implements Interfaces\Interval
     protected $opens    = '09:00';
     protected $closes   = '17:00';
 
-    protected $regex = '/^[0-5][0-9]:[0-5][0-9]$/';
     protected $straddles = false;
 
     // @todo unit tests
@@ -88,10 +88,10 @@ class WeekDay extends Base implements Interfaces\Interval
 
     public function configure($opens, $closes, $name = null, $plural = null, $singular = null)
     {
-        if (!preg_match($this->regex, $opens)) {
+        if (!preg_match(RegEx::time, $opens)) {
             throw new Exceptions\Booking("Intervals\Weekday::configure Invalid opening time {$opens}.");
         }
-        if (!preg_match($this->regex, $closes)) {
+        if (!preg_match(RegEx::time, $closes)) {
             throw new Exceptions\Booking("Intervals\Weekday::configure Invalid closing time {$closes}.");
         }
         $this->name       = is_null($name)     ? $this->name     : $name;
@@ -114,12 +114,12 @@ class WeekDay extends Base implements Interfaces\Interval
         $opens  = ($reconfigured) ? false : $this->Entity->getMeta('opens', false);
         $closes = ($reconfigured) ? false : $this->Entity->getMeta('closes', false);
 
-        if ($opens && preg_match($this->regex, $opens)) {
+        if ($opens && preg_match(RegEx::time, $opens)) {
             $this->opens = $opens;
         } else {
             $this->Entity->setMeta('opens', $this->opens);
         }
-        if ($closes && preg_match($this->regex, $closes)) {
+        if ($closes && preg_match(RegEx::time, $closes)) {
             $this->closes = $closes;
         } else {
             $this->Entity->setMeta('closes', $this->closes);

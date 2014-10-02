@@ -3,6 +3,7 @@ namespace MML\Booking\Intervals;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\RegEx;
 
 /**
  *
@@ -17,7 +18,6 @@ class DayOfWeek extends Base implements Interfaces\Interval
     protected $closes   = '17:00';
     protected $day      = "Monday";
 
-    protected $regex = '/^[0-2][0-9]:[0-5][0-9]$/';
     protected $straddles = false;
 
     public function getNearestStart(\DateTime $RoughStart)
@@ -86,10 +86,10 @@ class DayOfWeek extends Base implements Interfaces\Interval
 
     public function configure($day, $opens, $closes, $plural = null, $singular = null, $name = null)
     {
-        if (!preg_match($this->regex, $opens)) {
+        if (!preg_match(RegEx::time, $opens)) {
             throw new Exceptions\Booking("Intervals\DayOfWeek::configure Invalid opening time {$opens}.");
         }
-        if (!preg_match($this->regex, $closes)) {
+        if (!preg_match(RegEx::time, $closes)) {
             throw new Exceptions\Booking("Intervals\DayOfWeek::configure Invalid closing time {$closes}.");
         }
         if (!in_array(strtolower($day), array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'))) {
@@ -127,8 +127,8 @@ class DayOfWeek extends Base implements Interfaces\Interval
         $this->singular = $this->Entity->getSingular() ? $this->Entity->getSingular() : $this->singular;
 
         $properties = array(
-            'opens'  => $this->regex,
-            'closes' => $this->regex
+            'opens'  => RegEx::time,
+            'closes' => RegEx::time
         );
 
         foreach ($properties as $id => $regex) {

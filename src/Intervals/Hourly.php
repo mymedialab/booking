@@ -3,6 +3,7 @@ namespace MML\Booking\Intervals;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\Regex;
 
 class Hourly extends Base implements Interfaces\Interval
 {
@@ -79,7 +80,7 @@ class Hourly extends Base implements Interfaces\Interval
 
     public function configure($hourStarts = '00', $name = null, $plural = null, $singular = null)
     {
-        if (!preg_match('/[0-5][0-9]/', $hourStarts)) {
+        if (!preg_match(RegEx::minutes, $hourStarts)) {
             throw new Exceptions\Booking("Intervals\Hourly::configure Invalid start time {$hourStarts}.");
         }
         $this->name       = is_null($name)     ? $this->name     : $name;
@@ -100,7 +101,7 @@ class Hourly extends Base implements Interfaces\Interval
         // if we've just been reconfigured, this needs to be overwritten so don't fetch
         $starts = ($reconfigured) ? false : $this->Entity->getMeta('hourStarts', false);
 
-        if ($starts && preg_match('/[0-5][0-9]/', $starts)) {
+        if ($starts && preg_match(RegEx::minutes, $starts)) {
             $this->hourStarts = $starts;
         } else {
             $this->Entity->setMeta('hourStarts', $this->hourStarts);

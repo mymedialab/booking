@@ -3,6 +3,7 @@ namespace MML\Booking\Intervals;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\RegEx;
 
 class Minutes extends Base implements Interfaces\Interval
 {
@@ -12,9 +13,6 @@ class Minutes extends Base implements Interfaces\Interval
 
     protected $dayStarts = '00:00';
     protected $duration  = 30;
-
-    // @todo move all these regexes into a nice wee library
-    protected $regex = '/[0-2][0-9]:[0-5][0-9]/';
 
     /**
      *
@@ -121,7 +119,7 @@ class Minutes extends Base implements Interfaces\Interval
         if (intval($numberMinutes) < 1) {
             throw new Exceptions\Booking("Intervals\Duration::configure Invalid number of minutes {$numberMinutes}.");
         }
-        if (!is_null($dayStarts) && !preg_match($this->regex, $dayStarts)) {
+        if (!is_null($dayStarts) && !preg_match(RegEx::time, $dayStarts)) {
             throw new Exceptions\Booking("Intervals\Duration::configure Invalid start time {$dayStarts}.");
         }
 
@@ -144,7 +142,7 @@ class Minutes extends Base implements Interfaces\Interval
         $starts   = ($reconfigured) ? false : $this->Entity->getMeta('dayStarts', false);
         $duration = ($reconfigured) ? false : $this->Entity->getMeta('duration', false);
 
-        if ($starts && preg_match($this->regex, $starts)) {
+        if ($starts && preg_match(RegEx::time, $starts)) {
             $this->dayStarts = $starts;
         } else {
             $this->Entity->setMeta('dayStarts', $this->dayStarts);
