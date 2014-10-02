@@ -2,7 +2,6 @@
 namespace MML\Booking\Interfaces;
 
 /**
- * @todo document (ideally before bumping composer version ya lazy toerag)
  */
 interface ReservationPersistence
 {

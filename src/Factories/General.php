@@ -22,8 +22,6 @@ class General
     }
 
     /**
-     * @todo might this be better as a caching factory? Could use a decorator and __call around a
-     * real factory. Pros: cleaner. Cons: no granularity? (could do a lookup?)
      *
      * @param  [type] $fn         [description]
      * @param  [type] $identifier [description]

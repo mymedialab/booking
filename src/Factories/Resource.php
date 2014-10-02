@@ -22,7 +22,6 @@ class Resource
     public function getNew()
     {
         $Entity = new Models\Resource;
-        // @todo should I persist this here? Will you ever request a disposable resource?
         return new Resources\Base($Entity, $this->Factory);
     }
 }
