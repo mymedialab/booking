@@ -24,10 +24,6 @@ class Standalone implements Interfaces\Period
      */
     public function begins(\DateTime $DateTime)
     {
-        if ($this->Duration && $this->End) {
-            throw new Exceptions\Booking("Periods\Generic::begins() Misconfigured. Use (duration and ends) OR (duration and begins) OR (begins and ends).");
-        }
-
         $this->Start = $DateTime;
         if ($this->Duration) {
             $this->calculateEnd();
@@ -43,10 +39,6 @@ class Standalone implements Interfaces\Period
      */
     public function ends(\DateTime $DateTime)
     {
-        if ($this->Duration && $this->Start) {
-            throw new Exceptions\Booking("Periods\Generic::ends() Misconfigured. Use (duration and ends) OR (duration and begins) OR (begins and ends).");
-        }
-
         $this->End = $DateTime;
         if ($this->Duration) {
             $this->calculateStart();
