@@ -90,6 +90,7 @@ class BlockReservation implements Interfaces\BlockReservationPersistence, Interf
 
     public function setResource(Interfaces\ResourcePersistence $Resource)
     {
+        $Resource->addBlockReservation($this);
         $this->Resource = $Resource;
     }
     public function setBookingInterval(Interfaces\IntervalPersistence $Interval)
