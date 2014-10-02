@@ -101,7 +101,12 @@ class Daily extends Base implements Interfaces\Interval
 
     public function getNextFrom(\DateTime $From)
     {
-        // @todo missing function
+        $Start = clone $From;
+        $Start->setTime($this->Opens->format('H'), $this->Opens->format('i'), 0);
+        while ($Start <= $From) {
+            $Start->modify("+1 day");
+        }
+        return $Start;
     }
 
     /**

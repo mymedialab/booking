@@ -21,7 +21,6 @@ class DailyTest extends \PHPUnit_Framework_TestCase
             )));
         $this->Object = new Daily($this->Persist);
     }
-//@todo test configure etc
 
     /**
      * @dataProvider nearestStartTests
@@ -123,6 +122,40 @@ class DailyTest extends \PHPUnit_Framework_TestCase
             array('14:00', '12:00', '1982/09/07 12:00', 3, '04-09-1982 14:00:00'),
             // and the awkward 24 hour thing, for a week
             array('13:00', '13:00', '1982/09/11 13:00', 7, '04-09-1982 13:00:00'),
+        );
+    }
+
+    /**
+     * @dataProvider nextStartData
+     */
+    public function testGetNextFrom($opening, $closing, $from, $qty, $expect)
+    {
+        $this->configure($opening, $closing);
+        $From = new \DateTime($from);
+
+        $Out = $this->Object->getNextFrom($From, $qty);
+        $this->assertEquals($expect, $Out->format('d-m-Y H:i:s'));
+    }
+
+    public function nextStartData()
+    {
+        return array(
+            // easy one. Book an office 9-5
+            array('09:00', '17:00', '1982/09/04 17:00', 1, '05-09-1982 09:00:00'),
+            // trickier. book a hotel room for 2pm til midday
+            array('14:00', '12:00', '1982/09/05 12:00', 1, '05-09-1982 14:00:00'),
+            // very awkward book something for 24hours
+            array('13:00', '13:00', '1982/09/05 13:00', 1, '06-09-1982 13:00:00'),
+
+            // now book an office 9-5 for two days...
+            array('09:00', '17:00', '1982/09/05 17:00', 2, '06-09-1982 09:00:00'),
+            // ...and two weeks
+            array('09:00', '17:00', '1982/09/17 17:00', 14, '18-09-1982 09:00:00'),
+
+            // Now book that hotel room for 3 nights
+            array('14:00', '12:00', '1982/09/07 12:00', 3, '07-09-1982 14:00:00'),
+            // and the awkward 24 hour thing, for a week
+            array('13:00', '13:00', '1982/09/11 13:00', 7, '12-09-1982 13:00:00'),
         );
     }
 }

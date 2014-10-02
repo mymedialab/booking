@@ -19,21 +19,18 @@ class WeekDay extends Base implements Interfaces\Interval
 
     protected $straddles = false;
 
-    // @todo unit tests
     public function getNearestStart(\DateTime $RoughStart)
     {
         $opening = explode(':', $this->opens);
         return $this->nearestTo($RoughStart, $opening[0], $opening[1]);
     }
 
-    // @todo unit tests
     public function getNearestEnd(\DateTime $RoughEnd)
     {
         $closing = explode(':', $this->closes);
         return $this->nearestTo($RoughEnd, $closing[0], $closing[1]);
     }
 
-    // @todo unit test! Found a tricksy bug where I had 7 in place of teh 6. Write a test!
     protected function nearestTo(\DateTime $Rough, $targetHour, $targetMinute)
     {
         $Exact = clone $Rough;
@@ -86,6 +83,23 @@ class WeekDay extends Base implements Interfaces\Interval
         return $Start;
     }
 
+
+    public function getNextFrom(\DateTime $From)
+    {
+        $day = intval($From->format('w'));
+        $Exact = clone $From;
+
+        $opening = explode(':', $this->opens);
+        $Exact->setTime($opening[0], $opening[1], '00');
+
+        while ($day === 6 || $day === 0 || $Exact <= $From) {
+            $Exact->modify('+1 day');
+            $day = intval($Exact->format('w'));
+        }
+
+        return $Exact;
+    }
+
     public function configure($opens, $closes, $name = null, $plural = null, $singular = null)
     {
         if (!preg_match(RegEx::time, $opens)) {
@@ -133,10 +147,5 @@ class WeekDay extends Base implements Interfaces\Interval
         } else {
             $this->straddles = false;
         }
-    }
-
-    public function getNextFrom(\DateTime $From)
-    {
-        // @todo missing function
     }
 }

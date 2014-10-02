@@ -102,7 +102,15 @@ class Minutes extends Base implements Interfaces\Interval
 
     public function getNextFrom(\DateTime $From)
     {
-        // @todo missing function
+        // nearestTo takes into account the day start time.
+        $Start = $this->nearestTo($From);
+        if ($Start <= $From) {
+            // @todo this is very longhand. Could I come up with a better way? Could I generalise that for the
+            // blockbooking availbility checking?
+            $Start->modify("+{$this->duration} minutes");
+        }
+
+        return $Start;
     }
 
     /**

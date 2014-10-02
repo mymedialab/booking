@@ -23,7 +23,7 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
 
         $Rough = new \DateTime($in);
         $Exact = $this->Object->getNearestStart($Rough);
-        // $this->assertEquals(10, $Exact);
+
         $this->assertEquals($out, $Exact->format('Y-m-d H:i:s'));
     }
 
@@ -81,6 +81,26 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
             array('Saturday', '09:00', '17:00', '1982-09-03 09:15:39', '1982-09-04 09:00:00'), // Friday
             array('Saturday', '09:00', '17:00', '1982-09-02 09:15:39', '1982-09-04 09:00:00'), // Thursday
             array('Saturday', '09:00', '17:00', '1982-09-01 09:15:39', '1982-09-04 09:00:00'), // Wednesday
+        );
+    }
+
+    /**
+     * @dataProvider nextFromData
+     */
+    public function testNextFrom($day, $open, $close, $from, $expect)
+    {
+        $this->Object->configure($day, $open, $close);
+        $Rough = new \DateTime($from);
+        $Exact = $this->Object->getNextFrom($Rough);
+        $this->assertEquals($expect, $Exact->format('Y-m-d H:i:s'));
+    }
+
+    public function nextFromData()
+    {
+        return array(
+            array('Tuesday', '09:00', '17:00', '2014-10-02 13:00', '2014-10-07 09:00:00'),
+            array('Tuesday', '09:00', '17:00', '2014-10-07 09:00', '2014-10-14 09:00:00'),
+            array('Sunday', '23:00', '23:30', '2014-10-05 09:00', '2014-10-05 23:00:00'),
         );
     }
 }

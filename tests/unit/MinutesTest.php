@@ -46,6 +46,38 @@ class MinutesTest extends \PHPUnit_Framework_TestCase
             array(180, '09:00', '2014-09-03 11:46', '2014-09-03 12:00:00')
         );
     }
+    /**
+     * @dataProvider nextFromData
+     */
+    public function testGetnextFrom($duration, $opens, $rough, $exactTime)
+    {
+        $this->Object->configure($duration, $opens);
+
+        $Rough = new \DateTime($rough);
+        $Exact = $this->Object->getnextFrom($Rough);
+
+        $this->assertEquals($exactTime, $Exact->format('Y-m-d H:i:s'));
+    }
+
+    public function nextFromData()
+    {
+        return array(
+            array(90, '09:00', '2014-09-03 07:00', '2014-09-03 09:00:00'),
+
+            array(90, '09:00', '2014-09-03 09:00', '2014-09-03 10:30:00'),
+            array(90, '09:00', '2014-09-03 09:30', '2014-09-03 10:30:00'),
+            array(90, '09:00', '2014-09-03 09:45', '2014-09-03 10:30:00'),
+            array(90, '09:00', '2014-09-03 09:46', '2014-09-03 10:30:00'),
+            array(90, '09:00', '2014-09-03 10:00', '2014-09-03 10:30:00'),
+            array(90, '09:00', '2014-09-03 10:30', '2014-09-03 12:00:00'),
+
+            array(60, '09:00', '2014-09-03 09:00', '2014-09-03 10:00:00'),
+            array(60, '09:00', '2014-09-03 09:30', '2014-09-03 10:00:00'),
+            array(60, '09:00', '2014-09-03 10:00', '2014-09-03 11:00:00'),
+            array(5, '09:00', '2014-09-03 09:47', '2014-09-03 09:50:00'),
+            array(180, '09:00', '2014-09-03 11:46', '2014-09-03 12:00:00')
+        );
+    }
 
     public function testCalculateStart()
     {

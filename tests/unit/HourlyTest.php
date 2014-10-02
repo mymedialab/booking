@@ -61,6 +61,27 @@ class HourlyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($start, $Calculated->format('Y-m-d H:i:s'));
     }
 
+    /**
+     * @dataProvider getNextData
+     */
+    public function testGetNextFrom($hourStarts, $from, $start)
+    {
+        $this->Object->configure($hourStarts);
+        $From = new \DateTime($from);
+
+        $Calculated = $this->Object->getNextFrom($From);
+        $this->assertEquals($start, $Calculated->format('Y-m-d H:i:s'));
+    }
+
+    public function getNextData()
+    {
+        return array(
+            array('00', '1982-09-04 22:15:39', '1982-09-04 23:00:00'),
+            array('15', '1982-09-04 22:15:39', '1982-09-04 23:15:00'),
+            array('15', '1982-09-04 23:20:39', '1982-09-05 00:15:00'),
+        );
+    }
+
     public function nearesrStartData()
     {
         return array(

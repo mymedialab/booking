@@ -63,7 +63,16 @@ class DayOfWeek extends Base implements Interfaces\Interval
 
     public function getNextFrom(\DateTime $From)
     {
-        // @todo missing function
+        $Start = clone $From;
+        $open = explode(':', $this->opens);
+        // need to setTime first, so that we can see if it's later today or not.
+        $Start->setTime($open[0], $open[1], '00');
+        if (strtolower($Start->format('l')) !== strtolower($this->day) || $Start <= $From) {
+            $Start->modify("next {$this->day}");
+            $Start->setTime($open[0], $open[1], '00'); // need toset time again, as next xxxday winds to midnight
+        }
+
+        return $Start;
     }
 
     public function calculateStart(\DateTime $End, $qty = 1)

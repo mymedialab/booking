@@ -78,6 +78,16 @@ class Hourly extends Base implements Interfaces\Interval
         return $Start;
     }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        $Start = clone $From;
+        $Start->setTime($From->format('H'), $this->hourStarts, '00');
+        if ($Start <= $From) {
+            $Start->modify('+1 hour');
+        }
+        return $Start;
+    }
+
     public function configure($hourStarts = '00', $name = null, $plural = null, $singular = null)
     {
         if (!preg_match(RegEx::minutes, $hourStarts)) {
@@ -106,10 +116,5 @@ class Hourly extends Base implements Interfaces\Interval
         } else {
             $this->Entity->setMeta('hourStarts', $this->hourStarts);
         }
-    }
-
-    public function getNextFrom(\DateTime $From)
-    {
-        // @todo missing function
     }
 }
