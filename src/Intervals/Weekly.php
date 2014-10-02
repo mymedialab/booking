@@ -57,9 +57,10 @@ class Weekly extends Base implements Interfaces\Interval
             $Start->modify("last " .$this->Start->format("l"));
             $qty--;
         }
-        $Last->setTime($this->Last->format("H"), $this->Last->format("i"), "00");
+        $Start->setTime($this->Start->format("H"), $this->Start->format("i"), "00");
 
-        return $Last;
+        return $Start;
+
     }
 
     /**
