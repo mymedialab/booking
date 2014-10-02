@@ -20,6 +20,9 @@ class BlockReservation implements Interfaces\BlockReservationPersistence, Interf
     */
     private $id;
 
+    /** @Column(type="string") */
+    private $friendlyName;
+
     /** @Column(type="integer") */
     private $quantity;
 
@@ -51,6 +54,10 @@ class BlockReservation implements Interfaces\BlockReservationPersistence, Interf
     public function getQuantity()
     {
         return $this->quantity;
+    }
+    public function getFriendlyName()
+    {
+        return $this->friendlyName;
     }
     public function getBookingInterval()
     {
@@ -105,6 +112,12 @@ class BlockReservation implements Interfaces\BlockReservationPersistence, Interf
     {
         $this->quantity = $quantity;
     }
+
+    public function setFriendlyName($friendlyName)
+    {
+        $this->friendlyName = $friendlyName;
+    }
+
 
     /**
      *  @PrePersist

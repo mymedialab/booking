@@ -69,6 +69,7 @@ class App
     }
 
     public function createBlockReservation(
+        $friendlyName,
         Interfaces\Resource $Resource,
         Interfaces\Interval $BookingInterval,
         Interfaces\Interval $RecurringInterval,
@@ -77,7 +78,7 @@ class App
         $quantity = 1
     ) {
         $Reservation = $this->Factory->getBlockBooking();
-        $Reservation->setupFrom($Resource, $BookingInterval, $RecurringInterval, $FirstBooking, $Cutoff, $quantity);
+        $Reservation->setupFrom($friendlyName, $Resource, $BookingInterval, $RecurringInterval, $FirstBooking, $Cutoff, $quantity);
 
         $Doctrine = $this->Factory->getDoctrine();
         $Doctrine->persist($Reservation->getEntity());

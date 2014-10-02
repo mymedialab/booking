@@ -16,6 +16,7 @@ class Base implements Interfaces\BlockReservation
     }
 
     public function setupFrom(
+        $friendlyName,
         Interfaces\Resource $Resource,
         Interfaces\Interval $BookingInterval,
         Interfaces\Interval $RepeatInterval,
@@ -23,6 +24,7 @@ class Base implements Interfaces\BlockReservation
         \DateTime $Cutoff = null,
         $quantity = 1
     ) {
+        $this->Entity->setFriendlyName($friendlyName);
         $this->Entity->setResource($Resource->getEntity());
         $this->Entity->setBookingInterval($BookingInterval->getEntity());
         $this->Entity->setRepeatInterval($RepeatInterval->getEntity());
@@ -40,6 +42,22 @@ class Base implements Interfaces\BlockReservation
     public function overlaps(Interfaces\Period $Period)
     {
 
+    }
+
+    public function getRepeatInterval()
+    {
+        $Factory = $this->Factory->getIntervalFactory();
+        return $Factory->wrap($this->Entity->getRepeatInterval());
+    }
+    public function getBookingInterval()
+    {
+        $Factory = $this->Factory->getIntervalFactory();
+        return $Factory->wrap($this->Entity->getBookingInterval());
+    }
+
+    public function getQuantity()
+    {
+        return intval($this->Entity->getQuantity());
     }
 
     public function getEntity()

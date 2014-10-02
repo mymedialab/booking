@@ -32,7 +32,7 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $RecurringInterval->configure($Start, $End, 'Recurring interval');
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
-        $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start, $End);
+        $this->Booking->createBlockReservation('Limited Reservation', $Resource, $BookingInterval, $RecurringInterval, $Start, $End);
 
         $this->Booking->persist();
     }
@@ -50,7 +50,7 @@ class AddBlockReservationTest extends \PHPUnit_Framework_TestCase
         $RecurringInterval->configure($Start, $Start, 'Recurring interval');
         $BookingInterval->configure('10:00', '12:30', 'some friendly name');
 
-        $this->Booking->createBlockReservation($Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
+        $this->Booking->createBlockReservation('Unlimited Reservation', $Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
 
         $this->Booking->persist();
     }

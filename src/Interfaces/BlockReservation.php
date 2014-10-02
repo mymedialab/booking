@@ -4,6 +4,7 @@ namespace MML\Booking\Interfaces;
 interface BlockReservation
 {
     public function setupFrom(
+        $friendlyName,
         Resource $Resource,
         Interval $BookingInterval,
         Interval $RecurringInterval,
