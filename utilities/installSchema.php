@@ -1,6 +1,4 @@
 <?php
-namespace MML\Booking\Utilities;
-
 use MML\Booking;
 
 require __DIR__ . "/../vendor/autoload.php";

@@ -2,16 +2,14 @@
 namespace MML\Booking\Intervals;
 
 use MML\Booking\Interfaces;
+use MML\Booking\Utilities\RegEx;
 
 /**
  * Used for example to make a booking between two times on any day. eg specifically 9-5
  *
- * @todo  unit test this.
  */
 class TimeOfDay extends Base implements Interfaces\Interval
 {
-    // @todo seem to use this in a lot of intervals, lets make it a helper class!
-    protected $timePattern = "/^([0-9]|0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/";
     protected $start = "00:01";
     protected $end   = "23:59";
     protected $straddles = false;
@@ -24,7 +22,7 @@ class TimeOfDay extends Base implements Interfaces\Interval
 
     public function configure($start, $end, $name = null, $plural = null, $singular = null)
     {
-        if (!preg_match($this->timePattern, $start) || !preg_match($this->timePattern, $end)) {
+        if (!preg_match(RegEx::time, $start) || !preg_match(RegEx::time, $end)) {
             throw new Exceptions\Booking("Intervals\TimeOfDay::configure invalid time format, should be hh:mm");
         }
 
@@ -118,10 +116,10 @@ class TimeOfDay extends Base implements Interfaces\Interval
     {
         $start = $this->Entity->getMeta('start', false);
         $end   = $this->Entity->getMeta('end', false);
-        if ($start && preg_match($this->timePattern, $start)) {
+        if ($start && preg_match(RegEx::time, $start)) {
             $this->start = $start;
         }
-        if ($end && preg_match($this->timePattern, $end)) {
+        if ($end && preg_match(RegEx::time, $end)) {
             $this->end = $end;
         }
         $this->calculateStraddles();
