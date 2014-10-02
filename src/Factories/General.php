@@ -110,6 +110,13 @@ class General
         }, 'ResourceFactory');
     }
 
+    public function getBlockReservationFactory()
+    {
+        return $this->cache(function () {
+            return new BlockReservation($this);
+        }, 'BlockReservationFactory');
+    }
+
     public function getAvailability($name)
     {
         $Factory = $this->getAvailabilityFactory();
@@ -146,11 +153,10 @@ class General
         $Factory = $this->getReservationFactory();
         return $Factory->getNew($name);
     }
-
     public function getBlockBooking()
     {
-        $Entity = new Models\BlockReservation();
-        return new BlockReservations\Base($Entity, $this);
+        $Factory = $this->getBlockReservationFactory($this);
+        return $Factory->getNew();
     }
 
 
