@@ -62,6 +62,9 @@ class Interval implements Interfaces\IntervalPersistence, Interfaces\DoctrineEnt
     {
         $this->BookingAvailability  = new ArrayCollection();
         $this->IntervalMeta = new ArrayCollection();
+        $this->AvailabilityWindow = new ArrayCollection();
+        $this->BlockReservationRepeats = new ArrayCollection();
+        $this->BlockReservationBookings = new ArrayCollection();
     }
 
     public function getId()
