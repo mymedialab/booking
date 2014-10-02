@@ -61,6 +61,11 @@ class DayOfWeek extends Base implements Interfaces\Interval
         return $End;
     }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
+    }
+
     public function calculateStart(\DateTime $End, $qty = 1)
     {
         $qty = max(intval($qty), 1);

@@ -60,7 +60,19 @@ class Weekly extends Base implements Interfaces\Interval
         $Start->setTime($this->Start->format("H"), $this->Start->format("i"), "00");
 
         return $Start;
+    }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        $Next = clone $From;
+        $Next->setTime($this->Start->format("H"), $this->Start->format("i"), "00");
+        if ($Next->format('l') !== $this->Start->format('l') || $Next < $From) {
+            // If days match, but we've had to wind time backward, then skip to next week or we're not really going
+            // forward. If days DON'T match, then skip forwad to obvs.
+            $Next->modify('+7 days');
+        }
+
+        return $Next;
     }
 
     /**

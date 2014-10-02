@@ -110,7 +110,6 @@ class WeekDay extends Base implements Interfaces\Interval
 
     protected function setup($reconfigured = false)
     {
-
         // if we've just been reconfigured, this needs to be overwritten so don't fetch
         $opens  = ($reconfigured) ? false : $this->Entity->getMeta('opens', false);
         $closes = ($reconfigured) ? false : $this->Entity->getMeta('closes', false);
@@ -134,5 +133,10 @@ class WeekDay extends Base implements Interfaces\Interval
         } else {
             $this->straddles = false;
         }
+    }
+
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
     }
 }

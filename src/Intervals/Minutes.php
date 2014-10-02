@@ -102,6 +102,11 @@ class Minutes extends Base implements Interfaces\Interval
         return $Start;
     }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
+    }
+
     /**
      *
      * @param  integer $numberMinutes

@@ -51,6 +51,15 @@ class Fixed extends Base implements Interfaces\Interval
         return $this->Start;
     }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        if ($From < $this->Start) {
+            return $this->Start;
+        } else {
+            throw new Exceptions\Booking("Fixed interval cannot get next time.");
+        }
+    }
+
     /**
      * Called by __construct
      * @return null
