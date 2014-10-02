@@ -5,7 +5,6 @@ use MML\Booking\Interfaces;
 
 /**
  * Holds data for a block reservation.
- * @todo  make an interface and use it.
  * DOCTRINE CONFIG
  *
  * @Entity
