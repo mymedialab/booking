@@ -15,8 +15,7 @@ class DayOfWeek extends Base implements Interfaces\Interval
 
     protected $opens    = '09:00';
     protected $closes   = '17:00';
-    protected $day      = 1; // Monday by default. internally we use numeric ordering. Externally, whatever strtotime
-                             // accepts.
+    protected $day      = "Monday";
 
     protected $regex = '/^[0-2][0-9]:[0-5][0-9]$/';
     protected $straddles = false;
@@ -36,23 +35,10 @@ class DayOfWeek extends Base implements Interfaces\Interval
     protected function nearestTo(\DateTime $Rough, $hour, $minute)
     {
         $Exact = clone $Rough;
+        // by subtracting 4 days, we can always find the nearest day by going to next day.
+        $Exact->modify("-4 days");
+        $Exact->modify("next {$this->day}");
         $Exact->setTime($hour, $minute, '00');
-        $day = $Exact->format('w');
-
-        $diff = $day - $this->day;
-
-        if ($diff > 3) {
-            $mod = 7 - $diff;
-            $Exact->modify("+{$mod} days"); // move forward to the next weeks day
-        } elseif ($diff > 0) {
-            $Exact->modify("-{$diff} days"); // move back to the last day which was this day
-        } elseif ($diff < -3) {
-            $mod = 7 - abs($diff);
-            $Exact->modify("-{$mod} days"); // move back to the last tim we passed this day
-        } elseif ($diff < 0) {
-            $mod = abs($diff);
-            $Exact->modify("+{$mod} days"); // move forward to the next weeks day
-        }
 
         return $Exact;
     }
@@ -73,6 +59,11 @@ class DayOfWeek extends Base implements Interfaces\Interval
         }
 
         return $End;
+    }
+
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
     }
 
     public function calculateStart(\DateTime $End, $qty = 1)
@@ -101,13 +92,16 @@ class DayOfWeek extends Base implements Interfaces\Interval
         if (!preg_match($this->regex, $closes)) {
             throw new Exceptions\Booking("Intervals\DayOfWeek::configure Invalid closing time {$closes}.");
         }
+        if (!in_array(strtolower($day), array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'))) {
+            throw new Exceptions\Booking("Intervals\DayOfWeek::configure Invalid day {$day}.");
+        }
         $this->name       = is_null($name)     ? ucfirst($day)   : $name;
         $this->plural     = is_null($plural)   ? $this->plural   : $plural;
         $this->singular   = is_null($singular) ? $this->singular : $singular;
 
         $this->opens = $opens;
         $this->closes = $closes;
-        $this->day = $this->translate($day, 'int');
+        $this->day = $day;
         $this->save();
     }
 
@@ -133,7 +127,6 @@ class DayOfWeek extends Base implements Interfaces\Interval
         $this->singular = $this->Entity->getSingular() ? $this->Entity->getSingular() : $this->singular;
 
         $properties = array(
-            'day'    => '/^[0-6]$/',
             'opens'  => $this->regex,
             'closes' => $this->regex
         );
@@ -144,6 +137,10 @@ class DayOfWeek extends Base implements Interfaces\Interval
             if ($value !== false && preg_match($regex, $value)) {
                 $this->$id = $value;
             }
+        }
+        $day  = $this->Entity->getMeta('day', false);
+        if ($day && in_array(strtolower($day), array('monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'))) {
+            $this->day = $day;
         }
 
         $Opens  = new \DateTime($this->opens . ":00");
@@ -156,19 +153,5 @@ class DayOfWeek extends Base implements Interfaces\Interval
         }
 
         $this->save();
-    }
-
-    protected function translate($day, $output = 'string')
-    {
-        if (strlen("$day") === 1) {
-            return intval($day);
-        }
-        $stamp = strtotime($day);
-
-        if ($output === 'string') {
-            return date('l', $stamp);
-        } else {
-            return date('w', $stamp);
-        }
     }
 }

@@ -37,11 +37,13 @@ class Resource implements Interfaces\ResourcePersistence, Interfaces\DoctrineEnt
      * @OrderBy({"start" = "DESC"})
     */
     private $Reservations;
+
     /**
      * @OneToMany(targetEntity="MML\Booking\Models\BlockReservation", mappedBy="Resource")
-     * @OrderBy({"start" = "DESC"})
+     * @OrderBy({"FirstBooking" = "DESC"})
     */
     private $BlockReservations;
+
     /**
      * @ManyToMany(targetEntity="MML\Booking\Models\Availability", inversedBy="Resources")
      * @JoinTable(name="booking_resource_availability",
@@ -90,10 +92,17 @@ class Resource implements Interfaces\ResourcePersistence, Interfaces\DoctrineEnt
     {
         return $this->BlockReservations;
     }
+    public function addBlockReservation(Interfaces\BlockReservationPersistence $Reservation)
+    {
+        $this->BlockReservations[] = $Reservation;
+    }
+
     public function getBlockReservationsAfter(\DateTime $DateTime)
     {
         $Criteria = Criteria::create();
-        $Criteria->where(Criteria::expr()->gt('start', $DateTime));
+        // where cutoff is after Start, OR last booking is null
+        $Criteria->where(Criteria::expr()->isNull('Cutoff'))
+                 ->orWhere(Criteria::expr()->gt('Cutoff', $DateTime));
 
         return $this->BlockReservations->matching($Criteria);
     }

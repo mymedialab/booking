@@ -44,7 +44,7 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
         // Test from persistence layer
         $this->Persist->expects($this->exactly(3))->method('getMeta')
             ->will($this->returnValueMap(array(
-                array('day', false, 0),
+                array('day', false, "Sunday"),
                 array('opens', false, '09:00'),
                 array('closes', false, '17:00'),
             )));
@@ -81,17 +81,6 @@ class DayOfWeekTest extends \PHPUnit_Framework_TestCase
             array('Saturday', '09:00', '17:00', '1982-09-03 09:15:39', '1982-09-04 09:00:00'), // Friday
             array('Saturday', '09:00', '17:00', '1982-09-02 09:15:39', '1982-09-04 09:00:00'), // Thursday
             array('Saturday', '09:00', '17:00', '1982-09-01 09:15:39', '1982-09-04 09:00:00'), // Wednesday
-
-            // same exact tests, but with saturday expressed as a digit
-            array(6, '09:00', '17:00', '1982-09-07 09:15:39', '1982-09-04 09:00:00'), // Tuesday
-            array(6, '09:00', '17:00', '1982-09-06 09:15:39', '1982-09-04 09:00:00'), // Monday
-            array(6, '09:00', '17:00', '1982-09-05 09:15:39', '1982-09-04 09:00:00'), // Sunday
-
-            array(6, '09:00', '17:00', '1982-09-04 09:15:39', '1982-09-04 09:00:00'), // Saturday
-
-            array(6, '09:00', '17:00', '1982-09-03 09:15:39', '1982-09-04 09:00:00'), // Friday
-            array(6, '09:00', '17:00', '1982-09-02 09:15:39', '1982-09-04 09:00:00'), // Thursday
-            array(6, '09:00', '17:00', '1982-09-01 09:15:39', '1982-09-04 09:00:00'), // Wednesday
         );
     }
 }

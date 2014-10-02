@@ -71,5 +71,12 @@ interface Interval
      */
     public function calculateStart(\DateTime $End, $qty = 1);
 
+    /**
+     * Similar to getNearestStart but only looks forward.
+     *
+     * @return DateTime $Start
+     */
+    public function getNextFrom(\DateTime $From);
+
     public function getType();
 }

@@ -68,9 +68,23 @@ class App
         return ($qty === 1) ? $reservations[0] : $reservations;
     }
 
-    public function createBlockReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, Interfaces\Interval $Interval)
-    {
-        // @todo
+    public function createBlockReservation(
+        $friendlyName,
+        Interfaces\Resource $Resource,
+        Interfaces\Interval $BookingInterval,
+        Interfaces\Interval $RecurringInterval,
+        \DateTime $FirstBooking,
+        \DateTime $Cutoff = null,
+        $quantity = 1
+    ) {
+        $Reservation = $this->Factory->getBlockBooking();
+        $Reservation->setupFrom($friendlyName, $Resource, $BookingInterval, $RecurringInterval, $FirstBooking, $Cutoff, $quantity);
+
+        $Doctrine = $this->Factory->getDoctrine();
+        $Doctrine->persist($Reservation->getEntity());
+        $Doctrine->persist($BookingInterval->getEntity());
+        $Doctrine->persist($RecurringInterval->getEntity());
+        $Doctrine->flush();
     }
 
     public function getReservations(Interfaces\Resource $Resource, \DateTime $Start, \DateTime $End)

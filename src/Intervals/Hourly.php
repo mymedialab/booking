@@ -106,4 +106,9 @@ class Hourly extends Base implements Interfaces\Interval
             $this->Entity->setMeta('hourStarts', $this->hourStarts);
         }
     }
+
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
+    }
 }

@@ -2,6 +2,7 @@
 namespace MML\Booking\Factories;
 
 use MML\Booking;
+use MML\Booking\BlockReservations;
 use MML\Booking\Calendar;
 use MML\Booking\Models;
 use MML\Booking\Reservations;
@@ -109,6 +110,13 @@ class General
         }, 'ResourceFactory');
     }
 
+    public function getBlockReservationFactory()
+    {
+        return $this->cache(function () {
+            return new BlockReservation($this);
+        }, 'BlockReservationFactory');
+    }
+
     public function getAvailability($name)
     {
         $Factory = $this->getAvailabilityFactory();
@@ -145,6 +153,12 @@ class General
         $Factory = $this->getReservationFactory();
         return $Factory->getNew($name);
     }
+    public function getBlockBooking()
+    {
+        $Factory = $this->getBlockReservationFactory($this);
+        return $Factory->getNew();
+    }
+
 
     public function getDayCalendar()
     {

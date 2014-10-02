@@ -40,7 +40,7 @@ class Availability
     {
         $Doctrine = $this->Factory->getDoctrine();
 
-        // @todo should this be moved into a custom repo or something?
+        // @todo should this be moved into a custom repo query or something?
         if ($Period->forcePerSecond()) {
             $Query = $Doctrine->createQuery('SELECT COUNT(r.id) FROM MML\\Booking\\Models\\Reservation r JOIN r.Resource re WITH re.id = :resource_id WHERE ((r.start > :start AND r.start < :end) OR (r.end > :start AND r.end < :end))');
         } else {

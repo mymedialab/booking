@@ -98,6 +98,11 @@ class Daily extends Base implements Interfaces\Interval
         return $End;
     }
 
+    public function getNextFrom(\DateTime $From)
+    {
+        // @todo missing function
+    }
+
     /**
      * Given a $End datetime, this will find the $Start datetime. The $qty parameter behaves as with calculateEnd().
      * This function is the same in intent but counts back from the end instead of forward from the start.
