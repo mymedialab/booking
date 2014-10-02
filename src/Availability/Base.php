@@ -53,7 +53,13 @@ class Base
     }
     public function getAvailableInterval()
     {
-        return $this->Entity->getAvailableInterval();
+        $IntervalFactory = $this->Factory->getIntervalFactory();
+        $Entity = $this->Entity->getAvailableInterval();
+        if ($Entity) {
+            return $IntervalFactory->wrap($Entity);
+        } else {
+            return null;
+        }
     }
 
     public function getAvailable()

@@ -31,8 +31,7 @@ class Fixed extends Base implements Interfaces\Availability
      */
     public function overlaps(Interfaces\Period $Period)
     {
-        $IntervalFactory = $this->Factory->getIntervalFactory();
-        $Interval = $IntervalFactory->wrap($this->getAvailableInterval());
+        $Interval = $this->getAvailableInterval();
 
         $Start = $Interval->getNearestStart($Period->getEnd());
         $End   = $Interval->getNearestEnd($Period->getStart());
@@ -51,8 +50,7 @@ class Fixed extends Base implements Interfaces\Availability
      */
     public function contains(Interfaces\Period $Period)
     {
-        $IntervalFactory = $this->Factory->getIntervalFactory();
-        $Interval = $IntervalFactory->wrap($this->getAvailableInterval());
+        $Interval = $this->getAvailableInterval();
 
         $Start = $Interval->getNearestStart($Period->getEnd());
         $End   = $Interval->getNearestEnd($Period->getStart());

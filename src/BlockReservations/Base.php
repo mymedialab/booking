@@ -88,6 +88,28 @@ class Base implements Interfaces\BlockReservation
         return $Factory->wrap($this->Entity->getBookingInterval());
     }
 
+    public function getFirstBooking()
+    {
+        return $this->Entity->getFirstBooking();
+    }
+
+    public function getCutoff()
+    {
+        return $this->Entity->getCutoff();
+    }
+
+    public function getResource()
+    {
+        $Factory = $this->getResourceFactory();
+        $Entity = $this->Entity->getResource();
+        return ($Entity) ? $Factory->wrap($Entity) : null;
+    }
+
+    public function getFriendlyName()
+    {
+        return $this->Entity->getFriendlyName();
+    }
+
     public function getQuantity()
     {
         return intval($this->Entity->getQuantity());

@@ -20,4 +20,14 @@ interface BlockReservation
      * @return bool
      */
     public function overlaps(Period $Period);
+
+
+    public function getFirstBooking();
+    public function getCutoff();
+    public function getResource();
+    public function getRepeatInterval();
+    public function getBookingInterval();
+    public function getFriendlyName();
+    public function getQuantity();
+    public function getEntity();
 }
