@@ -74,7 +74,7 @@ class Day
                 'status' => $status,
                 'start'  => $Start->format('Y/m/d H:i:s'),
                 'end'    => $IntervalEnd->format('Y/m/d H:i:s'),
-                'existing' => $Finder->reservationsBetween($Resource, $Start, $IntervalEnd) // @todo merge in block reservations
+                'existing' => $Finder->allAsFixedBetween($Resource, $Start, $IntervalEnd) // @todo merge in block reservations
             );
 
             $Start = $IntervalEnd;
