@@ -9,6 +9,8 @@ class Base implements Interfaces\BlockReservation
     protected $Entity;
     protected $Factory;
 
+    protected $cachedOccurences = array();
+
     public function __construct(Interfaces\BlockReservationPersistence $Entity, Factories\General $Factory)
     {
         $this->Entity  = $Entity;
@@ -31,6 +33,8 @@ class Base implements Interfaces\BlockReservation
         $this->Entity->setFirstBooking($FirstBooking);
         $this->Entity->setCutoff($Cutoff);
         $this->Entity->setQuantity($quantity);
+
+        $this->cachedOccurences = array();
     }
 
     /**
@@ -41,40 +45,64 @@ class Base implements Interfaces\BlockReservation
      */
     public function overlaps(Interfaces\Period $Period)
     {
-        $Start  = $this->Entity->getFirstBooking();
+        return !!count($this->occurrencesBetween($Period->getStart(), $Period->getEnd()));
+    }
+
+    /**
+     * Finds all planned bookings occuring between start and end
+     * @param  DateTime $Start
+     * @param  DateTime $End
+     *
+     * @return array|Interfaces\Period[]
+     * @todo  this is a lot of stepping through a calendar. Can we make it more efficient? Also, could we cache the
+     *        results more permanently?
+     */
+    public function occurrencesBetween(\DateTime $Start, \DateTime $End)
+    {
+        $cacheKey = $Start->format('c') . $End->format('c');
+        if (array_key_exists($cacheKey, $this->cachedOccurences)) {
+            return $this->cachedOccurences[$cacheKey];
+        }
+
+        $found = array();
+        $BookingStart = $this->Entity->getFirstBooking();
         $Cutoff = $this->Entity->getCutoff(); // may be null!
 
-        if ($Period->getEnd() < $Start) {
+        if ($End < $BookingStart) {
             // booking won't overlap as it's not started yet.
-            return false;
+            return $found;
         }
-        if ($Cutoff && $Period->getStart() > $Cutoff) {
+        if ($Cutoff && $Start > $Cutoff) {
             // booking won't overlap as our run will finish before the start
-            return false;
+            return $found;
         }
 
         $Repeat  = $this->getRepeatInterval();
         $Booking = $this->getBookingInterval();
+        $PeriodFactory = $this->Factory->getPeriodFactory();
 
         // step through planned bookings before period ends or when we hit our [optional] cutoff.
-        while ($Start < $Period->getEnd() && (!$Cutoff || $Start < $Cutoff)) {
+        while ($BookingStart < $End && (!$Cutoff || $BookingStart < $Cutoff)) {
             // find the end of this proposed booking.
-            $End = $Booking->calculateEnd($Start);
+            $BookingEnd = $Booking->calculateEnd($BookingStart);
 
             // @todo this overlap logic peppers the codebase. Need to make a utility. Already had a few bugs from it!
-            if (($Period->getStart() >= $Start && $Period->getStart() < $End) ||
-                ($Period->getEnd()   > $Start && $Period->getEnd()   <= $End) ||
-                ($Period->getStart() <= $Start && $Period->getEnd()   >= $End)) {
-                // soon as one overlaps, return
-                return true;
+            if (($Start >= $BookingStart && $Start < $BookingEnd) ||
+                ($End   > $BookingStart && $End   <= $BookingEnd) ||
+                ($Start <= $BookingStart && $End   >= $BookingEnd)
+            ) {
+                $Period = $PeriodFactory->getStandalone();
+                $Period->begins($BookingStart);
+                $Period->ends($BookingEnd);
+                $found[] = $Period;
             }
 
-            // That booking didn't hit, wind on to the next one.
-            $Start = $Repeat->getNextFrom($End);
+            // move on
+            $BookingStart = $Repeat->getNextFrom($BookingEnd);
         }
 
-        // found
-        return false;
+        $this->cachedOccurences[$cacheKey] = $found;
+        return $found;
     }
 
     public function getRepeatInterval()

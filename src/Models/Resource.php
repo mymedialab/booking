@@ -2,7 +2,6 @@
 namespace MML\Booking\Models;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Criteria;
 use MML\Booking\Exceptions;
 use MML\Booking\Interfaces;
 
@@ -95,16 +94,6 @@ class Resource implements Interfaces\ResourcePersistence, Interfaces\DoctrineEnt
     public function addBlockReservation(Interfaces\BlockReservationPersistence $Reservation)
     {
         $this->BlockReservations[] = $Reservation;
-    }
-
-    public function getBlockReservationsAfter(\DateTime $DateTime)
-    {
-        $Criteria = Criteria::create();
-        // where cutoff is after Start, OR last booking is null
-        $Criteria->where(Criteria::expr()->isNull('Cutoff'))
-                 ->orWhere(Criteria::expr()->gt('Cutoff', $DateTime));
-
-        return $this->BlockReservations->matching($Criteria);
     }
     public function setName($newName)
     {

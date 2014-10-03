@@ -1,12 +1,12 @@
 <?php
-namespace MML\Booking\Reservations\Utilities;
+namespace MML\Booking\Utilities;
 
 use MML\Booking\Exceptions;
 use MML\Booking\Factories;
 use MML\Booking\Interfaces;
 use MML\Booking\Models;
 
-class Availability
+class ResourceAvailability
 {
     protected $Factory;
 
@@ -20,20 +20,34 @@ class Availability
         if (intval($qty) <= 0) {
             throw new Exceptions\Booking("Availability::check requires a positive integer quantity");
         }
-        if (!$Period->isPopulated()) {
-            throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
-        }
 
+        $count = $this->countAvailable($Resource, $Period);
+
+        // If we've got enough rooms not taken, we have availability!
+        return ($count >= $qty);
+    }
+
+    public function countAvailable(Interfaces\Resource $Resource, Interfaces\Period $Period)
+    {
         $available = $this->resourcesForPeriod($Resource, $Period);
         if ($available === 0) {
-            return false;
+            return 0;
+        }
+
+        $taken = $this->countBooked($Resource, $Period);
+        return $available - $taken;
+    }
+
+    public function countBooked(Interfaces\Resource $Resource, Interfaces\Period $Period)
+    {
+        if (!$Period->isPopulated()) {
+            throw new Exceptions\Booking("Availability::check failed due to unpopulated Period");
         }
 
         $taken  = $this->singleReservations($Resource, $Period);
         $taken += $this->blockBooking($Resource, $Period);
 
-        // If we've got enough rooms not taken, we have availability!
-        return (($available - $taken) >= $qty);
+        return $taken;
     }
 
     protected function singleReservations(Interfaces\Resource $Resource, Interfaces\Period $Period)
@@ -56,15 +70,8 @@ class Availability
 
     protected function blockBooking(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
-        $count = 0;
-
-        foreach ($Resource->getBlockReservationsAfter($Period->getStart()) as $Block) {
-            if ($Block->overlaps($Period)) {
-                ++$count;
-            }
-        }
-
-        return $count;
+        $Finder = $this->Factory->getReservationFinder();
+        return count($Finder->blockReservationsBetween($Resource, $Period->getStart(), $Period->getEnd()));
     }
 
     /**

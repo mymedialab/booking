@@ -91,15 +91,6 @@ class Base implements Interfaces\Resource
     }
 
     /**
-     * @return Array|Interfaces\BlockReservation[] All block reservations associated with the Resourcewhich occur after the specified DateTime
-     */
-    public function getBlockReservationsAfter(\DateTime $DateTime)
-    {
-        $Raw = $this->Entity->getBlockReservationsAfter($DateTime);
-        return (count($Raw)) ? $this->wrapEntities($Raw, $this->Factory->getBlockReservationFactory()) : array();
-    }
-
-    /**
      * @return Array|Interfaces\Availability[] All availability associated with the Resource
      */
     public function allAvailability()

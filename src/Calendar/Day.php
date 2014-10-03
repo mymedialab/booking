@@ -47,7 +47,7 @@ class Day
      */
     public function availabilityFor(Interfaces\Resource $Resource)
     {
-        $Availability = $this->Factory->getReservationAvailability();
+        $Availability = $this->Factory->getResourceAvailability();
         $Finder       = $this->Factory->getReservationFinder();
         $Period       = $this->Factory->getPeriodFactory()->getStandalone();
         $Start        = clone $this->Start; // use a clone because we do modifications to it.
@@ -74,7 +74,7 @@ class Day
                 'status' => $status,
                 'start'  => $Start->format('Y/m/d H:i:s'),
                 'end'    => $IntervalEnd->format('Y/m/d H:i:s'),
-                'existing' => $Finder->resourceBetween($Resource, $Start, $IntervalEnd)
+                'existing' => $Finder->reservationsBetween($Resource, $Start, $IntervalEnd) // @todo merge in block reservations
             );
 
             $Start = $IntervalEnd;

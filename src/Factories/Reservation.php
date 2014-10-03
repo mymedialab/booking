@@ -19,9 +19,12 @@ class Reservation
     {
         $Entity = new Models\Reservation;
         $Wrapped = $this->make($type, $Entity);
-        // only persist once we know we can wrap it!
-        $Doctrine = $this->Factory->getDoctrine();
-        $Doctrine->persist($Entity);
+        if ($type !== 'Transient') {
+            // @todo auto persisting reservations seems a bit too magical. Should we do it?
+            // only persist once we know we can wrap it!
+            $Doctrine = $this->Factory->getDoctrine();
+            $Doctrine->persist($Entity);
+        }
 
         return $Wrapped;
     }

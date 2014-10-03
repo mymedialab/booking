@@ -6,6 +6,8 @@ use MML\Booking\BlockReservations;
 use MML\Booking\Calendar;
 use MML\Booking\Models;
 use MML\Booking\Reservations;
+use MML\Booking\Utilities;
+
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\ORM\EntityManager;
 
@@ -124,7 +126,7 @@ class General
     public function getReservationFinder()
     {
         return $this->cache(function () {
-            return new Reservations\Utilities\Finder($this);
+            return new Utilities\ReservationFinder($this);
         }, 'ReservationsFinder');
     }
 
@@ -134,10 +136,10 @@ class General
         return $Factory->get($name);
     }
 
-    public function getReservationAvailability()
+    public function getResourceAvailability()
     {
         return $this->cache(function () {
-            return new Reservations\Utilities\Availability($this);
+            return new Utilities\ResourceAvailability($this);
         }, 'ReservationsAvailability');
     }
 

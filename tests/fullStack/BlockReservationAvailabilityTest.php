@@ -46,19 +46,20 @@ class BlockReservationAvailabilityTest extends \Codeception\TestCase\Test
 
     public function testResourceReturnsBookingsCorrectly()
     {
+        $Availability = $this->Factory->getReservationFinder();
         $Resource = $this->Booking->getResource('blocktest_something');
         $this->assertEquals(2, count($Resource->getBlockReservations()));
         // between birthdays, should return 2.
-        $this->assertEquals(2, count($Resource->getBlockReservationsAfter(new \DateTime('2000-07-15 00:00:00'))));
+        $this->assertEquals(2, count($Availability->blockReservationsAfter($Resource, new \DateTime('2000-07-15 00:00:00'))));
         // After Fin's birthday, return one
-        $this->assertEquals(1, count($Resource->getBlockReservationsAfter(new \DateTime('2011-07-15 00:00:00'))));
+        $this->assertEquals(1, count($Availability->blockReservationsAfter($Resource, new \DateTime('2011-07-15 00:00:00'))));
     }
     public function testReservationRanges()
     {
         // Any Saturdays prior to my birthday should return 2. Any after finleys birthday should return 1.
         $Resource = $this->Booking->getResource('blocktest_something');
 
-        $Availability = $this->Factory->getReservationAvailability();
+        $Availability = $this->Factory->getResourceAvailability();
         $Period = new Periods\Standalone();
         $Period->setDuration(new \DateInterval('PT23H59M'));
 

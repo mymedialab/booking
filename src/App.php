@@ -36,7 +36,7 @@ class App
 
     public function checkAvailability(Interfaces\Resource $Resource, Interfaces\Period $Period)
     {
-        $Availability = $this->Factory->getReservationAvailability();
+        $Availability = $this->Factory->getResourceAvailability();
         return $Availability->check($Resource, $Period);
     }
 
@@ -48,7 +48,7 @@ class App
 
     public function createReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, $qty = 1)
     {
-        $Availability = $this->Factory->getReservationAvailability();
+        $Availability = $this->Factory->getResourceAvailability();
 
         if (!$Availability->check($Resource, $Period, $qty)) {
             throw new Exceptions\Unavailable("{$Resource->getFriendlyName()} does not have enough availability for the selected period");
@@ -90,7 +90,7 @@ class App
     public function getReservations(Interfaces\Resource $Resource, \DateTime $Start, \DateTime $End)
     {
         $Finder = $this->Factory->getReservationFinder();
-        return $Finder->resourceBetween($Resource, $Start, $End);
+        return $Finder->reservationsBetween($Resource, $Start, $End);
     }
 
     public function getInterval($identifier)

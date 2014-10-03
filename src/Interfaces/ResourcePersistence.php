@@ -49,11 +49,6 @@ interface ResourcePersistence
     public function getBlockReservations();
 
     /**
-     * @return Array All block reservations associated with the Resourcewhich occur after the specified DateTime
-     */
-    public function getBlockReservationsAfter(\DateTime $DateTime);
-
-    /**
      * @return Array All availability associated with the Resource
      */
     public function allAvailability();
