@@ -147,4 +147,8 @@ class Base implements Interfaces\BlockReservation
     {
         return $this->Entity;
     }
+    public function getId()
+    {
+        return $this->Entity->getId();
+    }
 }

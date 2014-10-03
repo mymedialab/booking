@@ -21,7 +21,6 @@ interface BlockReservation
      */
     public function overlaps(Period $Period);
 
-
     public function getFirstBooking();
     public function getCutoff();
     public function getResource();
@@ -30,4 +29,5 @@ interface BlockReservation
     public function getFriendlyName();
     public function getQuantity();
     public function getEntity();
+    public function getId();
 }

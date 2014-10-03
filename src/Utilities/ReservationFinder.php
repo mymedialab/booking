@@ -110,6 +110,7 @@ class ReservationFinder
             foreach ($Block->occurrencesBetween($Start, $End) as $Period) {
                 $TransientReservation = $Factory->getNew('Transient');
                 $TransientReservation->setupFrom($Resource, $Period);
+                $TransientReservation->addMeta('blockBooking', $Block->getId());
                 $all[] = $TransientReservation;
             }
         }
