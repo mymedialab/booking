@@ -1,6 +1,6 @@
 {
     "name": "mml/booking",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "autoload": {
         "psr-4": {
             "MML\\Booking\\": "src/"
