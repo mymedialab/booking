@@ -70,9 +70,9 @@ class ReservationFinder
             Criteria::expr()->andX(
                 Criteria::expr()->orX(
                     Criteria::expr()->isNull('Cutoff'),
-                    Criteria::expr()->gt('Cutoff', $Start)
+                    Criteria::expr()->gte('Cutoff', $Start)
                 ),
-                Criteria::expr()->lt('FirstBooking', $Start)
+                Criteria::expr()->lte('FirstBooking', $Start)
             )
         );
         $Reservations = $Resource->getEntity()->getBlockReservations()->matching($Criteria);
@@ -108,10 +108,12 @@ class ReservationFinder
         $Factory = $this->Factory->getReservationFactory();
         foreach ($this->blockReservationsBetween($Resource, $Start, $End) as $Block) {
             foreach ($Block->occurrencesBetween($Start, $End) as $Period) {
-                $TransientReservation = $Factory->getNew('Transient');
-                $TransientReservation->setupFrom($Resource, $Period);
-                $TransientReservation->addMeta('blockBooking', $Block->getId());
-                $all[] = $TransientReservation;
+                for ($i=0; $i < $Block->getQuantity(); $i++) {
+                    $TransientReservation = $Factory->getNew('Transient');
+                    $TransientReservation->setupFrom($Resource, $Period);
+                    $TransientReservation->addMeta('blockBooking', $Block->getId());
+                    $all[] = $TransientReservation;
+                }
             }
         }
 

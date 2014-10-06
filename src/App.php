@@ -93,6 +93,18 @@ class App
         return $Finder->reservationsBetween($Resource, $Start, $End);
     }
 
+    public function getBlockReservation($id)
+    {
+        $Doctrine = $this->Factory->getDoctrine();
+        $Entity = $Doctrine->getRepository('MML\\Booking\\Models\\BlockReservation')->find($id);
+        if (!$Entity) {
+            return null;
+        }
+
+        $Factory = $this->Factory->getBlockReservationFactory();
+        return $Factory->wrap($Entity);
+    }
+
     public function getInterval($identifier)
     {
         $Provider = $this->Factory->getIntervalFactory();

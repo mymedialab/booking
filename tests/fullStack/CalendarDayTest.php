@@ -46,11 +46,7 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
 
     public function testEmptyCalendar()
     {
-        $dataFile = __DIR__ . "/../_data/emptyDay.json";
-
-        $this->assertTrue(is_file($dataFile));
-        $data = json_decode(file_get_contents($dataFile), true);
-        $this->assertTrue(is_array($data));
+        $data = $this->getDataFile('emptyDay');
 
         $this->Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
@@ -77,12 +73,8 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         // Two bookings from 17:00 -> 19:00. Should use all courts
         $Reservation = $this->Booking->createReservation($Resource, $Period, 2);
 
-        $dataFile = __DIR__ . "/../_data/bookedDay.json";
 
-        $this->assertTrue(is_file($dataFile), "file not found");
-        $data = json_decode(file_get_contents($dataFile), true);
-        $this->assertTrue(is_array($data), "file invalid");
-
+        $data = $this->getDataFile('bookedDay');
         $this->Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
 
@@ -99,19 +91,39 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(count($data), count($output));
     }
 
+    public function testWithBlockReservations()
+    {
+        $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
+        $IntervalFactory = $this->Factory->getIntervalFactory();
+        $RecurringInterval = $IntervalFactory->get('Weekly');
+        $BookingInterval   = $IntervalFactory->get('TimeOfDay');
+
+        $Start = date_create_from_format('d/m/Y H:i', '04/09/2014 11:00');
+        $End   = date_create_from_format('d/m/Y H:i', '04/09/2015 12:30');
+        $RecurringInterval->configure($Start, $End, 'Recurring interval');
+        $BookingInterval->configure('11:00', '12:30', 'some friendly name');
+
+        $this->Booking->createBlockReservation('Limited Reservation', $Resource, $BookingInterval, $RecurringInterval, $Start, $End);
+
+        $data = $this->getDataFile('bookedDayWithBlocks');
+        $this->Object->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
+        $output = $this->Object->availabilityFor($Resource);
+
+        $this->assertEquals(count($data), count($output));
+        foreach ($output as $i => $val) {
+            $this->assertEquals($data[$i]['existing'], count($val['existing']), "mismatched count on row $i");
+            $this->assertEquals($data[$i]['status'], $val['status'], "mismatched status on row $i");
+            $this->assertEquals($data[$i]['start'], $val['start'], "mismatched start on row $i");
+            $this->assertEquals($data[$i]['end'], $val['end'], "mismatched end on row $i");
+
+        }
+        $this->assertEquals(count($data), count($output));
+    }
+
     public function testEmptyCalendarWeekends()
     {
-        $satFile = __DIR__ . "/../_data/emptySaturday.json";
-
-        $this->assertTrue(is_file($satFile));
-        $satData = json_decode(file_get_contents($satFile), true);
-        $this->assertTrue(is_array($satData));
-
-        $sunFile = __DIR__ . "/../_data/emptySunday.json";
-
-        $this->assertTrue(is_file($sunFile));
-        $sunData = json_decode(file_get_contents($sunFile), true);
-        $this->assertTrue(is_array($sunData));
+        $satData = $this->getDataFile('emptySaturday');
+        $sunData = $this->getDataFile('emptySunday');
 
         $this->Object->setBounds(new \DateTime('2014/09/13 00:00:00'), new \DateTime('2014/09/14 00:00:00'));
         $Resource = $this->Booking->getResource('leisureCentre_indoor_tennis_court');
@@ -122,4 +134,12 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($sunData, $this->Object->availabilityFor($Resource));
     }
 
+    protected function getDataFile($name)
+    {
+        $filename =  __DIR__ . "/../_data/{$name}.json";
+        $this->assertTrue(is_file($filename));
+        $data = json_decode(file_get_contents($filename), true);
+        $this->assertTrue(is_array($data));
+        return $data;
+    }
 }

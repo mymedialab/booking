@@ -98,49 +98,70 @@ $Setup    = new Booking\Setup($Factory);
 /// test begins...
 try {
 
-    $Resource = $Setup->createResource('blocktest_something', 'This thing here', 2);
-    $Setup->addBookingIntervals($Resource, array());
+    $Weekday = $Factory->getIntervalFactory()->get('weekday');
+    $Weekday->configure('09:00', "20:00");
+
+    $Saturday = $Factory->getIntervalFactory()->get('dayOfWeek');
+    $Saturday->configure('saturday', '09:00', "18:00");
+
+    $Sunday = $Factory->getIntervalFactory()->get('dayOfWeek');
+    $Sunday->configure('sunday', "10:00", "16:00");
+
+    $Hourly = $Factory->getIntervalFactory()->get('hourly');
+    $Hourly->configure("00");
+
+    $Resource = $Setup->createResource('leisureCentre_indoor_tennis_court', 'Indoor Tennis Court', 2);
+    $Setup->addAvailabilityWindow($Resource, $Weekday, array($Hourly));
+    $Setup->addAvailabilityWindow($Resource, $Saturday, array($Hourly));
+    $Setup->addAvailabilityWindow($Resource, $Sunday, array($Hourly));
+
+    $Period   = $Booking->getPeriodFor($Resource, 'hourly');
+
+    $Period->begins(new \DateTime('2014/09/04 10:00:00'));
+    $Period->repeat(2);
+
+    // one booking from 10:00 -> 12:00. Should still leave one court available.
+    $Reservation = $Booking->createReservation($Resource, $Period);
+
+    $Period->repeat(1);
+    // one booking from 10:00 -> 11:00. Should use the last court
+    $Reservation = $Booking->createReservation($Resource, $Period);
+
+    $Period->begins(new \DateTime('2014/09/04 17:00:00'));
+    $Period->repeat(2);
+    // Two bookings from 17:00 -> 19:00. Should use all courts
+    $Reservation = $Booking->createReservation($Resource, $Period, 2);
 
     $IntervalFactory = $Factory->getIntervalFactory();
-
     $RecurringInterval = $IntervalFactory->get('Weekly');
     $BookingInterval   = $IntervalFactory->get('TimeOfDay');
 
-    $Start = date_create_from_format('d/m/Y H:i', '04/09/1982 00:00');
-    $End   = date_create_from_format('d/m/Y H:i', '10/01/2011 23:59');
+    $Start = date_create_from_format('d/m/Y H:i', '04/09/2014 11:00');
+    $End   = date_create_from_format('d/m/Y H:i', '04/09/2015 12:30');
+    $RecurringInterval->configure($Start, $End, 'Recurring interval');
+    $BookingInterval->configure('11:00', '12:30', 'some friendly name');
 
-    $RecurringInterval->configure($Start, $End, 'Recurring interval'); // end is irrelevant
-    $BookingInterval->configure('00:00', '23:59', 'All day.');
-
-    // Limited runs weekly from my birthday to Finleys birthday. Unlimited runs through until infiinity
     $Booking->createBlockReservation('Limited Reservation', $Resource, $BookingInterval, $RecurringInterval, $Start, $End);
-    $Booking->createBlockReservation('unlimited Reservation', $Resource, $BookingInterval, $RecurringInterval, $Start); // no end!
 
-    $Booking->persist();
+    $filename =  __DIR__ . "/../tests/_data/bookedDayWithBlocks.json";
+    assertTrue(is_file($filename));
+    $data = json_decode(file_get_contents($filename), true);
+    assertTrue(is_array($data));
 
-    assertEquals(2, count($Resource->getBlockReservations()), "Block reservations found!");
-    // between birthdays, should return 2.
-    assertEquals(2, count($Resource->getBlockReservationsAfter(new \DateTime('2000-07-15 00:00:00'))), "Block reservations after 2000 found");
-    // After Fin's birthday, return one
-    assertEquals(1, count($Resource->getBlockReservationsAfter(new \DateTime('2011-07-15 00:00:00'))), "Block reservations after 2011 found");
+    $Calendar = new \MML\Booking\Calendar\Day($Factory);
+    $Calendar->setBounds(new \DateTime('2014/09/04 00:00:00'), new \DateTime('2014/09/05 00:00:00'));
+    $output = $Calendar->availabilityFor($Resource);
 
-    // Any Saturdays prior to my birthday should return 2. Any after finleys birthday should return 1.
-    $Availability = $Factory->getReservationAvailability();
-    $Period = new Booking\Periods\Standalone();
-    $Period->setDuration(new \DateInterval('PT23H59M'));
+    echo "\n\n\nFORMAL TESTS: \n\n";
+    assertEquals(count($data), count($output));
+    foreach ($output as $i => $val) {
+        assertEquals($data[$i]['existing'], count($val['existing']), "mismatched count on row $i");
+        assertEquals($data[$i]['status'], $val['status'], "mismatched status on row $i");
+        assertEquals($data[$i]['start'], $val['start'], "mismatched start on row $i");
+        assertEquals($data[$i]['end'], $val['end'], "mismatched end on row $i");
 
-    // first check that we do have 2 things available on a day other than Saturday...
-    $Period->begins(new \DateTime('2010-07-15 00:00:00'));
-    assertEquals(true, $Availability->check($Resource, $Period, 2), "Two available on a " . $Period->getStart()->format('l'));
-
-    // Now check that we only have 1 thing available on a Saturday after Fins B'day
-    $Period->begins(new \DateTime('2011-07-16 00:00:00'));
-    assertEquals(true, $Availability->check($Resource, $Period, 1), "One available on a " . $Period->getStart()->format('l'));
-    assertEquals(false, $Availability->check($Resource, $Period, 2), "Two UNavailable on a " . $Period->getStart()->format('l'));
-
-    // Now check that we have nothing available on a Saturday before Fins B'day
-    $Period->begins(new \DateTime('2000-07-15 00:00:00'));
-    assertEquals(false, $Availability->check($Resource, $Period, 1), "One UNavailable on a " . $Period->getStart()->format('l'));
+    }
+    assertEquals(count($data), count($output));
 
 } catch (\Exception $e) {
     echo "UNCAUGHT EXCEPTION MUPPET!\n";

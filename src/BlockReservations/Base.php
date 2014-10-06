@@ -128,7 +128,7 @@ class Base implements Interfaces\BlockReservation
 
     public function getResource()
     {
-        $Factory = $this->getResourceFactory();
+        $Factory = $this->Factory->getResourceFactory();
         $Entity = $this->Entity->getResource();
         return ($Entity) ? $Factory->wrap($Entity) : null;
     }
