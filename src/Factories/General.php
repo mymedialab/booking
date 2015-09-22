@@ -148,7 +148,7 @@ class General
         $Factory = $this->getResourceFactory();
         return $Factory->getNew();
     }
-    public function getEmptyReservation($name = 'plain')
+    public function getEmptyReservation($name = 'Plain')
     {
         $Factory = $this->getReservationFactory();
         return $Factory->getNew($name);
