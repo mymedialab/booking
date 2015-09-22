@@ -37,7 +37,7 @@ class Config
             if (isset($this->$k)) {
                 $this->$k = $v;
             } else {
-                throw new Exceptions\Config("Could not override non-existent config option $key. Try add instead.");
+                throw new Exceptions\Config("Could not override non-existent config option $k. Try add instead.");
             }
         }
     }

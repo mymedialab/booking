@@ -26,16 +26,16 @@ class CalendarDayTest extends \PHPUnit_Framework_TestCase
     {
         Helper::wipeEntireDb();
 
-        $Weekday = $this->Factory->getIntervalFactory()->get('weekday');
+        $Weekday = $this->Factory->getIntervalFactory()->get('WeekDay');
         $Weekday->configure('09:00', "20:00");
 
-        $Saturday = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Saturday = $this->Factory->getIntervalFactory()->get('DayOfWeek');
         $Saturday->configure('saturday', '09:00', "18:00");
 
-        $Sunday = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Sunday = $this->Factory->getIntervalFactory()->get('DayOfWeek');
         $Sunday->configure('sunday', "10:00", "16:00");
 
-        $Hourly = $this->Factory->getIntervalFactory()->get('hourly');
+        $Hourly = $this->Factory->getIntervalFactory()->get('Hourly');
         $Hourly->configure("00");
 
         $Resource = $this->Setup->createResource('leisureCentre_indoor_tennis_court', 'Indoor Tennis Court', 2);

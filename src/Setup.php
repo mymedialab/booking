@@ -50,7 +50,7 @@ class Setup
      */
     public function addBookingIntervals(Interfaces\Resource $Resource, array $bookingIntervals)
     {
-        $Availability = $this->Factory->getAvailability('always');
+        $Availability = $this->Factory->getAvailability('Always');
 
         foreach ($bookingIntervals as $Interval) {
             if (!($Interval instanceof Interfaces\Interval)) {
@@ -117,7 +117,7 @@ class Setup
         $plural = null,
         $singular = null
     ) {
-        $Availability = $this->Factory->getAvailability('fixed');
+        $Availability = $this->Factory->getAvailability('Fixed');
         $Availability->setAvailable(false);
         if (!is_null($name)) {
             $Availability->setFriendlyName($name);
@@ -126,7 +126,7 @@ class Setup
             $Availability->setAffectedQuantity($qty);
         }
 
-        $Interval = $this->Factory->getInterval('fixed');
+        $Interval = $this->Factory->getInterval('Fixed');
         $Interval->configure($Period->getStart(), $Period->getEnd(), $name, $plural, $singular);
         $Availability->setAvailableInterval($Interval);
         $Resource->addAvailability($Availability);

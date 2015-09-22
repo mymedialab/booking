@@ -29,15 +29,15 @@ class hotelTest extends \Codeception\TestCase\Test
     {
         Helper::wipeEntireDb();
 
-        $Day       = $this->Factory->getIntervalFactory()->get('daily');
+        $Day       = $this->Factory->getIntervalFactory()->get('Daily');
         $Day->configure("09:00", "17:00");
-        $Nightly   = $this->Factory->getIntervalFactory()->get('daily');
+        $Nightly   = $this->Factory->getIntervalFactory()->get('Daily');
         $Nightly->configure("13:00", "09:00", 'nightly', 'nights', 'night');
-        $Morning   = $this->Factory->getIntervalFactory()->get('daily');
+        $Morning   = $this->Factory->getIntervalFactory()->get('Daily');
         $Morning->configure("09:00", "13:00", 'morning', 'mornings', 'morning');
-        $Afternoon = $this->Factory->getIntervalFactory()->get('daily');
+        $Afternoon = $this->Factory->getIntervalFactory()->get('Daily');
         $Afternoon->configure("13:00", "17:00", 'afternoon', 'afternoons', 'afternoon');
-        $Evening   = $this->Factory->getIntervalFactory()->get('daily');
+        $Evening   = $this->Factory->getIntervalFactory()->get('Daily');
         $Evening->configure("16:00", "00:00", 'evening', 'evenings', 'evening'); // Note you now can't book an afternoon AND evening.
 
         $MaintainenceOne = $this->Factory->getPeriodFactory()->getStandalone();

@@ -29,25 +29,25 @@ class leisureCentreTest extends \Codeception\TestCase\Test
         $opensAt  = "08:00";
         $closesAt = "20:00";
 
-        $Weekday  = $this->Factory->getIntervalFactory()->get('weekday');
+        $Weekday  = $this->Factory->getIntervalFactory()->get('WeekDay');
         $Weekday->configure($opensAt, $closesAt);
 
-        $Saturday = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Saturday = $this->Factory->getIntervalFactory()->get('DayOfWeek');
         $Saturday->configure('saturday', $opensAt, "18:00");
 
-        $Sunday   = $this->Factory->getIntervalFactory()->get('dayOfWeek');
+        $Sunday   = $this->Factory->getIntervalFactory()->get('DayOfWeek');
         $Sunday->configure('sunday', "10:00", "16:00");
 
-        $Hourly    = $this->Factory->getIntervalFactory()->get('hourly');
+        $Hourly    = $this->Factory->getIntervalFactory()->get('Hourly');
         $Hourly->configure("00");
 
-        $Morning   = $this->Factory->getIntervalFactory()->get('daily');
+        $Morning   = $this->Factory->getIntervalFactory()->get('Daily');
         $Morning->configure("08:00", "12:00");
 
-        $Afternoon = $this->Factory->getIntervalFactory()->get('daily');
+        $Afternoon = $this->Factory->getIntervalFactory()->get('Daily');
         $Afternoon->configure("12:00", "16:00");
 
-        $Evening   = $this->Factory->getIntervalFactory()->get('daily');
+        $Evening   = $this->Factory->getIntervalFactory()->get('Daily');
         $Evening->configure("16:00", "20:00");
 
         $resources = array(

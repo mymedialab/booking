@@ -18,16 +18,14 @@ gulp.task('linttests', function () {
   return phplint('tests/**/*.php');
 });
 
-gulp.task('phpsrc', ['lintsrc'], function(){
+gulp.task('phpcs', ['lintsrc'], function(){
     gulp.src('src/**/*.php').pipe(phpcs(phpcsOptions));
-    gulp.src('./tests/*.php').pipe(codecept());
 });
-gulp.task('phptests', ['linttests'], function(){
-    gulp.src('./tests/*.php').pipe(phpcs(phpcsOptions)).pipe(codecept());
+gulp.task('phptests', ['linttests', 'phpcs'], function(){
+    gulp.src('tests/*.php').pipe(phpcs(phpcsOptions)).pipe(codecept());
 });
 gulp.task('watch', function(){
-    gulp.watch('src/**/*.php', ['lintsrc', 'phpsrc']);
-    gulp.watch('tests/**/*.php', ['linttests', 'phptests']);
+    gulp.watch(['src/**/*.php', 'tests/**/*.php'], ['phptests']);
 });
 
-gulp.task('default', ['phpsrc', 'phptests', 'watch']);
+gulp.task('default', ['phpcs', 'phptests', 'watch']);
