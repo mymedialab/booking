@@ -181,19 +181,19 @@ class ReservationFinderTest extends \Codeception\TestCase\Test
 
     public function testReservationsWithMeta()
     {
-        $response = $this->Object->reservationsWithMeta('custom_key', 'missing_value');
+        $response = $this->Booking->getReservationsByMeta('custom_key', 'missing_value');
         $this->assertTrue(is_array($response));
         $this->assertEquals(0, count($response));
 
-        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_1');
+        $response = $this->Booking->getReservationsByMeta('custom_key', 'custom_value_1');
         $this->assertTrue(is_array($response));
         $this->assertEquals(3, count($response));
 
-        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_1', 2);
+        $response = $this->Booking->getReservationsByMeta('custom_key', 'custom_value_1', 2);
         $this->assertTrue(is_array($response));
         $this->assertEquals(2, count($response));
 
-        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_2');
+        $response = $this->Booking->getReservationsByMeta('custom_key', 'custom_value_2');
         $this->assertTrue(is_array($response));
         $this->assertEquals(2, count($response));
     }

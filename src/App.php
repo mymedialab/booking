@@ -111,6 +111,36 @@ class App
         return $Finder->reservationsBetween($Resource, $Start, $End);
     }
 
+    /**
+     * Fetches all reservations matching submitted meta
+     *
+     * @param  string $key   The meta key or meta name to search by
+     * @param  string $value The meta value to search for
+     * @param  int $limit    The maximum number of reservations to return
+     * @return array         The reservations found
+     */
+    public function getReservationsByMeta($key, $value, $limit = null)
+    {
+        $Finder = $this->Factory->getReservationFinder();
+        return $Finder->reservationsWithAnyMeta([['key' => $key, 'value' => $value]], $limit);
+    }
+
+    /**
+     * Returns any and all reservations which match the submitted meta.
+     *
+     * @param  array  $values An array of keys and values to search for, in the format
+     *                            [['key' => 'your_key', 'value' => 'your_value'], [...]]
+     *                        This will perform an inclusive (or based) search, returning reservations that match any of
+     *                        the key / value pairs.
+     * @param  int    $limit  A limit on the number of reservations returned
+     * @return array          All reservations found
+     */
+    public function getReservationsByAnyMeta($meta, $limit = null)
+    {
+        $Finder = $this->Factory->getReservationFinder();
+        return $Finder->reservationsWithAnyMeta($meta, $limit);
+    }
+
     public function getBlockReservation($id)
     {
         $Doctrine = $this->Factory->getDoctrine();

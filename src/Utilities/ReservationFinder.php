@@ -2,6 +2,7 @@
 namespace MML\Booking\Utilities;
 
 use Doctrine\Common\Collections\Criteria;
+use MMl\Booking\Exceptions;
 use MMl\Booking\Interfaces;
 use MMl\Booking\Models;
 
@@ -138,32 +139,15 @@ class ReservationFinder
     }
 
 
-    public function reservationsWithMeta($key, $value, $limit = null)
-    {
-        $ReservationFactory = $this->Factory->getReservationFactory();
-        $Doctrine = $this->Factory->getDoctrine();
-
-        $Repository = $Doctrine->getRepository('MML\\Booking\\Models\\Reservation');
-        $QueryBuilder = $Repository->createQueryBuilder('r')
-            ->join('r.ReservationMeta', 'm')
-            ->where('m.name = :name')
-            ->andWhere('m.value = :value')
-            ->setParameter('name', $key)
-            ->setParameter('value', $value);
-        if ($limit) {
-            $QueryBuilder->setMaxResults($limit);
-        }
-
-        $Query = $QueryBuilder->getQuery();
-
-        $return = array();
-        foreach ($Query->getResult() as $Reservation) {
-            $return[] = $ReservationFactory->wrap($Reservation);
-        }
-
-        return $return;
-    }
-
+    /**
+     * Returns any and all reservations which match the submitted meta. This will perform an inclusive (or based)
+     * search, returning reservations that match any of the submitted key / value pairs.
+     *
+     * @param  array  $values An array of keys and values to search for, in the format
+     *                            [['key' => 'your_key', 'value' => 'your_value'], [...]]
+     * @param  int    $limit  A limit on the number of reservations returned
+     * @return array          All reservations found
+     */
     public function reservationsWithAnyMeta(array $values, $limit = null)
     {
         $ReservationFactory = $this->Factory->getReservationFactory();
