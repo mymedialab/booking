@@ -46,7 +46,20 @@ class App
         return $Locator->getFor($Resource, $periodName);
     }
 
-    public function createReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, $qty = 1)
+    /**
+     * This utilitiy funciton creates a new reservation for an existing resource, and persists it in the database.
+     *
+     * @param  Interfaces\Resource $Resource The resource you're reserving
+     * @param  Interfaces\Period   $Period   The period for which the reservation is being made.
+     * @param  integer             $qty      [optional] Default 1. How many of the resource to reserve for this period
+     * @param  array               $meta     [optional] An array of meta to attach to the reservation(s). Each meta to
+     *                                          attach should be an array of
+     *                                              ['key' => 'your_meta_key', 'value' => 'your_meta_value']
+     *                                           Be aware that the same meta will attach to all reservations in this
+     *                                           call. (To vary meta per reservation, make multiple calls of qty 1)
+     * @return mixed                        Either an array of reservations or a single reservation, depending on quantity
+     */
+    public function createReservation(Interfaces\Resource $Resource, Interfaces\Period $Period, $qty = 1, $meta = [])
     {
         $Availability = $this->Factory->getResourceAvailability();
 
@@ -60,6 +73,11 @@ class App
         for ($i=0; $i < $qty; $i++) {
             $Reservation = $this->Factory->getEmptyReservation();
             $Reservation->setupFrom($Resource, $Period);
+            foreach ($meta as $metaItem) {
+                if (array_key_exists('key', $metaItem) && array_key_exists('value', $metaItem)) {
+                    $Reservation->addMeta($metaItem['key'], $metaItem['value']);
+                }
+            }
             $reservations[] = $Reservation;
         }
 

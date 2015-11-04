@@ -136,4 +136,72 @@ class ReservationFinder
 
         return $Wrapped;
     }
+
+
+    public function reservationsWithMeta($key, $value, $limit = null)
+    {
+        $ReservationFactory = $this->Factory->getReservationFactory();
+        $Doctrine = $this->Factory->getDoctrine();
+
+        $Repository = $Doctrine->getRepository('MML\\Booking\\Models\\Reservation');
+        $QueryBuilder = $Repository->createQueryBuilder('r')
+            ->join('r.ReservationMeta', 'm')
+            ->where('m.name = :name')
+            ->andWhere('m.value = :value')
+            ->setParameter('name', $key)
+            ->setParameter('value', $value);
+        if ($limit) {
+            $QueryBuilder->setMaxResults($limit);
+        }
+
+        $Query = $QueryBuilder->getQuery();
+
+        $return = array();
+        foreach ($Query->getResult() as $Reservation) {
+            $return[] = $ReservationFactory->wrap($Reservation);
+        }
+
+        return $return;
+    }
+
+    public function reservationsWithAnyMeta(array $values, $limit = null)
+    {
+        $ReservationFactory = $this->Factory->getReservationFactory();
+        $Doctrine = $this->Factory->getDoctrine();
+        $Repository = $Doctrine->getRepository('MML\\Booking\\Models\\Reservation');
+
+        $QueryBuilder = $Repository->createQueryBuilder('r')
+            ->join('r.ReservationMeta', 'm');
+
+        $i = 0;
+        foreach ($values as $meta) {
+            if (!isset($meta['key']) || !isset($meta['value'])) {
+                throw new Exceptions\Booking(
+                    "Malformed meta passed to ReservationFinder.
+                    Should be in the format of [['key' => 'your_meta_key', 'value' => 'your meta value'], [...]]"
+                );
+            }
+            $QueryBuilder->orWhere($QueryBuilder->expr()->andX(
+               $QueryBuilder->expr()->eq('m.name', '?' . $i++),
+               $QueryBuilder->expr()->eq('m.value', '?' . $i++)
+           ));
+        }
+
+        $i = 0;
+        foreach ($values as $meta) {
+            $QueryBuilder->setParameter($i++, $meta['key']);
+            $QueryBuilder->setParameter($i++, $meta['value']);
+        }
+
+        if ($limit) {
+            $QueryBuilder->setMaxResults($limit);
+        }
+        $Query = $QueryBuilder->getQuery();
+        $return = array();
+        foreach ($Query->getResult() as $ReservationEntity) {
+            $return[] = $ReservationFactory->wrap($ReservationEntity);
+        }
+
+        return $return;
+    }
 }

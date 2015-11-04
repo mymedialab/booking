@@ -50,10 +50,14 @@ class ReservationFinderTest extends \Codeception\TestCase\Test
 
         $Period = $this->Factory->getPeriodFactory()->getStandalone();
 
-        $setupReservation = function ($start, $end, $qty) use ($Period, $Resource) {
+        $setupReservation = function ($start, $end, $qty, $metaKey = null, $metaValue = null) use ($Period, $Resource) {
             $Period->begins(new \DateTime("2014-10-01 $start"));
             $Period->ends(new \DateTime("2014-10-01 $end"));
-            $this->Booking->createReservation($Resource, $Period, $qty);
+            $meta = [];
+            if ($metaKey) {
+                $meta[] = ['key' => $metaKey, 'value' => $metaValue];
+            }
+            $this->Booking->createReservation($Resource, $Period, $qty, $meta);
         };
         $setupBlock = function($ref, $first, $from, $until, $RepeatInterval) use ($Resource, $IntervalFactory) {
             $BookingInterval  = $IntervalFactory->get('TimeOfDay');
@@ -69,9 +73,9 @@ class ReservationFinderTest extends \Codeception\TestCase\Test
         };
 
         $setupReservation('09:00', '10:00', 5);
-        $setupReservation('10:00', '11:00', 3);
-        $setupReservation('11:00', '12:00', 1);
-        $setupReservation('10:00', '14:00', 1);
+        $setupReservation('10:00', '11:00', 3, 'custom_key', 'custom_value_1');
+        $setupReservation('11:00', '12:00', 1, 'custom_key', 'custom_value_2');
+        $setupReservation('10:00', '14:00', 1, 'custom_key', 'custom_value_2');
 
         $Weekly = $IntervalFactory->get('Weekly');
         $Date = new \DateTime('2014-09-24 12:00');
@@ -173,5 +177,40 @@ class ReservationFinderTest extends \Codeception\TestCase\Test
         $Start = new \DateTime('2014-10-03 08:00');
         $End = new \DateTime('2014-10-03 18:00');
         $this->assertEquals(1, count($this->Object->allAsFixedBetween($Resource, $Start, $End)), "the 3rd");
+    }
+
+    public function testReservationsWithMeta()
+    {
+        $response = $this->Object->reservationsWithMeta('custom_key', 'missing_value');
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(0, count($response));
+
+        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_1');
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(3, count($response));
+
+        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_1', 2);
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(2, count($response));
+
+        $response = $this->Object->reservationsWithMeta('custom_key', 'custom_value_2');
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(2, count($response));
+    }
+
+    public function testReservationsWithAnyMeta()
+    {
+        $response = $this->Object->reservationsWithAnyMeta([['key' => 'custom_key', 'value' => 'missing_value']]);
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(0, count($response));
+        $response = $this->Object->reservationsWithAnyMeta([['key' => 'custom_key', 'value' => 'missing_value'], ['key' => 'custom_key', 'value' => 'custom_value_1']]);
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(3, count($response));
+        $response = $this->Object->reservationsWithAnyMeta([['key' => 'custom_key', 'value' => 'missing_value'], ['key' => 'custom_key', 'value' => 'custom_value_1']], 2);
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(2, count($response));
+        $response = $this->Object->reservationsWithAnyMeta([['key' => 'custom_key', 'value' => 'custom_value_1'], ['key' => 'custom_key', 'value' => 'custom_value_2']]);
+        $this->assertTrue(is_array($response));
+        $this->assertEquals(5, count($response));
     }
 }
