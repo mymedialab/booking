@@ -13,6 +13,11 @@ class Config
     protected $mysqlPassword = '';
     protected $mysqlDatabase = 'booking';
     protected $mysqlHost = 'localhost';
+    protected $doctrineProxyDir = '/tmp';
+
+    public function __construct() {
+        $this->doctrineProxyDir = __DIR__ . '/../default_proxy_cache';
+    }
 
     public function __get($key)
     {

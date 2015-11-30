@@ -56,6 +56,9 @@ class General
 
         $paths = array(__DIR__ . '/Data');
         $config = Setup::createAnnotationMetadataConfiguration($paths, $Config->isDevMode);
+        if ($Config->has('doctrineProxyDir')) {
+            $config->setProxyDir($Config->doctrineProxyDir);
+        }
 
         // database configuration parameters
         if ($Config->has('doctrineConnection')) {
