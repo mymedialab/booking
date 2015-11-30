@@ -87,6 +87,10 @@ time to be 09:59:59 or adjust the start time to be 10:00:01 and then we could mo
 BUT then the API consumer would (probably) need to magically tweak the date / time every time it's presented to the end
 user.
 
+Doctrine needs a folder for proxy caches. We default to our own directory for max compat out of the box, BUT this means
+doctrine is spamming files all up in your /vendor folder if you install via composer. Fix this by injecting a value for
+doctrineProxyCache in your config.
+
 ## Projects todos.
 
 Lots.
